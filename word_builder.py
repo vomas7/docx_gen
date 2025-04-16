@@ -20,6 +20,7 @@ from copy import deepcopy
 
 from lxml import etree
 
+from PyPDF2 import PdfFileWriter
 
 class WordBuilder(DOC):
     """Класс для работы создания и работы с объектами документа."""

@@ -1,9 +1,13 @@
 import os
+import tempfile
 from io import BytesIO
+
 from docx import Document
 from docx.shared import Cm
 from docx.table import Table
 from docx.section import Section
+
+from docx2pdf import convert
 
 
 class DOC:
@@ -73,23 +77,44 @@ class DOC:
         content = buffer.getvalue()
         return content
 
-    def save_docx(self, file_name: str, path: str = None) -> None:
+    def save_doc(self, output_docx_path: str) -> None:
         """
-        Метод сохраняет документ в директорию проекта в формате docx.
-        Если не задан параметр path, то файл создастся в текущей директории
+        Метод сохраняет документ в директорию проекта.
+        Использовать при разработке, для визуального отображения результата.
         """
-        if path:
-            full_path = os.path.join(path, f"{file_name}.docx")
+        if output_docx_path.split('.')[-1] == 'docx':
+            with open(output_docx_path, "wb") as file:
+                file.write(self.doc_bytes)
         else:
-            full_path = f"{file_name}.docx"
-        with open(full_path, "wb") as file:
-            file.write(self.doc_bytes)
+            raise ValueError("'output_docx_path' is not .docx file")
 
-    def save_pdf(self, file: str) -> None:
+    @staticmethod
+    def convert_docx_to_pdf(dirs: str):###
+        """ 
+        использует библиотеку docx2pdf 
+        :dirs - путь к папке с docx-файлами, которые конвертируются в pdf
         """
-        Метод сохраняет документ в директорию проекта в формате pdf.
-        """
+        files_for_convert = os.listdir(dir)
         pass
+
+    def save_pdf(self, output_pdf_path: str) -> None:
+        """
+        Конвертирует байты DOCX в PDF-файл.
+        
+        :param output_pdf_path: Путь, куда сохранить PDF 
+        (например, "output.pdf").
+        """
+        if output_pdf_path.split('.')[-1] == 'pdf':
+            with tempfile.NamedTemporaryFile(
+                suffix=".docx", delete=False) as tmp_docx:
+                tmp_docx.write(self.doc_bytes)
+                tmp_docx_path = tmp_docx.name
+            
+            convert(tmp_docx_path, output_pdf_path)
+
+            os.unlink(tmp_docx_path)
+        else:
+            raise ValueError("'output_pdf_path' is not .pdf file")
 
     @staticmethod
     def load_docx_as_bytes() -> bytes:

@@ -1,0 +1,9 @@
+chardet==5.2.0
+colorama==0.4.6
+docx2pdf==0.1.8
+lxml==5.3.2
+pillow==11.2.1
+python-docx==1.1.2
+pywin32==310
+tqdm==4.67.1
+typing_extensions==4.13.2
