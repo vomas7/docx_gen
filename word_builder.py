@@ -1,29 +1,27 @@
 import decimal
-from typing import Any
-from decimal import Decimal
 from collections import namedtuple
+from copy import deepcopy
+from decimal import Decimal
+from typing import Any
 
-from docx import oxml, Document
-from docx.shared import Cm, Mm
-from docx.oxml.ns import qn
-from docx.oxml import OxmlElement
+from docx import Document, oxml
 from docx.enum.section import WD_SECTION
 from docx.enum.table import WD_CELL_VERTICAL_ALIGNMENT
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+from docx.shared import Cm, Mm
+from docx.table import Table, _Cell, _Row
 from docx.text.paragraph import Paragraph
-from docx.table import _Cell, Table, _Row
-
-from doc import DOC
-from helpers.styler import styler
-from helpers.cell_selector import CellSelection
-
-from copy import deepcopy
-
 from lxml import etree
 
-from PyPDF2 import PdfFileWriter
+from doc import DOC
+from helpers.cell_selector import CellSelection
+from helpers.styler import styler
+
 
 class WordBuilder(DOC):
     """Класс для работы создания и работы с объектами документа."""
+
     data: list
     _data: list
     table: Table
@@ -31,9 +29,13 @@ class WordBuilder(DOC):
     def __init__(self):
         super().__init__()
 
-    def add_table(self, table_data: list[list],
-                  rows: int = None, cols: int = None,
-                  table_style: str = None) -> Table:
+    def add_table(
+        self,
+        table_data: list[list],
+        rows: int = None,
+        cols: int = None,
+        table_style: str = None,
+    ) -> Table:
         """
         Метод добавляет таблицу в документ и перезаписывает переменную table.
         После добавления новой таблицы, все последующие методы будут работать
@@ -41,11 +43,7 @@ class WordBuilder(DOC):
         """
         self.data = table_data
         self._data = sum(self.data, []) if self.data else []
-        self.table = self._build_table(
-            rows=rows,
-            cols=cols,
-            table_style=table_style
-        )
+        self.table = self._build_table(rows=rows, cols=cols, table_style=table_style)
         self.table.autofit = False
         self.table.allow_autofit = False
         self._fill_table()
@@ -57,20 +55,18 @@ class WordBuilder(DOC):
         Метод добавляет переданную строку как текст документа,
         после чего styler применяет к нему переданные стили.
         """
-        if self.doc.paragraphs[0].runs[0].text == '123': ############
+        if self.doc.paragraphs[0].runs[0].text == "123":  ############
             self.doc.paragraphs[0].runs[0].text = text
             paragraph = self.doc.paragraphs[0]
         else:
             paragraph = self.doc.add_paragraph(text)
         return paragraph, kwargs
 
-    def insert_picture(self,
-                       path: str,
-                       height: int = 2.06,
-                       width: int = 13.95,
-                       align: str = 'center') -> None:
-        if self.doc.paragraphs[0].runs[0].text == '123': ###########
-            self.doc.paragraphs[0].runs[0].text = ''
+    def insert_picture(
+        self, path: str, height: int = 2.06, width: int = 13.95, align: str = "center"
+    ) -> None:
+        if self.doc.paragraphs[0].runs[0].text == "123":  ###########
+            self.doc.paragraphs[0].runs[0].text = ""
             paragraph = self.doc.paragraphs[0]
             run = paragraph.runs[0]
         else:
@@ -80,11 +76,11 @@ class WordBuilder(DOC):
         shape.width = Cm(width)
         shape.height = Cm(height)
         match align:
-            case 'left':
+            case "left":
                 paragraph.alignment = 0
-            case 'right':
+            case "right":
                 paragraph.alignment = 2
-            case 'center':
+            case "center":
                 paragraph.alignment = 1
 
     @property
@@ -124,7 +120,7 @@ class WordBuilder(DOC):
             yield row.cells[col_index]
 
     def row_cells(self, row_index: int) -> iter:
-        """ Итератор по ячейкам строки """
+        """Итератор по ячейкам строки"""
         row = self.table.rows[row_index]
         yield from row.cells
 
@@ -174,12 +170,12 @@ class WordBuilder(DOC):
 
     @staticmethod
     def set_cell_bold(cell: _Cell) -> None:
-        """ Превращает текст в ячейке в жирный. """
+        """Превращает текст в ячейке в жирный."""
         cell.paragraphs[0].runs[0].font.bold = True
 
     @staticmethod
     def set_cell_italic(cell: _Cell) -> None:
-        """ Превращает текст в ячейке в курсив. """
+        """Превращает текст в ячейке в курсив."""
         cell.paragraphs[0].runs[0].font.italic = True
 
     def page_break(self):
@@ -218,14 +214,13 @@ class WordBuilder(DOC):
         """Сеттер, устанавливает повторяющиеся строки таблицы."""
         tr = row._tr
         trPr = tr.get_or_add_trPr()
-        table_header = OxmlElement('w:tblHeader')
-        table_header.set(qn('w:val'), 'true')
+        table_header = OxmlElement("w:tblHeader")
+        table_header.set(qn("w:val"), "true")
         trPr.append(table_header)
 
-    def _build_table(self,
-                     rows: int = None,
-                     cols: int = None,
-                     table_style: str = None) -> Table:
+    def _build_table(
+        self, rows: int = None, cols: int = None, table_style: str = None
+    ) -> Table:
         """Метод создает таблицу и добавляет в документ."""
         return self.doc.add_table(
             rows=rows if rows else len(self.data),
@@ -246,15 +241,18 @@ class WordBuilder(DOC):
         else:
             self._set_repeat_table_header(self.get_row(row))
 
-    def merge_cells(self,
-                    start_cell: dict[str: int, str: int],
-                    end_cell: dict[str: int, str: int]) -> None:
+    def merge_cells(
+        self, start_cell: dict[str:int, str:int], end_cell: dict[str:int, str:int]
+    ) -> None:
         """
         Метод сливает ячейки.
         Значения индексов ячеек нужно передавать словарем вида
         {'col': 0, 'row': 0}
         """
-        Cell = namedtuple("C1", "col, row", )
+        Cell = namedtuple(
+            "C1",
+            "col, row",
+        )
         start_merge_cell = Cell(col=start_cell["col"], row=start_cell["row"])
         end_merge_cell = Cell(col=end_cell["col"], row=end_cell["row"])
         self._merge(
@@ -262,14 +260,11 @@ class WordBuilder(DOC):
                 c1=start_merge_cell,
                 c2=end_merge_cell,
                 max_row=self.last_row,
-                max_col=self.last_col
+                max_col=self.last_col,
             )
         )
 
-    def round_col(self,
-                  index: int,
-                  round_to: int,
-                  skip_rows: list[int] = None) -> None:
+    def round_col(self, index: int, round_to: int, skip_rows: list[int] = None) -> None:
         """Метод округляет числа в колонке."""
         for idx, row in enumerate(self.rows):
             if skip_rows and idx in skip_rows:
@@ -290,13 +285,11 @@ class WordBuilder(DOC):
         new = self.table.add_row()
         new.cells[0].text = "Итого"
         for col, total in zip(cols_index, totals):
-            self.set_cell_value(
-                self.get_cell(self.last_row, col), total)
+            self.set_cell_value(self.get_cell(self.last_row, col), total)
 
-    def replace_char_in_decimals(self,
-                                 index_cols: list[int],
-                                 old: str,
-                                 new: str) -> None:
+    def replace_char_in_decimals(
+        self, index_cols: list[int], old: str, new: str
+    ) -> None:
         """Метод заменяет символ в колонках на новый."""
         for index in index_cols:
             for cell in self.column_cells(index):
@@ -308,14 +301,8 @@ class WordBuilder(DOC):
 
     def _merge(self, cells: CellSelection) -> None:
         """Метод сливает колонки. Внутренняя функция."""
-        start_cell = self.get_cell(
-            row_index=cells.c1.row,
-            column_index=cells.c1.col
-        )
-        stop_cell = self.get_cell(
-            row_index=cells.c2.row,
-            column_index=cells.c2.col
-        )
+        start_cell = self.get_cell(row_index=cells.c1.row, column_index=cells.c1.col)
+        stop_cell = self.get_cell(row_index=cells.c2.row, column_index=cells.c2.col)
 
         cell_value = start_cell.text
 
@@ -327,11 +314,13 @@ class WordBuilder(DOC):
 
         self.set_cell_value(merged_cell, cell_value)
 
-    def set_page_size_and_orient(self,
-                                 width: int = 210,
-                                 height: int = 297,
-                                 orientation: str = "portrait",
-                                 table_index: int = None,):
+    def set_page_size_and_orient(
+        self,
+        width: int = 210,
+        height: int = 297,
+        orientation: str = "portrait",
+        table_index: int = None,
+    ):
         """
         Сеттер, устаналивает размеры страницы и его ориентацию.
         Параметры width и height задаются в миллиметрах.
@@ -347,8 +336,7 @@ class WordBuilder(DOC):
             section.page_width = Mm(height)
         if table_index:
             table = self.get_table(table_index)
-            page_width = (section.page_width - section.left_margin
-                          - section.right_margin)
+            page_width = section.page_width - section.left_margin - section.right_margin
             column_width = page_width / len(table.columns)
             for cell in self.cells:
                 cell.width = column_width
@@ -357,21 +345,16 @@ class WordBuilder(DOC):
         """Геттер, возвращает последний раздел."""
         return self.get_section(-1)
 
-    def make_text_vertical_in_cell(self,
-                                   cell: _Cell,
-                                   position: str = None) -> None:
+    def make_text_vertical_in_cell(self, cell: _Cell, position: str = None) -> None:
         """
         Метод переворачивает тектс в ячейке
         с горизонтального на вертикальное положение
         """
-        position_map = {
-            'bottom_to_top': 'btLr',
-            'top_to_bottom': 'lrTb'
-        }
-        position_value = position_map.get(position, 'btLr')
+        position_map = {"bottom_to_top": "btLr", "top_to_bottom": "lrTb"}
+        position_value = position_map.get(position, "btLr")
         tc = cell._element
-        text_direction = OxmlElement('w:textDirection')
-        text_direction.set(qn('w:val'), position_value)
+        text_direction = OxmlElement("w:textDirection")
+        text_direction.set(qn("w:val"), position_value)
         tcPr = tc.get_or_add_tcPr()
         tcPr.append(text_direction)
 
@@ -381,31 +364,27 @@ class WordBuilder(DOC):
         Пока умеет только верхнюю (top) и нижнюю (bottom).
         """
         xml_str = {
-            "bottom": r'<w:tcBorders xmlns:w='
-                      r'"http://schemas.openxmlformats.org'
-                      r'/wordprocessingml/2006/main">'
-                      r'<w:top w:val="single" w:sz="4" w:space="0" />'
-                      r'<w:left w:val="single" w:sz="4" w:space="0" />'
-                      r'<w:bottom w:val="nil" />'
-                      r'<w:right w:val="single" w:sz="4" w:space="0" />'
-                      r'</w:tcBorders>',
-            "top": r'<w:tcBorders xmlns:w='
-                   r'"http://schemas.openxmlformats.org'
-                   r'/wordprocessingml/2006/main">'
-                   r'<w:top w:val="nil" />'
-                   r'<w:left w:val="single" w:sz="4" w:space="0" />'
-                   r'<w:bottom w:val="single" w:sz="4" w:space="0" />'
-                   r'<w:right w:val="single" w:sz="4" w:space="0" />'
-                   r'</w:tcBorders>'
+            "bottom": r"<w:tcBorders xmlns:w="
+            r'"http://schemas.openxmlformats.org'
+            r'/wordprocessingml/2006/main">'
+            r'<w:top w:val="single" w:sz="4" w:space="0" />'
+            r'<w:left w:val="single" w:sz="4" w:space="0" />'
+            r'<w:bottom w:val="nil" />'
+            r'<w:right w:val="single" w:sz="4" w:space="0" />'
+            r"</w:tcBorders>",
+            "top": r"<w:tcBorders xmlns:w="
+            r'"http://schemas.openxmlformats.org'
+            r'/wordprocessingml/2006/main">'
+            r'<w:top w:val="nil" />'
+            r'<w:left w:val="single" w:sz="4" w:space="0" />'
+            r'<w:bottom w:val="single" w:sz="4" w:space="0" />'
+            r'<w:right w:val="single" w:sz="4" w:space="0" />'
+            r"</w:tcBorders>",
         }
         for cell in self.get_row(row_index).cells:
-            cell._element.get_or_add_tcPr().append(
-                oxml.parse_xml(xml_str[position])
-            )
+            cell._element.get_or_add_tcPr().append(oxml.parse_xml(xml_str[position]))
 
-    def _replace_text(self,
-                      searched_string: str,
-                      replaced_string: str) -> None:
+    def _replace_text(self, searched_string: str, replaced_string: str) -> None:
         """
         Метод заменяет кусок текста из ячейки, с сохранением стилей.
         """
@@ -415,16 +394,17 @@ class WordBuilder(DOC):
                     for run in prg.runs:
                         if searched_string in run.text:
                             run.text = run.text.replace(
-                                searched_string,
-                                replaced_string
-                                )
+                                searched_string, replaced_string
+                            )
 
-    def copy_table(self,
-                   source_path: str,
-                   destination_path: str,
-                   table_index: int,
-                   searched: str = None,
-                   new_text: str = None) -> None:
+    def copy_table(
+        self,
+        source_path: str,
+        destination_path: str,
+        table_index: int,
+        searched: str = None,
+        new_text: str = None,
+    ) -> None:
         """
         Метод копирует таблицу по индексу table_index
         Из заданного документа.
@@ -433,19 +413,20 @@ class WordBuilder(DOC):
         self.source_document = Document(source_path)
         self.template = self.source_document.tables[table_index]
         if searched:
-            self._replace_text(searched_string=searched,
-                               replaced_string=new_text)
+            self._replace_text(searched_string=searched, replaced_string=new_text)
         tbl = self.template._tbl
         new_tbl = deepcopy(tbl)
         self.destination_document = self.doc
         self.destination_document.add_paragraph()._p.addnext(new_tbl)
         self.destination_document.save(destination_path)
 
-    def copy_text(self,
-                  source_path: str,
-                  destination_path: str,
-                  start_text: str,
-                  delete_start_text: bool = False) -> None:
+    def copy_text(
+        self,
+        source_path: str,
+        destination_path: str,
+        start_text: str,
+        delete_start_text: bool = False,
+    ) -> None:
         """
         Метод копирует текст из заданного документа,
         начиная с определенного словосочения и заканчивая
@@ -459,7 +440,7 @@ class WordBuilder(DOC):
             if paragraph.text.startswith(start_text):
                 copying_flag = True
             if copying_flag:
-                if paragraph.style.name == 'Heading 1' or paragraph.text.strip() == "":  # noqa: E501
+                if paragraph.style.name == "Heading 1" or paragraph.text.strip() == "":  # noqa: E501
                     break
 
                 new_paragraph = self.destination_document.add_paragraph()
@@ -479,17 +460,17 @@ class WordBuilder(DOC):
                     new_run.font.name = run.font.name
         self.destination_document.save(destination_path)
 
-    def copy_paragraph_attributes(self,
-                                  source_paragraph: Paragraph,
-                                  destination_paragraph: Paragraph) -> None: # какое-то хреновое описание
+    def copy_paragraph_attributes(
+        self, source_paragraph: Paragraph, destination_paragraph: Paragraph
+    ) -> None:  # какое-то хреновое описание
         """
         Метод копирует все параметры текста (отступы, выравнивание и т.д.),
         который нужно вставить в документ.
         """
         if source_paragraph.alignment is not None:
             destination_paragraph.alignment = source_paragraph.alignment
-        link = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
-        num_pr = source_paragraph._element.find(f'.//{{{link}}}numPr')
+        link = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+        num_pr = source_paragraph._element.find(f".//{{{link}}}numPr")
         if num_pr is not None:
             destination_paragraph._element.get_or_add_pPr().append(num_pr)
         if source_paragraph.alignment is not None:
@@ -507,10 +488,9 @@ class WordBuilder(DOC):
             space_after = source_paragraph.paragraph_format.space_after
             destination_paragraph.paragraph_format.space_after = space_after
 
-    def merge_depending_on_2columns(self,
-                                    base_col_idx_1: int,
-                                    merge_col_idx: int,
-                                    base_col_idx_2: int = None) -> list[list]:
+    def merge_depending_on_2columns(
+        self, base_col_idx_1: int, merge_col_idx: int, base_col_idx_2: int = None
+    ) -> list[list]:
         """
         Метод объединяет ячейки колонки в рамках заданой базовой колонки.
         """
@@ -535,14 +515,14 @@ class WordBuilder(DOC):
         """
         Метод делит на колонки страницы в последнем разделе.
         """
-        link = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+        link = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
         section = self.get_section(-1)
         section_xml = section._sectPr
-        cols_elem = section_xml.find(f'.//{{{link}}}cols')
+        cols_elem = section_xml.find(f".//{{{link}}}cols")
         if cols_elem is not None:
-            cols_elem.set(f'{{{link}}}num', str(column_nums))
+            cols_elem.set(f"{{{link}}}num", str(column_nums))
             if column_nums > 1:
                 for _ in range(column_nums):
-                    col = etree.Element(f'{{{link}}}col')
+                    col = etree.Element(f"{{{link}}}col")
                     cols_elem.append(col)
             section_xml.append(cols_elem)

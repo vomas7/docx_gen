@@ -3,10 +3,9 @@ import tempfile
 from io import BytesIO
 
 from docx import Document
+from docx.section import Section
 from docx.shared import Cm
 from docx.table import Table
-from docx.section import Section
-
 from docx2pdf import convert
 
 
@@ -46,7 +45,7 @@ class DOC:
             section.right_margin = Cm(self._right_margin)
 
     @staticmethod
-    def create_document(template_path: str) -> Document: ############
+    def create_document(template_path: str) -> Document:  ############
         """
         Создает документ из шаблона. В шаблоне нужно определить стили.
         """
@@ -82,16 +81,16 @@ class DOC:
         Метод сохраняет документ в директорию проекта.
         Использовать при разработке, для визуального отображения результата.
         """
-        if output_docx_path.split('.')[-1] == 'docx':
+        if output_docx_path.split(".")[-1] == "docx":
             with open(output_docx_path, "wb") as file:
                 file.write(self.doc_bytes)
         else:
             raise ValueError("'output_docx_path' is not .docx file")
 
     @staticmethod
-    def convert_docx_to_pdf(dirs: str):###
-        """ 
-        использует библиотеку docx2pdf 
+    def convert_docx_to_pdf(dirs: str):  ###
+        """
+        использует библиотеку docx2pdf
         :dirs - путь к папке с docx-файлами, которые конвертируются в pdf
         """
         files_for_convert = os.listdir(dir)
@@ -100,16 +99,15 @@ class DOC:
     def save_pdf(self, output_pdf_path: str) -> None:
         """
         Конвертирует байты DOCX в PDF-файл.
-        
-        :param output_pdf_path: Путь, куда сохранить PDF 
+
+        :param output_pdf_path: Путь, куда сохранить PDF
         (например, "output.pdf").
         """
-        if output_pdf_path.split('.')[-1] == 'pdf':
-            with tempfile.NamedTemporaryFile(
-                suffix=".docx", delete=False) as tmp_docx:
+        if output_pdf_path.split(".")[-1] == "pdf":
+            with tempfile.NamedTemporaryFile(suffix=".docx", delete=False) as tmp_docx:
                 tmp_docx.write(self.doc_bytes)
                 tmp_docx_path = tmp_docx.name
-            
+
             convert(tmp_docx_path, output_pdf_path)
 
             os.unlink(tmp_docx_path)

@@ -1,4 +1,5 @@
 from collections import namedtuple
+
 from helpers.custom_exceptions import CellSelectionValidationError
 
 
@@ -8,11 +9,7 @@ class CellSelection:
     которые будут сливаться.
     """
 
-    def __init__(self,
-                 c1: namedtuple,
-                 c2: namedtuple,
-                 max_row: int,
-                 max_col: int):
+    def __init__(self, c1: namedtuple, c2: namedtuple, max_row: int, max_col: int):
         """
         Здесь реализуется валидация индексов ячеек, которые будут сливаться.
         """

@@ -1,0 +1,22 @@
+[tool.ruff]
+line-length = 88
+target-version = 'py311'
+respect-gitignore = true
+
+[tool.ruff.lint]
+select = [
+    "E",   # Ошибки (PEP8)
+    "F",   # Ошибки (Pyflakes)
+    "B",   # Подозрительный код (flake8-bugbear)
+    "I",   # Сортировка импортов (isort)
+    "UP",  # Автоапгрейд синтаксиса (pyupgrade)
+    "SIM", # Упрощение кода (flake8-simplify)
+    "PD",  # Pandas-специфичные правила (опционально)
+]
+
+
+[tool.ruff.lint.isort]
+known-first-party = ["docx_gen"]
+
+[tool.ruff.format]
+quote-style = "double"

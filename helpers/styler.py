@@ -1,5 +1,5 @@
+from docx.enum.text import WD_COLOR_INDEX, WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Pt, RGBColor
-from docx.enum.text import WD_PARAGRAPH_ALIGNMENT, WD_COLOR_INDEX
 
 
 class Styler:
@@ -8,20 +8,24 @@ class Styler:
     Основной метод - style_text, использующийся в качестве декоратора.
     Все методы вызываются из экземпляра класса - styler.
     """
+
     align = WD_PARAGRAPH_ALIGNMENT
 
     def style_text(self):
         """Декоратор, который стилизует текст, по заданным параметрам."""
+
         def take_attrs(add_text: callable):
             def init_styler(*args, **kwargs):
                 p, kwargs = add_text(*args, **kwargs)
                 for key, value in kwargs.items():
                     self.apply_text_styles(p, key, value)
+
             return init_styler
+
         return take_attrs
 
     @staticmethod
-    def apply_cell_style(cell, style_name: str = 'ЕИПП_стиль_авто'):
+    def apply_cell_style(cell, style_name: str = "ЕИПП_стиль_авто"):
         for paragraph in cell.paragraphs:
             paragraph.style = style_name
 
