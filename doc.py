@@ -2,25 +2,58 @@ import os
 import tempfile
 from io import BytesIO
 
-from docx import Document
+# from docx.api import Document
+from docx.document import Document
 from docx.section import Section
 from docx.shared import Cm
 from docx.table import Table
 from docx2pdf import convert
 
 
-class DOC:
+
+from docx.package import Package
+from docx.opc.package import OpcPackage
+from docx.parts.document import DocumentPart
+from typing import IO, TYPE_CHECKING, cast
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
+from docx.document import Document as DocumentObject
+from docx.oxml.xmlchemy import BaseOxmlElement, ZeroOrMore, ZeroOrOne
+
+
+class DOC(Document):
     _left_margin: int = 3
     _right_margin: int = 1.5
 
-    def __init__(self, template: str):
-        """
-        При создании документа - применяются отступы по умолчанию
-        Это поведение можно поменять, если переопределить отступы (margins)
-        и вызвать функцию setup_margins еще раз, в дочернем классе.
-        """
-        self.doc = DOC.create_document(template)
-        self.setup_margins()
+    def __init__(self, template: str = None):
+        # Инициализация Package
+        # Загрузка документа
+        document_part = Package.open(template).main_document_part
+        document = document_part.document
+        self._part = getattr(document, '_part', None)
+        self._element = getattr(document, '_element', None)
+        Document.__init__(self, self._element, document_part)
+
+
+
+    # def __init__(self, template: str = None):
+    #
+    #     document_part = cast("DocumentPart", Package.open(template).main_document_part)
+    #     document = document_part.document
+    #     self._part = document.__dict__.get('_part')
+    #     self._element = document.__dict__.get('_element')
+    #     super(Package, self).__init__()
+    #     super(DocumentObject, self).__init__()
+
+
+        # self.doc = DOC.create_document(template)
+
+        # self.setup_margins()
+
+    def _default_docx_path(self):
+        """Return the path to the built-in default .docx package."""
+        _thisdir = os.path.split(__file__)[0]
+        return os.path.join(_thisdir, "templates", "default.docx")
+
 
     def get_table(self, table_index: int) -> Table:
         """Возвращает таблицу, по индексу."""
@@ -72,7 +105,7 @@ class DOC:
         по HTTP, либо для записи в файл.
         """
         buffer = BytesIO()
-        self.doc.save(buffer)
+        self.save(buffer)
         content = buffer.getvalue()
         return content
 
@@ -121,3 +154,26 @@ class DOC:
         doc.save(buffer)
         doc_bytes = buffer.getvalue()
         return doc_bytes
+
+    def add_table(self, rows: int, cols: int, style: str | _TableStyle | None = None):
+        """Add a table having row and column counts of `rows` and `cols` respectively.
+
+        `style` may be a table style object or a table style name. If `style` is |None|,
+        the table inherits the default table style of the document.
+        """
+        table = self._body.add_table(rows, cols, self._block_width)
+        table.style = style
+        return table
+
+class Tabel:
+
+    def __init__(self):
+        super().__init__()
+
+
+d = DOC(r'D:\projects\docx_gen\venv\Lib\site-packages\docx\templates\default.docx')
+# print(d._element)
+
+d.add_table(5, 6)
+print(d.tables)
+d.save_doc(r'C:\Users\Krasnopoliskij.IA\Downloads\Новая папка (36)\hui.docx')
