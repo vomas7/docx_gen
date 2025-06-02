@@ -29,9 +29,8 @@ class DOC(Document):
         # Загрузка документа
         document_part = Package.open(template).main_document_part
         document = document_part.document
-        self._part = getattr(document, '_part', None)
-        self._element = getattr(document, '_element', None)
-        Document.__init__(self, self._element, document_part)
+        element = getattr(document, '_element', None)
+        Document.__init__(self, element, document_part)
 
 
 
