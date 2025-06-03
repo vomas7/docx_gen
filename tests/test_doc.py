@@ -4,7 +4,6 @@ from pathlib import Path
 import pytest
 import os.path
 from engine.doc import DOC
-from docx.opc.exceptions import PackageNotFoundError
 
 
 class TestDOC:
@@ -15,12 +14,6 @@ class TestDOC:
     def test_init(self):
         assert self.doc
         assert "<DOC object: not saved>" == str(self.doc)
-
-    def test_wrong_template_content_type(self):
-        with pytest.raises(PackageNotFoundError):
-            test_template = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                         "test.zip")
-            DOC(template=test_template)
 
     def test_export_to_docx(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -44,3 +37,13 @@ class TestDOC:
         assert self.doc.file is None
         self.doc.file = "test.docx"
         assert str(self.doc.file) == "test.docx"
+
+    def test_wrong_template_content_type(self):
+        with pytest.raises(ValueError):
+            DOC(self.get_test_static_file("wrong_doc_test.txt"))
+
+    @staticmethod
+    def get_test_static_file(file_name: str) -> str:
+        return os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), file_name
+        )
