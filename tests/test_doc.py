@@ -1,8 +1,9 @@
-import tempfile
+import os.path
 from pathlib import Path
+import tempfile
 
 import pytest
-import os.path
+
 from engine.doc import DOC
 
 
@@ -13,18 +14,18 @@ class TestDOC:
 
     def test_init(self):
         assert self.doc
-        assert "<DOC object: not saved>" == str(self.doc)
+        assert str(self.doc) == "<DOC object: not saved>"
 
     def test_export_to_docx(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            file = Path(tmpdir) / 'test.doc'
+            file = Path(tmpdir) / "test.doc"
             self.doc.export.to_docx(file)
             assert file.is_file()
             assert file.exists()
 
     def test_export_pdf(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            file = Path(tmpdir) / 'test.pdf'
+            file = Path(tmpdir) / "test.pdf"
             self.doc.export.to_pdf(file)
             assert file.is_file()
             assert file.exists()
@@ -44,6 +45,4 @@ class TestDOC:
 
     @staticmethod
     def get_test_static_file(file_name: str) -> str:
-        return os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), file_name
-        )
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), file_name)

@@ -264,7 +264,8 @@
 #             )
 #         )
 #
-#     def round_col(self, index: int, round_to: int, skip_rows: list[int] = None) -> None:
+#     def round_col(
+#     self, index: int, round_to: int, skip_rows: list[int] = None) -> None:
 #         """Метод округляет числа в колонке."""
 #         for idx, row in enumerate(self.rows):
 #             if skip_rows and idx in skip_rows:
@@ -336,7 +337,8 @@
 #             section.page_width = Mm(height)
 #         if table_index:
 #             table = self.get_table(table_index)
-#             page_width = section.page_width - section.left_margin - section.right_margin
+#             page_width = section.page_width - section.left_margin -
+#             section.right_margin
 #             column_width = page_width / len(table.columns)
 #             for cell in self.cells:
 #                 cell.width = column_width

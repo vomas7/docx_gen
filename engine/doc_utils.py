@@ -1,11 +1,10 @@
-import os
-import warnings
-from pathlib import Path
-from typing import Union
 from importlib import resources
+import os
+from pathlib import Path
+import warnings
 
 
-def get_default_docx_path() -> Union[str, Path]:
+def get_default_docx_path() -> str | Path:
     """Gets path to libs template."""
     try:
         with resources.path("docx.templates", "default.docx") as path:
@@ -34,7 +33,8 @@ def validate_filepath(path: Path) -> Path:
         raise PermissionError(f"No write permissions for directory: {parent}")
     if path.exists():
         warnings.warn(
-            f"File already exists and will be overwritten: {path.resolve()}",
-            UserWarning
+            message=f"File already exists and will be overwritten: {path.resolve()}",
+            category=UserWarning,
+            stacklevel=1
         )
     return path

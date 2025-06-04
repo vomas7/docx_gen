@@ -1,16 +1,14 @@
-from pathlib import Path
-from typing import Union, Iterable
-
+from collections.abc import Iterable
 from io import BytesIO
-from docx.shared import Cm
+from pathlib import Path
 
-from engine.export import DocumentExporter
-from engine.doc_utils import validate_filepath
-from engine.doc_utils import get_default_docx_path
-
-from docx.package import Package
 from docx.document import Document
 from docx.opc.constants import CONTENT_TYPE as CT
+from docx.package import Package
+from docx.shared import Cm
+
+from engine.doc_utils import get_default_docx_path, validate_filepath
+from engine.export import DocumentExporter
 
 
 class DOC(Document):
@@ -18,23 +16,24 @@ class DOC(Document):
     __standard_right_margin: Cm = Cm(1.5)
     valid_inputs: Iterable[str] = (".docx", ".doc", ".rtf")
     valid_extensions: Iterable[str] = (".pdf", ".docx", ".doc", ".rtf")
-    _file: Union[str, Path] = None
+    _file: str | Path = None
 
-    def __init__(self, template_path: Union[str, Path] = None):
-
+    def __init__(self, template_path: str | Path = None):
         template_path = template_path if template_path else get_default_docx_path()
 
         if Path(template_path).suffix not in self.valid_inputs:
-            raise ValueError(f'File format not in {self.valid_extensions}')
+            raise ValueError(f"File format not in {self.valid_extensions}")
 
         document_part = Package.open(template_path).main_document_part
 
         if document_part.content_type != CT.WML_DOCUMENT_MAIN:
-            raise ValueError(f"File {template_path} is not a Word file,"
-                             f"content type is {document_part.content_type}!")
+            raise ValueError(
+                f"File {template_path} is not a Word file,"
+                f"content type is {document_part.content_type}!"
+            )
 
         document = document_part.document
-        element = getattr(document, '_element', None)
+        element = getattr(document, "_element", None)
         Document.__init__(self, element, document_part)
         self.export = DocumentExporter(self)
 
