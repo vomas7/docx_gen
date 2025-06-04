@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 class DocumentExporter:
 
-    valid_docx_formats = (".docx", ".doc", ".rtf", '.html')
+    valid_docx_formats = (".docx", ".doc", ".rtf")
 
     def __init__(self, doc: 'DOC'):
         self.doc = doc
