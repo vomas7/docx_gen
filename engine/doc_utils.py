@@ -14,7 +14,7 @@ def get_default_docx_path() -> Union[str, Path]:
         return resources.path("docx.templates", "default.docx").__enter__()
 
 
-def validate_filepath(path: Path):
+def validate_filepath(path: Path) -> Path:
     """
     Validate a filepath for writing operations.
     Raises:
@@ -24,6 +24,7 @@ def validate_filepath(path: Path):
     Warns:
         UserWarning: If the file already exists and will be overwritten.
     """
+    path = path if isinstance(path, Path) else Path(path)
     if path.is_dir():
         raise ValueError(f"Path must be a file, not a directory: {path.resolve()}")
     parent = path.parent
@@ -36,3 +37,4 @@ def validate_filepath(path: Path):
             f"File already exists and will be overwritten: {path.resolve()}",
             UserWarning
         )
+    return path

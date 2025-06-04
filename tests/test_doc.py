@@ -18,14 +18,14 @@ class TestDOC:
     def test_export_to_docx(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             file = Path(tmpdir) / 'test.doc'
-            self.doc.export(file)
+            self.doc.to_docx(file)
             assert file.is_file()
             assert file.exists()
 
     def test_export_pdf(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             file = Path(tmpdir) / 'test.pdf'
-            self.doc.export(file)
+            self.doc.to_pdf(file)
             assert file.is_file()
             assert file.exists()
 
