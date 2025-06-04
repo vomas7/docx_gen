@@ -4,7 +4,7 @@ import tempfile
 
 import pytest
 
-from engine.doc import DOC
+from core.doc import DOC
 
 
 class TestDOC:

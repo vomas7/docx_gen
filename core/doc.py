@@ -7,8 +7,8 @@ from docx.opc.constants import CONTENT_TYPE as CT
 from docx.package import Package
 from docx.shared import Cm
 
-from engine.doc_utils import get_default_docx_path, validate_filepath
-from engine.export import DocumentExporter
+from core.validators.doc_utils import get_default_docx_path, validate_filepath
+from core.io.export import DocumentExporter
 
 
 class DOC(Document):
@@ -59,6 +59,9 @@ class DOC(Document):
     def file(self, value: Path):
         self._file = Path(value) if not isinstance(value, Path) else value
         validate_filepath(self._file)
+
+    def add(self, obj):
+        Dobovlyator(self, obj)
 
     def __str__(self):
         return f"<DOC object: {self.file if self.file else 'not saved'}>"

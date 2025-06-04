@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING
 
 import docx2pdf
 
-from engine.doc_utils import validate_filepath
+from core.validators.doc_utils import validate_filepath
 
 if TYPE_CHECKING:
-    from engine.doc import DOC
+    from core.doc import DOC
 
 
 class DocumentExporter:
