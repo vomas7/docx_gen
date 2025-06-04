@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from importlib import resources
 from io import BytesIO
 from pathlib import Path
 
@@ -7,8 +8,17 @@ from docx.opc.constants import CONTENT_TYPE as CT
 from docx.package import Package
 from docx.shared import Cm
 
-from core.validators.doc_utils import get_default_docx_path, validate_filepath
+from core.validators.doc_utils import validate_filepath
 from core.io.export import DocumentExporter
+
+
+def get_default_docx_path() -> str | Path:
+    """Gets path to libs template."""
+    try:
+        with resources.path("docx.templates", "default.docx") as path:
+            return str(path)
+    except AttributeError:
+        return resources.path("docx.templates", "default.docx").__enter__()
 
 
 class DOC(Document):
@@ -57,11 +67,7 @@ class DOC(Document):
 
     @file.setter
     def file(self, value: Path):
-        self._file = Path(value) if not isinstance(value, Path) else value
-        validate_filepath(self._file)
-
-    def add(self, obj):
-        Dobovlyator(self, obj)
+        self._file = validate_filepath(Path(value))
 
     def __str__(self):
         return f"<DOC object: {self.file if self.file else 'not saved'}>"
