@@ -63,7 +63,3 @@ class DOC(Document):
 
     def __str__(self):
         return f"<DOC object: {self.file if self.file else 'not saved'}>"
-
-d = DOC()
-d.add_paragraph('lflflflffl')
-d.export.to_docx(Path('D:/Всякое/bin/test.html'))
