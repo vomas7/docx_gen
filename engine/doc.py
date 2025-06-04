@@ -36,13 +36,7 @@ class DOC(Document):
         document = document_part.document
         element = getattr(document, '_element', None)
         Document.__init__(self, element, document_part)
-        self._exporter = DocumentExporter()
-
-    def to_docx(self, file: Path = None):
-        self._exporter.export_to_docx(self, file)
-
-    def to_pdf(self, file: Path = None):
-        self._exporter.export_to_pdf(self, file)
+        self.export = DocumentExporter(self)
 
     def setup_margins(self) -> None:
         """Setup margins in document"""
