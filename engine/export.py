@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 class DocumentExporter:
 
-    valid_docx_formats = (".docx", ".doc", ".rtf")
+    valid_docx_formats = (".docx", ".doc", ".rtf", '.html')
 
     def __init__(self, doc: 'DOC'):
         self.doc = doc
@@ -21,7 +21,7 @@ class DocumentExporter:
         if valid_file.suffix not in self.valid_docx_formats:
             raise ValueError(f"Unsupported file format to export: {valid_file.suffix}. "
                              f"Only {self.valid_docx_formats} are allowed.")
-        if not file:
+        if not valid_file:
             self.doc.save(str(self.doc.file.resolve()))
         else:
             self.doc.save(str(file.resolve()))
