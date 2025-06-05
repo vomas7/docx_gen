@@ -21,20 +21,29 @@ def get_default_docx_path() -> str | Path:
         return resources.path("docx.templates", "default.docx").__enter__()
 
 
+def is_default_template_path(path: Path) -> bool:
+    return Path(get_default_docx_path()) == Path(path)
+
+
 class DOC(Document):
     __standard_left_margin: Cm = Cm(3)
     __standard_right_margin: Cm = Cm(1.5)
     valid_inputs: Iterable[str] = (".docx", ".doc", ".rtf")
     valid_extensions: Iterable[str] = (".pdf", ".docx", ".doc", ".rtf")
     _file: str | Path = None
+    system_template_path: Path = None
 
     def __init__(self, template_path: str | Path = None):
-        template_path = template_path if template_path else get_default_docx_path()
+
+        self.system_template_path = Path(get_default_docx_path())
+
+        if not template_path:
+            template_path = self.system_template_path
 
         if Path(template_path).suffix not in self.valid_inputs:
             raise ValueError(f"File format not in {self.valid_extensions}")
 
-        document_part = Package.open(template_path).main_document_part
+        document_part = Package.open(str(template_path)).main_document_part
 
         if document_part.content_type != CT.WML_DOCUMENT_MAIN:
             raise ValueError(
