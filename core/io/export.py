@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 import docx2pdf
 
 from core.validators.doc_utils import validate_filepath
-from core.validators.export_utils import is_default_template_path
 
 if TYPE_CHECKING:
     from core.doc import DOC
@@ -31,7 +30,7 @@ class DocumentExporter:
                     f"Unsupported file format to export: {output.suffix}. "
                     f"Only {self.valid_docx_formats} are allowed."
                 )
-        if is_default_template_path(output):
+        if self.doc.system_template_path == output:
             raise FileExistsError(
                 "Export failed: "
                 "Can not rewrite template document!"
