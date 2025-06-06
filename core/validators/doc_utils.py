@@ -1,16 +1,6 @@
-from importlib import resources
 import os
 from pathlib import Path
 import warnings
-
-
-def get_default_docx_path() -> str | Path:
-    """Gets path to libs template."""
-    try:
-        with resources.path("docx.templates", "default.docx") as path:
-            return str(path)
-    except AttributeError:
-        return resources.path("docx.templates", "default.docx").__enter__()
 
 
 def validate_filepath(path: Path) -> Path:

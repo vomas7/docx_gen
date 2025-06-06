@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from importlib import resources
 from io import BytesIO
 from pathlib import Path
 
@@ -7,8 +8,21 @@ from docx.opc.constants import CONTENT_TYPE as CT
 from docx.package import Package
 from docx.shared import Cm
 
-from core.validators.doc_utils import get_default_docx_path, validate_filepath
+from core.validators.doc_utils import validate_filepath
 from core.io.export import DocumentExporter
+
+
+def get_default_docx_path() -> str | Path:
+    """Gets path to libs template."""
+    try:
+        with resources.path("docx.templates", "default.docx") as path:
+            return str(path)
+    except AttributeError:
+        return resources.path("docx.templates", "default.docx").__enter__()
+
+
+def is_default_template_path(path: Path) -> bool:
+    return Path(get_default_docx_path()) == Path(path)
 
 
 class DOC(Document):
@@ -17,14 +31,19 @@ class DOC(Document):
     valid_inputs: Iterable[str] = (".docx", ".doc", ".rtf")
     valid_extensions: Iterable[str] = (".pdf", ".docx", ".doc", ".rtf")
     _file: str | Path = None
+    system_template_path: Path = None
 
     def __init__(self, template_path: str | Path = None):
-        template_path = template_path if template_path else get_default_docx_path()
+
+        self.system_template_path = Path(get_default_docx_path())
+
+        if not template_path:
+            template_path = self.system_template_path
 
         if Path(template_path).suffix not in self.valid_inputs:
             raise ValueError(f"File format not in {self.valid_extensions}")
 
-        document_part = Package.open(template_path).main_document_part
+        document_part = Package.open(str(template_path)).main_document_part
 
         if document_part.content_type != CT.WML_DOCUMENT_MAIN:
             raise ValueError(
@@ -57,11 +76,7 @@ class DOC(Document):
 
     @file.setter
     def file(self, value: Path):
-        self._file = Path(value) if not isinstance(value, Path) else value
-        validate_filepath(self._file)
-
-    def add(self, obj):
-        Dobovlyator(self, obj)
+        self._file = validate_filepath(Path(value))
 
     def __str__(self):
         return f"<DOC object: {self.file if self.file else 'not saved'}>"
