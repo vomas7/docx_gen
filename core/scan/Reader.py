@@ -2,6 +2,8 @@ import copy
 from typing import TYPE_CHECKING
 from lxml import etree
 
+from core.doc_objects.Section import DOCSection as Section
+
 
 if TYPE_CHECKING:
     from core.doc import DOC
@@ -52,4 +54,14 @@ class Reader(DocumentBodyReader):
     def __init__(self, doc: 'DOC'):
         self.doc = doc
         super().__init__(self.doc)
-    # Prisrat Section
+        self.document_content = dict()
+        self.read()
+
+    def read(self):
+        for section_index, section_object in enumerate(self.doc.sections):
+            section_key = f"Section_{section_index}"
+            try:
+                linked_objects = self.elements_tree[section_key]
+            except KeyError:
+                linked_objects = None
+            self.document_content[section_key] = Section(section_object, linked_objects)
