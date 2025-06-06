@@ -1,5 +1,6 @@
 from collections import UserString
 from core.doc_objects.data import TextStyle
+from core.doc_objects.styles import TextStyle
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 from typing import Union
@@ -36,6 +37,7 @@ class Text(UserString):
 
     def __str__(self):
         return str(self.data)
+        # return "Text('%s') id: %s" % (self.text, iid(self))
 
 
 t = Text(text="hello")
