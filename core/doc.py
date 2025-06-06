@@ -10,6 +10,7 @@ from docx.shared import Cm
 
 from core.validators.doc_utils import validate_filepath
 from core.io.export import DocumentExporter
+from core.scan.Reader import Reader
 
 
 def get_default_docx_path() -> str | Path:
@@ -55,6 +56,7 @@ class DOC(Document):
         element = getattr(document, "_element", None)
         Document.__init__(self, element, document_part)
         self.export = DocumentExporter(self)
+        self.reader = Reader(self)
 
     def setup_margins(self) -> None:
         """Setup margins in document"""
