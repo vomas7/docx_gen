@@ -79,6 +79,14 @@ class DOCParagraph(Paragraph):
             """
         )
         return cast("CT_P", p)
+    
+    @property
+    def linked_objects(self) -> list:
+        return self._linked_objects
+
+    @linked_objects.setter
+    def linked_objects(self, new: list):
+        self._linked_objects = new
 
     @staticmethod
     def gen_random_paragraph_id(length:int = 8):
