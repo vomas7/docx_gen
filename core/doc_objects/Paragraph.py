@@ -78,6 +78,15 @@ class DOCParagraph(Paragraph):
         )
         return default_paragraph
 
+
+    @property
+    def linked_objects(self) -> list:
+        return self._linked_objects
+
+    @linked_objects.setter
+    def linked_objects(self, new: list):
+        self._linked_objects = new
+
     @staticmethod
     def gen_random_paragraph_id(length:int = 8):
         """Generate random id for attributes in paragraph"""
