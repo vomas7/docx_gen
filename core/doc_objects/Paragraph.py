@@ -1,7 +1,9 @@
 import random
+from typing import cast
 from typing import overload
 
 from docx.text.paragraph import Paragraph
+from docx.oxml.text.paragraph import CT_P
 from docx.oxml import parse_xml
 
 from core.doc_objects.styles import ParagraphStyle
@@ -59,9 +61,9 @@ class DOCParagraph(Paragraph):
 
 
     @staticmethod
-    def _create_default_paragraph():
+    def _create_default_p() -> CT_P:
         """Creates standard paragraph settings"""
-        default_paragraph = parse_xml(f"""
+        p = parse_xml(f"""
             <w:p 
                 w14:paraId="{DOCParagraph.gen_random_paragraph_id(8)}" 
                 w14:textId="{DOCParagraph.gen_random_paragraph_id(8)}" 
@@ -76,7 +78,7 @@ class DOCParagraph(Paragraph):
             </w:p>
             """
         )
-        return default_paragraph
+        return cast("CT_P", p)
 
     @staticmethod
     def gen_random_paragraph_id(length:int = 8):
