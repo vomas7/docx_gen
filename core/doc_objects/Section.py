@@ -3,8 +3,11 @@ from docx.section import Section
 from typing import overload, cast
 from docx.oxml.section import CT_SectPr
 
+from core.styles.stylist import Stylist
+from core.styles.section_style import SectionStyle
 
-class DOCSection(Section):
+
+class DOCSection(Section, Stylist):
     """
         Document section, providing access to section and page setup.
         Also provides access to headers and footers.
@@ -69,3 +72,12 @@ class DOCSection(Section):
 
     def __repr__(self):
         return self.__str__()
+
+    def style(self, dc_style: SectionStyle):
+        super().style(dc_style)
+
+
+s = DOCSection()
+print(s.left_margin)
+s.style(SectionStyle(left_margin=4))
+print(s.left_margin)
