@@ -1,9 +1,9 @@
-from collections import UserString
-from core.doc_objects.data import TextStyle
-from core.doc_objects.styles import TextStyle
-from docx.text.paragraph import Paragraph
-from docx.text.run import Run
 from typing import Union
+from collections import UserString
+from docx.text.run import Run
+from docx.text.paragraph import Paragraph
+
+from core.doc_objects.styles import TextStyle
 
 
 class Text(UserString):
@@ -36,8 +36,10 @@ class Text(UserString):
         self.data = value
 
     def __str__(self):
-        return str(self.data)
-        # return "Text('%s') id: %s" % (self.text, iid(self))
+        return "<DOC.TEXT object>"
+    
+    def __repr__(self):
+        return self.__str__()
 
 
 t = Text(text="hello")
