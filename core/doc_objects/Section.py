@@ -51,7 +51,7 @@ class DOCSection(Section, Stylist):
             '<w:sectPr xmlns:w="http://schemas.openxmlformats.org'
             '/wordprocessingml/2006/main">'
             '  <w:pgSz w:w="12240" w:h="15840"/>'  # A4 размер в twips (8.5×11 дюймов)
-            '  <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" '
+            '  <w:pgMar w:top="1440" w:right="2440" w:bottom="1440" w:left="1440" '
             '           w:header="720" w:footer="720" w:gutter="0"/>'
             '  <w:cols w:space="720"/>'
             '  <w:docGrid w:linePitch="360"/>'
@@ -74,10 +74,14 @@ class DOCSection(Section, Stylist):
         return self.__str__()
 
     def style(self, dc_style: SectionStyle):
-        super().style(dc_style)
+        ns = {
+            'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
+            'wp': 'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
+            'a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
+            'r': 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
+        }
+        from lxml.etree import QName
+        attr_name = QName(ns['w'], "left")
+        # self._sectPr.pgMar.set(attr_name, str(dc_style.left_margin.twips))
+        super().style(self._sectPr, dc_style)
 
-
-s = DOCSection()
-print(s.left_margin)
-s.style(SectionStyle(left_margin=4))
-print(s.left_margin)

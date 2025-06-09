@@ -7,11 +7,12 @@ from docx.document import Document
 from docx.opc.constants import CONTENT_TYPE as CT
 from docx.package import Package
 from docx.shared import Cm
+from docx.section import Sections
 
 from core.validators.doc_utils import validate_filepath
 from core.io.export import DocumentExporter
 from core.scan.Reader import Reader
-
+from core.doc_objects.Section import DOCSection
 
 def get_default_docx_path() -> str | Path:
     """Gets path to libs template."""
@@ -63,6 +64,11 @@ class DOC(Document):
         for section in self.sections:
             section.left_margin = self.__standard_left_margin
             section.right_margin = self.__standard_right_margin
+
+    def set_section(self, section: DOCSection, index: int = -1):
+        self._element.body.replace(
+            self.sections[index]._sectPr, section._sectPr
+        )
 
     @property
     def doc_bytes(self) -> bytes:

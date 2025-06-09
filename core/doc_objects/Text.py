@@ -1,5 +1,5 @@
 from collections import UserString
-from core.doc_objects.dataclasses import TextStyle
+from core.doc_objects.data import TextStyle
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 from typing import Union
