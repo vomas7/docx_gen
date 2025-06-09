@@ -77,7 +77,7 @@ class TextStyle(BaseStyle):
 
 @dataclass
 class ParagraphStyle(BaseStyle):
-    """Paragraph style for Word documents
+    """Paragraph style for Word Document
     
     Attributes:
 
@@ -121,6 +121,3 @@ class CellStyle(BaseStyle):
 @dataclass
 class TableStyle(BaseStyle):
     pass
-
-
-style = TextStyle()

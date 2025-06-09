@@ -32,10 +32,7 @@ class DOCSection(Section):
                 linked_objects = args[0]
             if isinstance(source, Section):
                 super().__init__(source._sectPr, source._document_part)
-                if linked_objects:
-                    self._linked_objects = linked_objects
-                else:
-                    self._linked_objects = None
+                self._linked_objects = linked_objects
             else:
                 raise AttributeError(f"Creating Section object failed:"
                                      f"Unknown source {type(source)}!")
