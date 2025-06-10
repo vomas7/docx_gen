@@ -1,11 +1,11 @@
 from docx.enum.section import WD_ORIENTATION, WD_SECTION_START
 from docx.shared import Length
 from docx.oxml.section import CT_PageMar, CT_PageSz, CT_OnOff, CT_SectType
-from core.styles.base import BaseStyle, StyleMeta
+from core.styles.base import BaseStyle
 from typing import Optional, Union
 
 
-class SectionStyle(BaseStyle, metaclass=StyleMeta):
+class SectionStyle(BaseStyle):
 
     _style_tags = {"_pgMar", "_pgSz", "_titlePg", "_scType"}
 
@@ -47,3 +47,6 @@ class SectionStyle(BaseStyle, metaclass=StyleMeta):
         self._scType = CT_SectType
 
         super().__init__(**kwargs)
+
+print(SectionStyle())
+print(BaseStyle())

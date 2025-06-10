@@ -1,37 +1,9 @@
-from abc import ABC
+from abc import ABCMeta
 from dataclasses import dataclass
 from typing import get_type_hints
 
 
-@dataclass
-class BaseStyle:
-    _style_tags: dict
-    _style_attrs: dict
-    ns = {
-        'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
-        'wp': 'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
-        'a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
-        'r': 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
-    }
-
-    NAMESPACE: str | None
-
-    def __init__(self, **kwargs):
-        if not self._style_tags or not self._style_attrs:
-            raise AttributeError("Style_tags and style_attrs must not be empty")
-        for key, value in kwargs.items():
-            if key not in self._style_attrs:
-                raise AttributeError(f"Invalid property: {key}")
-            super().__setattr__(key, value)
-
-    def __setattr__(self, name, value):
-        if name in self._style_attrs or name in self._style_tags:
-            super().__setattr__(name, value)
-        else:
-            raise AttributeError(f"Cannot add new attribute '{name}'")
-
-
-class StyleMeta(type):
+class StyleMeta(ABCMeta):
     """A metaclass for automatically generating style properties."""
 
     def __new__(cls, name, bases, namespace):
@@ -59,3 +31,36 @@ class StyleMeta(type):
                     new_class.__annotations__[prop_name] = annotations[prop_name]
 
         return new_class
+
+    def __call__(cls, *args, **kwargs):
+        if cls.__name__ == "BaseStyle":
+            raise TypeError("Cannot instantiate BaseStyle directly")
+        return super().__call__(*args, **kwargs)
+
+
+@dataclass
+class BaseStyle(metaclass=StyleMeta):
+    _style_tags: dict
+    _style_attrs: dict
+    ns = {
+        'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
+        'wp': 'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
+        'a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
+        'r': 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
+    }
+
+    NAMESPACE: str | None
+
+    def __init__(self, **kwargs):
+        if not self._style_tags or not self._style_attrs:
+            raise AttributeError("Style_tags and style_attrs must not be empty")
+        for key, value in kwargs.items():
+            if key not in self._style_attrs:
+                raise AttributeError(f"Invalid property: {key}")
+            super().__setattr__(key, value)
+
+    def __setattr__(self, name, value):
+        if name in self._style_attrs or name in self._style_tags:
+            super().__setattr__(name, value)
+        else:
+            raise AttributeError(f"Cannot add new attribute '{name}'")
