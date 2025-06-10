@@ -1,6 +1,7 @@
 from abc import ABCMeta
 from dataclasses import dataclass
 from typing import get_type_hints
+from core.doc_objects.metric_system import CM
 
 
 class StyleMeta(ABCMeta):
@@ -13,12 +14,14 @@ class StyleMeta(ABCMeta):
 
         if hasattr(new_class, "_style_attrs"):
             for prop_name, (_attr, _field) in new_class._style_attrs.items():
+
                 def getter(self, attr=_attr, field=_field):
                     internal_obj = getattr(self, attr)
                     return getattr(internal_obj, field)
 
                 def setter(self, value, attr=_attr, field=_field):
                     internal_obj = getattr(self, attr)
+                    value = CM(value) if isinstance(value, int | float) else value
                     setattr(internal_obj, field, value)
 
                 prop = property(getter)
@@ -41,6 +44,7 @@ class StyleMeta(ABCMeta):
 @dataclass
 class BaseStyle(metaclass=StyleMeta):
     _style_attrs: dict
+
     ns = {
         'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
         'wp': 'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
@@ -53,14 +57,14 @@ class BaseStyle(metaclass=StyleMeta):
     def __init__(self, **kwargs):
         if not self._style_attrs:
             raise AttributeError("Style_tags and style_attrs must not be empty")
-        _style_tags = {i[0] for i in self._style_attrs.values()}
         for key, value in kwargs.items():
             if key not in self._style_attrs:
                 raise AttributeError(f"Invalid property: {key}")
             super().__setattr__(key, value)
 
     def __setattr__(self, name, value):
-        if name in self._style_attrs:
+        style_tags = {i[0] for i in self._style_attrs.values()}
+        if name in style_tags:
             super().__setattr__(name, value)
         else:
             raise AttributeError(f"Cannot add new attribute '{name}'")

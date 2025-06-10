@@ -59,12 +59,6 @@ class DOC(Document):
         self.export = DocumentExporter(self)
         self.reader = Reader(self)
 
-    def setup_margins(self) -> None:
-        """Setup margins in document"""
-        for section in self.sections:
-            section.left_margin = self.__standard_left_margin
-            section.right_margin = self.__standard_right_margin
-
     def set_section(self, section: DOCSection, index: int = -1):
         self._element.body.replace(
             self.sections[index]._sectPr,

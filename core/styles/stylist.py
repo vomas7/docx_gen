@@ -14,8 +14,13 @@ def set_style(xml: _Element, dc_style: BaseStyle):
         for child in xml.getchildren():
             if isinstance(child, BaseOxmlElement):
                 children[child._nsptag] = child
-        old_child = children[f'{dc_style.NAMESPACE}:{parent}']
+        old_child = children.get(f'{dc_style.NAMESPACE}:{parent[1:]}')
         for name, value in kids.__dict__.items():
-            if value:
+            if (
+                    '__' not in name
+                    and value is not None
+                    and not isinstance(value, property)
+                    and old_child is not None
+            ):
                 attr_name = QName(dc_style.ns[dc_style.NAMESPACE], name)
                 old_child.set(attr_name, str(value.twips))
