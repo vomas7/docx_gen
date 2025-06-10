@@ -4,8 +4,11 @@ from core.styles.section_style import SectionStyle
 
 
 d = DOC()
+
 s = DOCSection()
-style = SectionStyle(left_margin=5)
+
+style = SectionStyle(left_margin=7)
+style.right_margin = 4
 s.add_style(style)
 d.set_section(s)
 d.export.to_docx('test.docx')

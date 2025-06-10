@@ -64,7 +64,8 @@ class BaseStyle(metaclass=StyleMeta):
 
     def __setattr__(self, name, value):
         style_tags = {i[0] for i in self._style_attrs.values()}
-        if name in style_tags:
+        style_child = {i for i in self._style_attrs.keys()}
+        if name in style_tags or name in style_child:
             super().__setattr__(name, value)
         else:
             raise AttributeError(f"Cannot add new attribute '{name}'")
