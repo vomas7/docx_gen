@@ -7,8 +7,6 @@ from typing import Optional, Union
 
 class SectionStyle(BaseStyle):
 
-    _style_tags = {"_pgMar", "_pgSz", "_titlePg", "_scType"}
-
     _style_attrs = {
         "left_margin": ("_pgMar", "left"),
         "right_margin": ("_pgMar", "right"),

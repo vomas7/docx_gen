@@ -40,7 +40,6 @@ class StyleMeta(ABCMeta):
 
 @dataclass
 class BaseStyle(metaclass=StyleMeta):
-    _style_tags: dict
     _style_attrs: dict
     ns = {
         'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
@@ -52,15 +51,16 @@ class BaseStyle(metaclass=StyleMeta):
     NAMESPACE: str | None
 
     def __init__(self, **kwargs):
-        if not self._style_tags or not self._style_attrs:
+        if not self._style_attrs:
             raise AttributeError("Style_tags and style_attrs must not be empty")
+        _style_tags = {i[0] for i in self._style_attrs.values()}
         for key, value in kwargs.items():
             if key not in self._style_attrs:
                 raise AttributeError(f"Invalid property: {key}")
             super().__setattr__(key, value)
 
     def __setattr__(self, name, value):
-        if name in self._style_attrs or name in self._style_tags:
+        if name in self._style_attrs:
             super().__setattr__(name, value)
         else:
             raise AttributeError(f"Cannot add new attribute '{name}'")
