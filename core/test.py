@@ -8,9 +8,9 @@ from docx.section import Sections
 
 s = DOCSection()
 
-s.style(SectionStyle(left_margin=Length(Cm(4))))
+s.style(SectionStyle(left_margin=Length(Cm(8))))
 
-print(s.left_margin.cm)
+# print(s.left_margin.cm)
 d = DOC()
 d.set_section(s)
 # list(d.sections)[0].left_margin = CM(5)

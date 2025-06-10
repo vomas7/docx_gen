@@ -67,7 +67,8 @@ class DOC(Document):
 
     def set_section(self, section: DOCSection, index: int = -1):
         self._element.body.replace(
-            self.sections[index]._sectPr, section._sectPr
+            self.sections[index]._sectPr,
+            section._sectPr
         )
 
     @property
