@@ -25,7 +25,6 @@ class SectionStyle(BaseStyle, metaclass=StyleMeta):
         'hui': ("_scType", "val")
     }
 
-    # Аннотации типов
     left_margin: Optional[Union[Length, int]]
     right_margin: Optional[Union[Length, int]]
     top_margin: Optional[Union[Length, int]]
