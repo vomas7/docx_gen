@@ -47,6 +47,3 @@ class SectionStyle(BaseStyle):
         self._scType = CT_SectType
 
         super().__init__(**kwargs)
-
-print(SectionStyle())
-print(BaseStyle())
