@@ -1,6 +1,10 @@
-from typing import overload
 from docx.oxml import parse_xml
 from docx.section import Section
+from typing import overload, cast
+from docx.oxml.section import CT_SectPr
+
+from core.styles.stylist import set_style
+from core.styles.section_style import SectionStyle
 
 
 class DOCSection(Section):
@@ -29,7 +33,7 @@ class DOCSection(Section):
             source = args[0]
             linked_objects = None
             if len(args) == 2:
-                linked_objects = args[0]
+                linked_objects = args[1]
             if isinstance(source, Section):
                 super().__init__(source._sectPr, source._document_part)
                 if linked_objects:
@@ -41,7 +45,7 @@ class DOCSection(Section):
                                      f"Unknown source {type(source)}!")
 
     @staticmethod
-    def _create_default_sect_pr():
+    def _create_default_sect_pr() -> CT_SectPr:
         """Creates standard section settings"""
         sect_pr = parse_xml(
             '<w:sectPr xmlns:w="http://schemas.openxmlformats.org'
@@ -53,7 +57,7 @@ class DOCSection(Section):
             '  <w:docGrid w:linePitch="360"/>'
             '</w:sectPr>'
         )
-        return sect_pr
+        return cast("CT_SectPr", sect_pr)
 
     @property
     def linked_objects(self) -> list:
@@ -68,3 +72,6 @@ class DOCSection(Section):
 
     def __repr__(self):
         return self.__str__()
+
+    def add_style(self, dc_style: SectionStyle):
+        set_style(self._sectPr, dc_style)
