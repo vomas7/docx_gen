@@ -1,21 +1,21 @@
 from docx.oxml.xmlchemy import BaseOxmlElement
-from core.styles.section_style import SectionStyle
+from core.styles.base import BaseStyle
 from lxml.etree import _Element
+from lxml.etree import QName
 
 
-class Stylist:
-    """Mixin class to provide methods of applying and retrieve style for object."""
-
-    def style(self, xml: _Element, dc_style: SectionStyle):
-        from lxml.etree import QName
-        for parent, childs in dc_style.__dict__.items():
-            childrens = {}
-            for i in xml.getchildren():
-                if isinstance(i, BaseOxmlElement):
-                    childrens[i._nsptag] = i
-            old_child = childrens['w:' + parent]
-            for name, value in childs.__dict__.items():
-                if value:
-                    namespace, clean_attr_name = name.split("_")[0], name.split("_")[1]
-                    attr_name = QName(dc_style.ns[namespace], clean_attr_name)
-                    old_child.set(attr_name, str(value.twips))
+def set_style(xml: _Element, dc_style: BaseStyle):
+    """
+    A function for changing tag attributes in xml related to the element style,
+    for use in docx-gen element classes
+    """
+    for parent, kids in dc_style.__dict__.items():
+        children = {}
+        for child in xml.getchildren():
+            if isinstance(child, BaseOxmlElement):
+                children[child._nsptag] = child
+        old_child = children[f'{dc_style.NAMESPACE}:{parent}']
+        for name, value in kids.__dict__.items():
+            if value:
+                attr_name = QName(dc_style.ns[dc_style.NAMESPACE], name)
+                old_child.set(attr_name, str(value.twips))
