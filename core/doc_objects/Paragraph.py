@@ -65,12 +65,12 @@ class DOCParagraph(Paragraph):
         """Creates standard paragraph settings"""
         p = parse_xml(f"""
             <w:p 
-                w14:paraId="{DOCParagraph.gen_random_paragraph_id(8)}" 
-                w14:textId="{DOCParagraph.gen_random_paragraph_id(8)}" 
-                w:rsidR="{DOCParagraph.gen_random_paragraph_id(8)}" 
-                w:rsidRPr="{DOCParagraph.gen_random_paragraph_id(8)}" 
-                w:rsidRDefault="{DOCParagraph.gen_random_paragraph_id(8)}" 
-                w:rsidP="{DOCParagraph.gen_random_paragraph_id(8)}"
+                w14:paraId="{DOCParagraph._gen_random_paragraph_id(8)}" 
+                w14:textId="{DOCParagraph._gen_random_paragraph_id(8)}" 
+                w:rsidR="{DOCParagraph._gen_random_paragraph_id(8)}" 
+                w:rsidRPr="{DOCParagraph._gen_random_paragraph_id(8)}" 
+                w:rsidRDefault="{DOCParagraph._gen_random_paragraph_id(8)}" 
+                w:rsidP="{DOCParagraph._gen_random_paragraph_id(8)}"
             >
                 <w:r>
                     <w:t></w:t>
@@ -89,7 +89,7 @@ class DOCParagraph(Paragraph):
         self._linked_objects = new
 
     @staticmethod
-    def gen_random_paragraph_id(length:int = 8):
+    def _gen_random_paragraph_id(length:int = 8):
         """Generate random id for attributes in paragraph"""
         return f"{random.getrandbits(32 * length):0{length}x}"
 
