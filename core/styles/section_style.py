@@ -21,8 +21,7 @@ class SectionStyle(BaseStyle):
         "page_height": ("_pgSz", "h"),
         "orientation": ("_pgSz", "orient"),
         "different_first_page_header_footer": ("_titlePg", "val"),
-        "start_type": ("_scType", "val"),
-        'hui': ("_scType", "val")
+        "start_type": ("_scType", "val")
     }
 
     left_margin: Optional[Union[Length, int]]
