@@ -5,7 +5,7 @@ from docx.oxml.section import CT_SectPr
 from core.constant import SECTION_STANDARD
 from docx.api import Document
 from core.styles.stylist import set_style
-from core.styles.section_style import SectionStyle
+from core.styles.section import SectionStyle
 
 
 class DOCSection(Section):

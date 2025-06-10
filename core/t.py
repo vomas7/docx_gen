@@ -1,6 +1,6 @@
 from core.doc import DOC
 from core.doc_objects.Section import DOCSection
-from core.styles.section_style import SectionStyle
+from core.styles.section import SectionStyle
 
 
 d = DOC()

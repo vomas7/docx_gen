@@ -29,52 +29,6 @@ from docx.enum.dml import MSO_THEME_COLOR
 from docx.enum.shape import WD_INLINE_SHAPE
 
 
-WD_STYLE_TYPE.CHARACTER
-
-@dataclass
-class TextStyle(BaseStyle):
-    """Text style for Word documents
-    
-    Attributes:
-
-    """
-    text_size: Pt = Pt(14.0)
-    text_name: str = "Times New Roman"
-    text_color: Optional[RGBColor] = None
-    highlight_color: Optional[color_name] = color_name.INHERITED
-    underline: Optional[underline_type] = None
-    bold: bool = None
-    italic: bool = None
-    outline: bool = None
-    all_caps: bool = None
-    small_caps: bool = None
-    strike: bool = None
-    double_strike: bool = None
-    subscript: bool = None
-    superscript: bool = None
-    complex_script: bool = None
-    cs_bold: bool = None
-    cs_italic: bool = None
-    emboss: bool = None
-    hidden: bool = None
-    imprint: bool = None
-    math: bool = None
-    snap_to_grid: bool = None
-    spec_vanish: bool = None
-    no_proof: bool = None
-    rtl: bool = None
-    shadow: bool = None
-    web_hidden: bool  = None
-
-    def get_style_dict(self) -> dict:
-        """Return dict with all text style parametres"""
-        style_dict = asdict(self)
-        return style_dict
-    
-    def __repr__(self):
-        return "Dataclass TextStyle"
-
-
 @dataclass
 class ParagraphStyle(BaseStyle):
     """Paragraph style for Word Document
@@ -101,23 +55,3 @@ class ParagraphStyle(BaseStyle):
         """Return dict with all paragraph style parametres"""
         style_dict = asdict(self)
         return style_dict
-
-
-@dataclass
-class SectionStyle(BaseStyle):
-    pass 
-
-
-@dataclass
-class Image(BaseStyle):
-    pass
-
-
-@dataclass
-class CellStyle(BaseStyle):
-    pass
-
-
-@dataclass
-class TableStyle(BaseStyle):
-    pass
