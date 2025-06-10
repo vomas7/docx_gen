@@ -60,6 +60,7 @@ class DOC(Document):
         self.reader = Reader(self)
 
     def set_section(self, section: DOCSection, index: int = -1):
+        self._element.body.add_section_break()
         self._element.body.replace(
             self.sections[index]._sectPr,
             section._sectPr
