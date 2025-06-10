@@ -4,7 +4,7 @@ from typing import overload, cast
 from docx.oxml.section import CT_SectPr
 
 from core.styles.stylist import set_style
-from core.styles.section_style import SectionStyle
+from core.styles.section import SectionStyle
 
 
 class DOCSection(Section):
