@@ -1,10 +1,12 @@
+from abc import ABC
 from dataclasses import dataclass
 from typing import get_type_hints
 
 
 @dataclass
 class BaseStyle:
-    NAMESPACE: str | None = None
+    _style_tags: dict
+    _style_attrs: dict
     ns = {
         'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
         'wp': 'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
@@ -12,12 +14,27 @@ class BaseStyle:
         'r': 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
     }
 
+    NAMESPACE: str | None
+
+    def __init__(self, **kwargs):
+        if not self._style_tags or not self._style_attrs:
+            raise AttributeError("Style_tags and style_attrs must not be empty")
+        for key, value in kwargs.items():
+            if key not in self._style_attrs:
+                raise AttributeError(f"Invalid property: {key}")
+            super().__setattr__(key, value)
+
+    def __setattr__(self, name, value):
+        if name in self._style_attrs or name in self._style_tags:
+            super().__setattr__(name, value)
+        else:
+            raise AttributeError(f"Cannot add new attribute '{name}'")
+
 
 class StyleMeta(type):
     """A metaclass for automatically generating style properties."""
 
     def __new__(cls, name, bases, namespace):
-
         new_class = super().__new__(cls, name, bases, namespace)
 
         annotations = get_type_hints(new_class)

@@ -46,13 +46,4 @@ class SectionStyle(BaseStyle, metaclass=StyleMeta):
         self._titlePg = CT_OnOff
         self._scType = CT_SectType
 
-        for key, value in kwargs.items():
-            if key not in self._style_attrs:
-                raise AttributeError(f"Invalid property: {key}")
-            super().__setattr__(key, value)
-
-    def __setattr__(self, name, value):
-        if name in self._style_attrs or name in self._style_tags:
-            super().__setattr__(name, value)
-        else:
-            raise AttributeError(f"Cannot add new attribute '{name}'")
+        super().__init__(**kwargs)
