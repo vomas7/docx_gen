@@ -8,14 +8,18 @@ from docx.document import Document
 from docx.opc.constants import CONTENT_TYPE as CT
 from docx.package import Package
 from docx.shared import Cm
-from docx.section import Sections
 
 from core.validators.doc_utils import validate_filepath
 from core.io.export import DocumentExporter
+
 from core.reader import Reader
 from core.writer import Writer
 from core.writer import DOCElement
 from core.doc_objects.Section import DOCSection
+
+from core.scan.Reader import Reader
+from core.scan.Writer import Writer
+
 
 
 def get_default_docx_path() -> str | Path:
@@ -62,6 +66,9 @@ class DOC(Document):
         document = document_part.document
         element = getattr(document, "_element", None)
         Document.__init__(self, element, document_part)
+
+        self.elements = list()
+
         self.export = DocumentExporter(self)
         self.reader = Reader(self)
         self.writer = Writer(self)
@@ -71,6 +78,7 @@ class DOC(Document):
         self._element.body.replace(
             self.sections[index]._sectPr,section._sectPr
         )
+
 
     @property
     def doc_bytes(self) -> bytes:
