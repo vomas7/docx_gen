@@ -26,6 +26,7 @@ class DOCSection(Section):
         ...
 
     def __init__(self, *args):
+        self._linked_objects = []
         if not args:
             from docx.api import Document
             super().__init__(self._create_default_sect_pr(), Document().part)
@@ -38,8 +39,6 @@ class DOCSection(Section):
                 super().__init__(source._sectPr, source._document_part)
                 if linked_objects:
                     self._linked_objects = linked_objects
-                else:
-                    self._linked_objects = None
             else:
                 raise AttributeError(f"Creating Section object failed:"
                                      f"Unknown source {type(source)}!")
@@ -66,6 +65,9 @@ class DOCSection(Section):
     @linked_objects.setter
     def linked_objects(self, new: list):
         self._linked_objects = new
+
+    def insert_linked_objects(self, new, index: int = -1):
+        self._linked_objects.insert(index, new)
 
     def __str__(self):
         return "<DOC.SECTION object>"

@@ -9,6 +9,7 @@ from docx.opc.constants import CONTENT_TYPE as CT
 from docx.package import Package
 from docx.shared import Cm
 
+from core.doc_objects.Section import DOCSection
 from core.validators.doc_utils import validate_filepath
 from core.io.export import DocumentExporter
 
@@ -67,7 +68,7 @@ class DOC(Document):
         element = getattr(document, "_element", None)
         Document.__init__(self, element, document_part)
 
-        self.elements = list()
+        self.doc_sections: list[DOCSection] = list()
 
         self.export = DocumentExporter(self)
         self.reader = Reader(self)
