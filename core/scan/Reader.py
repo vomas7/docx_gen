@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 from lxml import etree
 
 from core.doc_objects.Section import DOCSection
+from core.constant import ns
 
 
 if TYPE_CHECKING:
@@ -10,18 +11,12 @@ if TYPE_CHECKING:
 
 
 class DocumentBodyReader:
-    ns = {
-        'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
-        'wp': 'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
-        'a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
-        'r': 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
-    }
 
     def __init__(self, doc: 'DOC'):
         self.doc = doc
         self.xml = self.doc.element.xml
         self.root = etree.fromstring(self.xml)
-        self.body = self.root.find("w:body", namespaces=self.ns)
+        self.body = self.root.find("w:body", namespaces=ns)
         self.elements_tree = list()
         self.collect_sequence_doc_objects()
 
@@ -38,13 +33,13 @@ class DocumentBodyReader:
         self.add_section_to_tree(objects_sequence)
 
     def paragraph_has_section_tag(self, e: etree.ElementBase) -> bool:
-        return bool(e.xpath('.//w:sectPr', namespaces=self.ns))
+        return bool(e.xpath('.//w:sectPr', namespaces=ns))
 
     def paragraph_has_text(self, e: etree.ElementBase) -> bool:
-        return bool(e.xpath('.//w:t', namespaces=self.ns))
+        return bool(e.xpath('.//w:t', namespaces=ns))
 
     def get_text(self, e: etree.ElementBase):
-        return ' '.join(t.text for t in e.xpath('.//w:t', namespaces=self.ns) if t.text)
+        return ' '.join(t.text for t in e.xpath('.//w:t', namespaces=ns) if t.text)
 
     def add_section_to_tree(self, objs: list):
         self.elements_tree.append(copy.deepcopy(objs))

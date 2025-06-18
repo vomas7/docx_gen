@@ -12,7 +12,7 @@ from docx.section import Sections
 from core.validators.doc_utils import validate_filepath
 from core.io.export import DocumentExporter
 from core.scan.Reader import Reader
-from core.doc_objects.Section import DOCSection
+from core.scan.Writer import Writer
 
 def get_default_docx_path() -> str | Path:
     """Gets path to libs template."""
@@ -56,15 +56,13 @@ class DOC(Document):
         document = document_part.document
         element = getattr(document, "_element", None)
         Document.__init__(self, element, document_part)
+
+        self.elements = list()
+
         self.export = DocumentExporter(self)
         self.reader = Reader(self)
+        self.writer = Writer(self)
 
-    def set_section(self, section: DOCSection, index: int = -1):
-        self._element.body.add_section_break()
-        self._element.body.replace(
-            self.sections[index]._sectPr,
-            section._sectPr
-        )
 
     @property
     def doc_bytes(self) -> bytes:
