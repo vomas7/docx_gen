@@ -2,6 +2,7 @@ from collections.abc import Iterable
 from importlib import resources
 from io import BytesIO
 from pathlib import Path
+from typing import overload
 
 from docx.document import Document
 from docx.opc.constants import CONTENT_TYPE as CT
@@ -11,8 +12,11 @@ from docx.section import Sections
 
 from core.validators.doc_utils import validate_filepath
 from core.io.export import DocumentExporter
-from core.scan.Reader import Reader
+from core.reader import Reader
+from core.writer import Writer
+from core.writer import DOCElement
 from core.doc_objects.Section import DOCSection
+
 
 def get_default_docx_path() -> str | Path:
     """Gets path to libs template."""
@@ -25,6 +29,8 @@ def get_default_docx_path() -> str | Path:
 
 def is_default_template_path(path: Path) -> bool:
     return Path(get_default_docx_path()) == Path(path)
+
+IndexInDOC = int  # Индекс в списке всех элементов документа.
 
 
 class DOC(Document):
@@ -58,12 +64,12 @@ class DOC(Document):
         Document.__init__(self, element, document_part)
         self.export = DocumentExporter(self)
         self.reader = Reader(self)
+        self.writer = Writer(self)
 
     def set_section(self, section: DOCSection, index: int = -1):
         self._element.body.add_section_break()
         self._element.body.replace(
-            self.sections[index]._sectPr,
-            section._sectPr
+            self.sections[index]._sectPr,section._sectPr
         )
 
     @property
