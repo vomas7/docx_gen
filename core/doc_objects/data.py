@@ -37,6 +37,7 @@ class TextStyle(BaseStyle):
         text_direction
 
     """
+    double_strike: bool = False
     text_size: Decimal = Decimal("14.0")
     text_name: str = "Times New Roman"
     text_color: Optional[RGBColor] = None
@@ -45,11 +46,8 @@ class TextStyle(BaseStyle):
     italic: bool = False
     underline: Optional[WD_UNDERLINE] = None
     strike: bool = None
-    double_strike: bool
     subscript: bool = None
     superscript: bool = None
-    # snap_to_grid
-    # spec_vanish
 
     alignment: str = "center"
     line_spacing: Optional[Decimal] = None
@@ -58,7 +56,7 @@ class TextStyle(BaseStyle):
     left_indent: Optional[Pt] = None
     right_indent: Optional[Pt] = None
     keep_together: bool = False
-    page_bereak_before: bool = False
+    page_break_before: bool = False
     text_direction: str = None
 
 
