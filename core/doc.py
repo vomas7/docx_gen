@@ -2,7 +2,6 @@ from collections.abc import Iterable
 from importlib import resources
 from io import BytesIO
 from pathlib import Path
-from typing import overload
 
 from docx.document import Document
 from docx.opc.constants import CONTENT_TYPE as CT
@@ -15,17 +14,9 @@ from core.io.export import DocumentExporter
 from core.reader import Reader
 from core.writer import Writer
 
-from core.writer import DOCElement
-from core.doc_objects.Section import DOCSection
-
-from core.scan.Reader import Reader
 from core.scan.Writer import Writer
 
 from core.doc_objects.Section import DOCSection
-
-
-
-
 
 
 def get_default_docx_path() -> str | Path:
@@ -39,8 +30,6 @@ def get_default_docx_path() -> str | Path:
 
 def is_default_template_path(path: Path) -> bool:
     return Path(get_default_docx_path()) == Path(path)
-
-IndexInDOC = int  # Индекс в списке всех элементов документа.
 
 
 class DOC(Document):
@@ -84,7 +73,6 @@ class DOC(Document):
         self._element.body.replace(
             self.sections[index]._sectPr,section._sectPr
         )
-
 
     @property
     def doc_bytes(self) -> bytes:
