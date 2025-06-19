@@ -43,6 +43,7 @@ class ParagraphWriter(BaseWriter):
         self.doc.doc_sections[section_index].insert_linked_objects(paragraph,
                                                                    paragraph_index)
 
+
 class Writer(SectionWriter, ParagraphWriter):
 
     def __init__(self, doc: 'DOC'):
