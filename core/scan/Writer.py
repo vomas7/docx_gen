@@ -6,10 +6,12 @@ from core.doc_objects.Section import DOCSection
 if TYPE_CHECKING:
     from core.doc import DOC
 
+
 class BaseWriter:
 
     def __init__(self, doc: 'DOC'):
         self.doc = doc
+
 
 class SectionWriter(BaseWriter):
 
@@ -31,11 +33,16 @@ class SectionWriter(BaseWriter):
 
 class ParagraphWriter(BaseWriter):
 
-    def add_paragraph(self, paragraph: Union[DOCParagraph, str], section_index: int = -1, paragraph_index: int = -1):
+    def add_paragraph(self,
+                      paragraph: Union[DOCParagraph, str],
+                      section_index: int = -1,
+                      paragraph_index: int = -1):
         if isinstance(paragraph, str):
             paragraph = DOCParagraph(text=paragraph)
         self.doc.add_paragraph(text=paragraph.text)
-        self.doc.doc_sections[section_index].insert_linked_objects(paragraph, paragraph_index)
+        self.doc.doc_sections[section_index].insert_linked_objects(paragraph,
+                                                                   paragraph_index)
+
 
 class Writer(SectionWriter, ParagraphWriter):
 
