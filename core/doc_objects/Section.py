@@ -26,7 +26,6 @@ class DOCSection(Section):
     def __init__(self, section: Section = None, linked_objects: list = None):
         self._linked_objects = []
         if not section:
-            from docx.api import Document
             super().__init__(self._create_default_sect_pr(), Document().part)
         elif section:
             self._linked_objects = linked_objects if linked_objects else None
