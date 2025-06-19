@@ -2,7 +2,8 @@ from docx.oxml import parse_xml
 from docx.section import Section
 from typing import overload, cast
 from docx.oxml.section import CT_SectPr
-
+from core.constant import SECTION_STANDARD
+from docx.api import Document
 from core.styles.stylist import set_style
 from core.styles.section_style import SectionStyle
 
@@ -14,48 +15,29 @@ class DOCSection(Section):
     """
 
     @overload
-    def __init__(self, section: Section):
-        ...
+    def __init__(self, section: Section): ...
 
     @overload
-    def __init__(self, section: Section, linked_objects: list):
-        ...
+    def __init__(self, section: Section, linked_objects: list): ...
 
     @overload
-    def __init__(self):
-        ...
+    def __init__(self): ...
 
-    def __init__(self, *args):
+    def __init__(self, section: Section = None, linked_objects: list = None):
         self._linked_objects = []
-        if not args:
-            from docx.api import Document
+        if not section:
+
             super().__init__(self._create_default_sect_pr(), Document().part)
+        elif section:
+            self._linked_objects = linked_objects if linked_objects else None
+            super().__init__(section._sectPr, section._document_part)
         else:
-            source = args[0]
-            linked_objects = None
-            if len(args) == 2:
-                linked_objects = args[1]
-            if isinstance(source, Section):
-                super().__init__(source._sectPr, source._document_part)
-                if linked_objects:
-                    self._linked_objects = linked_objects
-            else:
-                raise AttributeError(f"Creating Section object failed:"
-                                     f"Unknown source {type(source)}!")
+            raise AttributeError(f"Creating Section object failed!")
 
     @staticmethod
     def _create_default_sect_pr() -> CT_SectPr:
         """Creates standard section settings"""
-        sect_pr = parse_xml(
-            '<w:sectPr xmlns:w="http://schemas.openxmlformats.org'
-            '/wordprocessingml/2006/main">'
-            '  <w:pgSz w:w="12240" w:h="15840"/>'  # A4 размер в twips (8.5×11 дюймов)
-            '  <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" '
-            '           w:header="720" w:footer="720" w:gutter="0"/>'
-            '  <w:cols w:space="720"/>'
-            '  <w:docGrid w:linePitch="360"/>'
-            '</w:sectPr>'
-        )
+        sect_pr = parse_xml(SECTION_STANDARD)
         return cast("CT_SectPr", sect_pr)
 
     @property
