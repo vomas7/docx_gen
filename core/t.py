@@ -1,3 +1,8 @@
+import copy
+
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+
 from core.doc import DOC
 from core.doc_objects.Section import DOCSection
 from core.styles.section import SectionStyle

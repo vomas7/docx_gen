@@ -8,15 +8,11 @@ from docx.opc.constants import CONTENT_TYPE as CT
 from docx.package import Package
 from docx.shared import Cm
 
-from core.doc_objects.Section import DOCSection
 from core.validators.doc_utils import validate_filepath
 from core.io.export import DocumentExporter
 
 from core.reader import Reader
-from core.writer import Writer
-
-from core.scan.Writer import Writer
-
+from core.writers.Writer import Writer
 from core.doc_objects.Section import DOCSection
 
 
