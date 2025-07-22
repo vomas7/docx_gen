@@ -2,18 +2,16 @@ from collections.abc import Iterable
 from importlib import resources
 from io import BytesIO
 from pathlib import Path
-
 from docx.document import Document
 from docx.opc.constants import CONTENT_TYPE as CT
 from docx.package import Package
 from docx.shared import Cm
-
 from core.validators.doc_utils import validate_filepath
 from core.io.export import DocumentExporter
-
 from core.reader import Reader
 from core.writers.Writer import Writer
 from core.doc_objects.Section import DOCSection
+
 
 
 def get_default_docx_path() -> str | Path:

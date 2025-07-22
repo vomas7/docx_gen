@@ -1,6 +1,7 @@
 import random
-from typing import overload
-from typing import Optional
+from typing import overload, cast
+from typing import Optional, Union
+from core.constant import PARAGRAPH_STANDARD
 from docx.parts.story import StoryPart
 from docx.text.paragraph import Paragraph
 from docx.oxml import parse_xml
@@ -21,12 +22,17 @@ class DOCParagraph(Paragraph):
     def __init__(self, paragraph: Paragraph, linked_objects: list): ...
 
     @overload
+    def __init__(self, text: Union[str, Text]): ...
+
+    @overload
     def __init__(self): ...
 
-    def __init__(self, paragraph: Optional[Paragraph] = None, linked_objects: Optional[list] = None):
+    def __init__(self, paragraph: Optional[Paragraph] = None, linked_objects: Optional[list] = None, text: Union[str, Text] = None):
         if paragraph is None:
-            xml = self._create_default_p()
+            xml = self._create_default_paragraph()
             super().__init__(xml, StoryPart.part)
+            if text:
+                self.add_run(text)
         else:
             linked_objects = None
             if isinstance(paragraph, Paragraph):
@@ -35,30 +41,16 @@ class DOCParagraph(Paragraph):
             else:
                 raise AttributeError (f"Creating Paragraph object failed:"
                                       f"Unknown source {type(paragraph)}!")
-            
-    def add_run(self, text: Text):
-        return super().add_run(text)
 
     @staticmethod
     def _create_default_paragraph():
         """Creates standard paragraph settings"""
-        default_paragraph = parse_xml(f"""
-            <w:p 
-                w14:paraId="{DOCParagraph._gen_random_paragraph_id(8)}" 
-                w14:textId="{DOCParagraph._gen_random_paragraph_id(8)}" 
-                w:rsidR="{DOCParagraph._gen_random_paragraph_id(8)}" 
-                w:rsidRPr="{DOCParagraph._gen_random_paragraph_id(8)}" 
-                w:rsidRDefault="{DOCParagraph._gen_random_paragraph_id(8)}" 
-                w:rsidP="{DOCParagraph._gen_random_paragraph_id(8)}"
-            >
-                <w:r>
-                    <w:t></w:t>
-                </w:r>
-            </w:p>
-            """
+        default_paragraph = parse_xml(
+            PARAGRAPH_STANDARD.format(
+                random_paragraph_id=DOCParagraph._gen_random_paragraph_id(8)
+            )
         )
-        return default_paragraph
-
+        return cast("CT_P", default_paragraph)
 
     @property
     def linked_objects(self) -> list:

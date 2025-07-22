@@ -8,23 +8,15 @@ from core.doc_objects.Section import DOCSection
 from core.styles.section import SectionStyle
 
 
-d = DOC()
+# d = DOC(r'C:\Users\Balabanov.DA\PycharmProjects\docx_gen\core\е.docx')
+# p2 = [p for p in d.paragraphs][-1]
+# p1 = [p for p in d.paragraphs][0]
+# p1_copy = copy.deepcopy(p1)
+# d.writer.write(element=p1_copy, before=p2)
+# d.save(r'C:\Users\Balabanov.DA\PycharmProjects\docx_gen\core\eе.docx')
+sect = DOCSection()
+print(sect.elem)
+if sect:
+    print(1)
+print(sect is not None)
 
-s = DOCSection()
-
-style = SectionStyle(left_margin=7)
-style.right_margin = 4
-s.add_style(style)
-
-d.writer.replace_section(s)
-
-d.writer.add_paragraph('test')
-
-
-d.export.to_docx('test.docx')
-print(d.doc_sections)
-print(d.doc_sections[0].linked_objects)
-for s in d.doc_sections:
-    for i in s.linked_objects:
-        print(i)
-        print(type(i))
