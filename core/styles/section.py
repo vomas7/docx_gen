@@ -37,9 +37,9 @@ class SectionStyle(BaseStyle):
     NAMESPACE: str = 'w'
 
     def __init__(self, **kwargs):
-        self._pgMar = CT_PageMar
-        self._pgSz = CT_PageSz
-        self._titlePg = CT_OnOff
-        self._scType = CT_SectType
+        self._pgMar = CT_PageMar()
+        self._pgSz = CT_PageSz()
+        self._titlePg = CT_OnOff()
+        self._scType = CT_SectType()
 
         super().__init__(**kwargs)
