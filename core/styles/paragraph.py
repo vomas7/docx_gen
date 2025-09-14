@@ -1,7 +1,4 @@
-from typing import Optional
-
-from dataclasses import asdict
-from dataclasses import dataclass
+from typing import Optional, Union
 
 from docx.shared import Pt
 from docx.shared import Cm
@@ -10,48 +7,81 @@ from docx.shared import Emu
 from docx.shared import Twips
 from docx.shared import Inches
 from docx.shared import RGBColor
+from docx.shared import Length
 
-from docx.enum.text import WD_BREAK as break_type
-from docx.enum.text import WD_COLOR as color_name
-from docx.enum.text import WD_TAB_LEADER as tab_leader
-from docx.enum.text import WD_TAB_ALIGNMENT as tab_align
-from docx.enum.text import WD_UNDERLINE as underline_type
-from docx.enum.text import WD_LINE_SPACING as line_spacing
-from docx.enum.text import WD_ALIGN_PARAGRAPH as paragraph_align
-
-from docx.styles.style import BaseStyle
-from docx.text.paragraph import Paragraph
-
+from docx.enum.text import WD_BREAK
+from docx.enum.text import WD_COLOR
+from docx.enum.text import WD_TAB_LEADER
+from docx.enum.text import WD_TAB_ALIGNMENT
+from docx.enum.text import WD_UNDERLINE
+from docx.enum.text import WD_LINE_SPACING
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.style import WD_STYLE
 from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.dml import MSO_COLOR_TYPE
 from docx.enum.dml import MSO_THEME_COLOR
 from docx.enum.shape import WD_INLINE_SHAPE
 
+from docx.styles.style import BaseStyle
 
-@dataclass
+# особое внимание обратить на импорты ниже!
+from docx.oxml.text.paragraph import CT_P
+from docx.oxml.text.parfmt import CT_PPr, CT_Ind, CT_Jc, CT_Spacing, CT_TabStop
+from docx.oxml.text.run import CT_R, CT_Text
+
+
 class ParagraphStyle(BaseStyle):
-    """Paragraph style for Word Document
-    
-    Attributes:
+    _style_attrs = {
+        "alignment": ("_jc", "val"),
+        "tab_leadment": ("_tab", "leader"),
+        "tab_alignment": ("_tab", "val"),
+        "p_break": ("_p", "p_break"),
+        "line_space": ("", ""),
+        "space_before": ("_sp", ""),
+        "space_after": ("_sp", ""),
+        "first_line_indent": ("_ind", "firstLine"),
+        "left_indent": ("_ind", "left"),
+        "right_indent": ("_ind", "right"),
+        "hanging_indent": ("_ind", "hanging"),
+        "keep_together": ("", ""),
+        "page_break_before": ("", ""),
+    }
 
-    """
-    alignment: paragraph_align = paragraph_align.LEFT
-    line_space: Optional[line_spacing] = line_spacing.SINGLE
-    tab_leadment: Optional[tab_leader] = tab_leader.SPACES
-    p_break: Optional[break_type] = None
-    tab_alignment: Optional[tab_align] = None
+    alignment: Optional[WD_ALIGN_PARAGRAPH] = WD_ALIGN_PARAGRAPH.LEFT
+    line_space: Optional[WD_LINE_SPACING] = WD_LINE_SPACING.SINGLE
+    tab_leadment: Optional[WD_TAB_LEADER] = WD_TAB_LEADER.SPACES
+    tab_alignment: Optional[WD_TAB_ALIGNMENT]
+    p_break: Optional[WD_BREAK]
+    space_before: Optional[Union[Length, int]]
+    space_after: Optional[Union[Length, int]]
+    first_line_indent: Optional[Union[Length, int]]
+    left_indent: Optional[Union[Length, int]]
+    right_indent: Optional[Union[Length, int]]
+    hanging_indent: Optional[Union[Length, int]]
+    keep_together: Optional[bool] = False
+    page_break_before: Optional[bool] = False
+    # text_direction
 
-    space_before: Optional[Pt] = None
-    space_after: Optional[Pt] = None
-    first_line_indent : Optional[Pt] = None
-    left_indent: Optional[Pt] = None
-    right_indent: Optional[Pt] = None
-    keep_together: bool = False
-    page_break_before: bool = False
-    text_direction: str = 'ltr' # ltr = left to right
+    NAMESPACE: str = "p"
 
-    def get_style_dict(self) -> dict:
-        """Return dict with all paragraph style parametres"""
-        style_dict = asdict(self)
-        return style_dict
+    def __init__(self, **kwargs):
+        """
+        - <w:p> - контейнер для параграфа. Внутри него будут располагаться все xml-элементы, касающиеся параграфа.
+        - <w:pPr> - контейнер для всех свойств объекта параграфа
+        - <w:ind> - элемент для обозначения отступов
+        - <w:jc> - элемент для обозначения выравнивания
+        - <w:r> - контейнер для текста. Внутри него будут располагаться все xml-элементы, касающиеся текста.
+        Всегда находится внутри параграфа, т.е внутри <w:p>.
+        - <w:t> - внутри данного тэга пишется непосредственно сам текст.
+        """
+
+        self._p = CT_P  # <w:p>
+        self._pPr = CT_PPr  # <w:pPr>
+        self._ind = CT_Ind  # <w:ind>
+        self._jc = CT_Jc  # <w:jc>
+        self._sp = CT_Spacing  # <w:spacing>
+        self._tab = CT_TabStop  # <w:tab>
+        self._r = CT_R  # <w:r>
+        self._t = CT_Text  # <w:t>
+
+        super().__init__(kwargs)

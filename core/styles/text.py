@@ -1,75 +1,113 @@
 from typing import Optional
 
-from dataclasses import asdict
-from dataclasses import dataclass
-
-from docx.shared import Pt
-from docx.shared import Cm
-from docx.shared import Mm
-from docx.shared import Emu
-from docx.shared import Twips
-from docx.shared import Inches
+from docx.enum.dml import MSO_COLOR_TYPE, MSO_THEME_COLOR
+from docx.enum.shape import WD_INLINE_SHAPE
+from docx.enum.style import WD_STYLE, WD_STYLE_TYPE
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.text import WD_BREAK
+from docx.enum.text import WD_COLOR
+from docx.enum.text import WD_LINE_SPACING
+from docx.enum.text import WD_TAB_ALIGNMENT
+from docx.enum.text import WD_TAB_LEADER
+from docx.enum.text import WD_UNDERLINE
+from docx.enum.text import WD_COLOR_INDEX
+from docx.oxml.text.font import (
+    CT_Color,
+    CT_Fonts,
+    CT_Highlight,
+    CT_HpsMeasure,
+    CT_RPr,
+    CT_Underline,
+    CT_VerticalAlignRun,
+)
+from docx.oxml.text.run import (
+    CT_R,
+    CT_Text,
+    CT_PTab,
+    CT_Br,
+    CT_Cr,
+    CT_NoBreakHyphen,
+)
 from docx.shared import RGBColor
-
-from docx.enum.text import WD_BREAK as break_type
-from docx.enum.text import WD_COLOR as color_name
-from docx.enum.text import WD_TAB_LEADER as tab_leader
-from docx.enum.text import WD_TAB_ALIGNMENT as tab_align
-from docx.enum.text import WD_UNDERLINE as underline_type
-from docx.enum.text import WD_LINE_SPACING as line_spacing
-from docx.enum.text import WD_ALIGN_PARAGRAPH as paragraph_align
-
-from docx.styles.style import BaseStyle
 from docx.text.paragraph import Paragraph
 
-from docx.enum.style import WD_STYLE
-from docx.enum.style import WD_STYLE_TYPE
-from docx.enum.dml import MSO_COLOR_TYPE
-from docx.enum.dml import MSO_THEME_COLOR
-from docx.enum.shape import WD_INLINE_SHAPE
+from core.styles.base import BaseStyle
 
 
-WD_STYLE_TYPE.CHARACTER
-
-@dataclass
 class TextStyle(BaseStyle):
-    """Text style for Word documents
-    
-    Attributes:
+    """Класс стилей для текста
 
+    Args:
+        BaseStyle (_type_): базовый класс стилей
     """
-    text_size: Pt = Pt(14.0)
-    text_name: str = "Times New Roman"
-    text_color: Optional[RGBColor] = None
-    highlight_color: Optional[color_name] = color_name.INHERITED
-    underline: Optional[underline_type] = None
-    bold: bool = None
-    italic: bool = None
-    outline: bool = None
-    all_caps: bool = None
-    small_caps: bool = None
-    strike: bool = None
-    double_strike: bool = None
-    subscript: bool = None
-    superscript: bool = None
-    complex_script: bool = None
-    cs_bold: bool = None
-    cs_italic: bool = None
-    emboss: bool = None
-    hidden: bool = None
-    imprint: bool = None
-    math: bool = None
-    snap_to_grid: bool = None
-    spec_vanish: bool = None
-    no_proof: bool = None
-    rtl: bool = None
-    shadow: bool = None
-    web_hidden: bool  = None
 
-    def get_style_dict(self) -> dict:
-        """Return dict with all text style parametres"""
-        style_dict = asdict(self)
-        return style_dict
-    
-    def __repr__(self):
-        return "Dataclass TextStyle"
+    _style_attrs = {
+        "text_size": (),
+        "text_name": (),
+        "text_color": (),
+        "highlight_color": (),
+        "underline": (),
+        "bold": (),
+        "italic": (),
+        "outline": (),
+        "all_caps": (),
+        "small_caps": (),
+        "strike": (),
+        "double_strike": (),
+        "subscript": (),
+        "superscript": (),
+        "complex_script": (),
+        "cs_bold": (),
+        "cs_italic": (),
+        "emboss": (),
+        "hidden": (),
+        "imprint": (),
+        "math": (),
+        "snap_to_grid": (),
+        "spec_vanish": (),
+        "no_proof": (),
+        "shadow": (),
+        "web_hidden": (),
+    }
+
+    text_size = Optional[]
+    text_name = Optional[]
+    text_color = Optional[]
+    highlight_color = Optional[WD_COLOR_INDEX]
+    underline = Optional[WD_UNDERLINE]
+    bold = Optional[bool]
+    italic = Optional[bool]
+    outline = Optional[bool]
+    all_caps = Optional[bool]
+    small_caps = Optional[bool]
+    strike = Optional[bool]
+    double_strike = Optional[bool]
+    subscript = Optional[bool]
+    superscript = Optional[bool]
+    complex_script = Optional[bool]
+    cs_bold = Optional[bool]
+    cs_italic = Optional[bool]
+    emboss = Optional[bool]
+    hidden = Optional[bool]
+    imprint = Optional[bool]
+    math = Optional[bool]
+    snap_to_grid = Optional[bool]
+    spec_vanish = Optional[bool]
+    no_proof = Optional[bool]
+    shadow = Optional[bool]
+    web_hidden = Optional[bool]
+
+    NAMESPACE: str = "r"
+
+    def __init__(self, **kwargs):
+        self._r = CT_R
+        self._rPr = CT_RPr
+        self._t = CT_Text
+        self._highlight = CT_Highlight
+        self._sz = CT_HpsMeasure
+        self._br = CT_Br
+        self._ptab = CT_PTab
+        self._cr = CT_Cr
+        self._noBreakHyphen = CT_NoBreakHyphen
+
+        super().__init__(kwargs)

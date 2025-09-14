@@ -5,6 +5,7 @@ from core.constant import PARAGRAPH_STANDARD
 from docx.parts.story import StoryPart
 from docx.text.paragraph import Paragraph
 from docx.oxml import parse_xml
+from docx.oxml.text.paragraph import CT_P
 from core.doc_objects.Text import Text
 from core.styles.stylist import set_style
 from core.styles.paragraph import ParagraphStyle
@@ -12,7 +13,8 @@ from core.styles.paragraph import ParagraphStyle
 
 class DOCParagraph(Paragraph):
     """
-    Document paragraph
+    Document paragraph that also includes other document objects,
+    which also allows to customize the alignment.
     """
 
     @overload
