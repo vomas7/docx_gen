@@ -6,25 +6,54 @@ from docx.oxml.ns import qn
 from core.doc import DOC
 from core.doc_objects.Section import DOCSection
 from core.styles.section import SectionStyle
+from core.styles.paragraph import ParagraphStyle
+
 
 
 d = DOC()
+ParagraphStyle().alignment = 10
+s1 = DOCSection()
+s1.add_style(SectionStyle(right_margin=0))
+s2 = DOCSection()
+s2.add_style(SectionStyle(right_margin=5))
+s3 = DOCSection()
+s3.add_style(SectionStyle(right_margin=10))
+d.writer.add_section(s3, -1)
 
-s = DOCSection()
+d.writer.add_section(s2, 0)
+d.writer.add_paragraph()
 
-style = SectionStyle(left_margin=7)
-style.right_margin = 4
-s.add_style(style)
-
-d.writer.replace_section(s)
-
-d.writer.add_paragraph('test')
-
-
+# d.writer.add_section(s1, -1)
+d.writer.replace_section(s1)
+print(d._element.body.xml)
 d.export.to_docx('test.docx')
-print(d.doc_sections)
-print(d.doc_sections[0].linked_objects)
-for s in d.doc_sections:
-    for i in s.linked_objects:
-        print(i)
-        print(type(i))
+
+# ('_pgMar', <class 'docx.oxml.section.CT_PageMar'>), ('_pgSz', <class 'docx.oxml.section.CT_PageSz'>), ('_titlePg', <class 'docx.oxml.shared.CT_OnOff'>), ('_scType', <class 'docx.oxml.section.CT_SectType'>)]
+# {'w:pgSz': <CT_PageSz '<w:pgSz>' at 0x1f6015ec2d0>, 'w:pgMar': <CT_PageMar '<w:pgMar>' at 0x1f6015ecf50>}
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'top': 'Length | None', 'right': 'Length | None', 'bottom': 'Length | None', 'left': 'Length | None', 'header': 'Length | None', 'footer': 'Length | None', 'gutter': 'Length | None'}), ('__doc__', '``<w:pgMar>`` element, defining page margins.'), ('top', <property object at 0x000001F6012D1EE0>), ('right', <property object at 0x000001F6012D1F30>), ('bottom', <property object at 0x000001F6012D1F80>), ('left', 3600000), ('header', <property object at 0x000001F6012D2020>), ('footer', <property object at 0x000001F6012D2070>), ('gutter', <property object at 0x000001F6012D20C0>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'top': 'Length | None', 'right': 'Length | None', 'bottom': 'Length | None', 'left': 'Length | None', 'header': 'Length | None', 'footer': 'Length | None', 'gutter': 'Length | None'}), ('__doc__', '``<w:pgMar>`` element, defining page margins.'), ('top', <property object at 0x000001F6012D1EE0>), ('right', <property object at 0x000001F6012D1F30>), ('bottom', <property object at 0x000001F6012D1F80>), ('left', 3600000), ('header', <property object at 0x000001F6012D2020>), ('footer', <property object at 0x000001F6012D2070>), ('gutter', <property object at 0x000001F6012D20C0>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'top': 'Length | None', 'right': 'Length | None', 'bottom': 'Length | None', 'left': 'Length | None', 'header': 'Length | None', 'footer': 'Length | None', 'gutter': 'Length | None'}), ('__doc__', '``<w:pgMar>`` element, defining page margins.'), ('top', <property object at 0x000001F6012D1EE0>), ('right', <property object at 0x000001F6012D1F30>), ('bottom', <property object at 0x000001F6012D1F80>), ('left', 3600000), ('header', <property object at 0x000001F6012D2020>), ('footer', <property object at 0x000001F6012D2070>), ('gutter', <property object at 0x000001F6012D20C0>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'top': 'Length | None', 'right': 'Length | None', 'bottom': 'Length | None', 'left': 'Length | None', 'header': 'Length | None', 'footer': 'Length | None', 'gutter': 'Length | None'}), ('__doc__', '``<w:pgMar>`` element, defining page margins.'), ('top', <property object at 0x000001F6012D1EE0>), ('right', <property object at 0x000001F6012D1F30>), ('bottom', <property object at 0x000001F6012D1F80>), ('left', 3600000), ('header', <property object at 0x000001F6012D2020>), ('footer', <property object at 0x000001F6012D2070>), ('gutter', <property object at 0x000001F6012D20C0>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'top': 'Length | None', 'right': 'Length | None', 'bottom': 'Length | None', 'left': 'Length | None', 'header': 'Length | None', 'footer': 'Length | None', 'gutter': 'Length | None'}), ('__doc__', '``<w:pgMar>`` element, defining page margins.'), ('top', <property object at 0x000001F6012D1EE0>), ('right', <property object at 0x000001F6012D1F30>), ('bottom', <property object at 0x000001F6012D1F80>), ('left', 3600000), ('header', <property object at 0x000001F6012D2020>), ('footer', <property object at 0x000001F6012D2070>), ('gutter', <property object at 0x000001F6012D20C0>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'top': 'Length | None', 'right': 'Length | None', 'bottom': 'Length | None', 'left': 'Length | None', 'header': 'Length | None', 'footer': 'Length | None', 'gutter': 'Length | None'}), ('__doc__', '``<w:pgMar>`` element, defining page margins.'), ('top', <property object at 0x000001F6012D1EE0>), ('right', <property object at 0x000001F6012D1F30>), ('bottom', <property object at 0x000001F6012D1F80>), ('left', 3600000), ('header', <property object at 0x000001F6012D2020>), ('footer', <property object at 0x000001F6012D2070>), ('gutter', <property object at 0x000001F6012D20C0>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'top': 'Length | None', 'right': 'Length | None', 'bottom': 'Length | None', 'left': 'Length | None', 'header': 'Length | None', 'footer': 'Length | None', 'gutter': 'Length | None'}), ('__doc__', '``<w:pgMar>`` element, defining page margins.'), ('top', <property object at 0x000001F6012D1EE0>), ('right', <property object at 0x000001F6012D1F30>), ('bottom', <property object at 0x000001F6012D1F80>), ('left', 3600000), ('header', <property object at 0x000001F6012D2020>), ('footer', <property object at 0x000001F6012D2070>), ('gutter', <property object at 0x000001F6012D20C0>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'top': 'Length | None', 'right': 'Length | None', 'bottom': 'Length | None', 'left': 'Length | None', 'header': 'Length | None', 'footer': 'Length | None', 'gutter': 'Length | None'}), ('__doc__', '``<w:pgMar>`` element, defining page margins.'), ('top', <property object at 0x000001F6012D1EE0>), ('right', <property object at 0x000001F6012D1F30>), ('bottom', <property object at 0x000001F6012D1F80>), ('left', 3600000), ('header', <property object at 0x000001F6012D2020>), ('footer', <property object at 0x000001F6012D2070>), ('gutter', <property object at 0x000001F6012D20C0>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'top': 'Length | None', 'right': 'Length | None', 'bottom': 'Length | None', 'left': 'Length | None', 'header': 'Length | None', 'footer': 'Length | None', 'gutter': 'Length | None'}), ('__doc__', '``<w:pgMar>`` element, defining page margins.'), ('top', <property object at 0x000001F6012D1EE0>), ('right', <property object at 0x000001F6012D1F30>), ('bottom', <property object at 0x000001F6012D1F80>), ('left', 3600000), ('header', <property object at 0x000001F6012D2020>), ('footer', <property object at 0x000001F6012D2070>), ('gutter', <property object at 0x000001F6012D20C0>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'top': 'Length | None', 'right': 'Length | None', 'bottom': 'Length | None', 'left': 'Length | None', 'header': 'Length | None', 'footer': 'Length | None', 'gutter': 'Length | None'}), ('__doc__', '``<w:pgMar>`` element, defining page margins.'), ('top', <property object at 0x000001F6012D1EE0>), ('right', <property object at 0x000001F6012D1F30>), ('bottom', <property object at 0x000001F6012D1F80>), ('left', 3600000), ('header', <property object at 0x000001F6012D2020>), ('footer', <property object at 0x000001F6012D2070>), ('gutter', <property object at 0x000001F6012D20C0>)]
+# {'w:pgSz': <CT_PageSz '<w:pgSz>' at 0x1f6015ec2d0>, 'w:pgMar': <CT_PageMar '<w:pgMar>' at 0x1f6015ecf50>}
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'w': 'Length | None', 'h': 'Length | None', 'orient': 'WD_ORIENTATION'}), ('__doc__', '``<w:pgSz>`` element, defining page dimensions and orientation.'), ('w', 10800000), ('h', 21600000), ('orient', <property object at 0x000001F6012D2250>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'w': 'Length | None', 'h': 'Length | None', 'orient': 'WD_ORIENTATION'}), ('__doc__', '``<w:pgSz>`` element, defining page dimensions and orientation.'), ('w', 10800000), ('h', 21600000), ('orient', <property object at 0x000001F6012D2250>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'w': 'Length | None', 'h': 'Length | None', 'orient': 'WD_ORIENTATION'}), ('__doc__', '``<w:pgSz>`` element, defining page dimensions and orientation.'), ('w', 10800000), ('h', 21600000), ('orient', <property object at 0x000001F6012D2250>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'w': 'Length | None', 'h': 'Length | None', 'orient': 'WD_ORIENTATION'}), ('__doc__', '``<w:pgSz>`` element, defining page dimensions and orientation.'), ('w', 10800000), ('h', 21600000), ('orient', <property object at 0x000001F6012D2250>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'w': 'Length | None', 'h': 'Length | None', 'orient': 'WD_ORIENTATION'}), ('__doc__', '``<w:pgSz>`` element, defining page dimensions and orientation.'), ('w', 10800000), ('h', 21600000), ('orient', <property object at 0x000001F6012D2250>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'w': 'Length | None', 'h': 'Length | None', 'orient': 'WD_ORIENTATION'}), ('__doc__', '``<w:pgSz>`` element, defining page dimensions and orientation.'), ('w', 10800000), ('h', 21600000), ('orient', <property object at 0x000001F6012D2250>)]
+# {'w:pgSz': <CT_PageSz '<w:pgSz>' at 0x1f6015ec2d0>, 'w:pgMar': <CT_PageMar '<w:pgMar>' at 0x1f6015ecf50>}
+# [('__module__', 'docx.oxml.shared'), ('__annotations__', {'val': 'bool'}), ('__doc__', 'Used for `w:b`, `w:i` elements and others.\n\n    Contains a bool-ish string in its `val` attribute, xsd:boolean plus "on" and\n    "off". Defaults to `True`, so `<w:b>` for example means "bold is turned on".\n    '), ('val', <property object at 0x000001F601200F90>)]
+# [('__module__', 'docx.oxml.shared'), ('__annotations__', {'val': 'bool'}), ('__doc__', 'Used for `w:b`, `w:i` elements and others.\n\n    Contains a bool-ish string in its `val` attribute, xsd:boolean plus "on" and\n    "off". Defaults to `True`, so `<w:b>` for example means "bold is turned on".\n    '), ('val', <property object at 0x000001F601200F90>)]
+# [('__module__', 'docx.oxml.shared'), ('__annotations__', {'val': 'bool'}), ('__doc__', 'Used for `w:b`, `w:i` elements and others.\n\n    Contains a bool-ish string in its `val` attribute, xsd:boolean plus "on" and\n    "off". Defaults to `True`, so `<w:b>` for example means "bold is turned on".\n    '), ('val', <property object at 0x000001F601200F90>)]
+# [('__module__', 'docx.oxml.shared'), ('__annotations__', {'val': 'bool'}), ('__doc__', 'Used for `w:b`, `w:i` elements and others.\n\n    Contains a bool-ish string in its `val` attribute, xsd:boolean plus "on" and\n    "off". Defaults to `True`, so `<w:b>` for example means "bold is turned on".\n    '), ('val', <property object at 0x000001F601200F90>)]
+# {'w:pgSz': <CT_PageSz '<w:pgSz>' at 0x1f6015ecf50>, 'w:pgMar': <CT_PageMar '<w:pgMar>' at 0x1f6015ec2d0>}
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'val': 'WD_SECTION_START | None'}), ('__doc__', '``<w:sectType>`` element, defining the section start type.'), ('val', <property object at 0x000001F6012D2D40>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'val': 'WD_SECTION_START | None'}), ('__doc__', '``<w:sectType>`` element, defining the section start type.'), ('val', <property object at 0x000001F6012D2D40>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'val': 'WD_SECTION_START | None'}), ('__doc__', '``<w:sectType>`` element, defining the section start type.'), ('val', <property object at 0x000001F6012D2D40>)]
+# [('__module__', 'docx.oxml.section'), ('__annotations__', {'val': 'WD_SECTION_START | None'}), ('__doc__', '``<w:sectType>`` element, defining the section start type.'), ('val', <property object at 0x000001F6012D2D40>)]
