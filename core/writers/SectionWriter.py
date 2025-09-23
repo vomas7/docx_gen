@@ -10,8 +10,8 @@ class SectionWriter(BaseWriter):
     def add_section(self, section: DOCSection, index: int = -1):
         section_elem = self.doc.sections[index]._sectPr
         if isinstance(section_elem.getparent(), CT_Body):
-            self.doc._element.body.add_p().set_sectPr(section._sectPr.clone())
-
+            self.doc._element.body.add_section_break()
+            self.replace_section(section)
         else:
             p_elem = OxmlElement('w:p')
             pPr_elem = OxmlElement('w:pPr')
