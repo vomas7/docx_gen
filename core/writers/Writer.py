@@ -5,7 +5,6 @@ if TYPE_CHECKING:
 
 from core.writers.SectionWriter import SectionWriter
 from core.writers.ParagraphWriter import ParagraphWriter
-from core.doc_objects.Paragraph import Paragraph
 
 
 class Writer(SectionWriter, ParagraphWriter):
