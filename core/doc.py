@@ -2,7 +2,7 @@ from collections.abc import Iterable
 from importlib import resources
 from io import BytesIO
 from pathlib import Path
-from docx.document import Document
+from docx.document import Document, Section
 from docx.opc.constants import CONTENT_TYPE as CT
 from docx.package import Package
 from docx.shared import Cm
@@ -11,7 +11,6 @@ from core.io.export import DocumentExporter
 from core.reader import Reader
 from core.writers.Writer import Writer
 from core.doc_objects.Section import DOCSection
-
 
 
 def get_default_docx_path() -> str | Path:
@@ -57,7 +56,11 @@ class DOC(Document):
         element = getattr(document, "_element", None)
         Document.__init__(self, element, document_part)
 
-        self.doc_sections: list[DOCSection] = list()
+        self.doc_sections: list[DOCSection] = [
+            DOCSection(
+                Section(self._body._element.get_or_add_sectPr, document_part)
+            )
+        ]
 
         self.export = DocumentExporter(self)
         self.reader = Reader(self)
@@ -66,7 +69,7 @@ class DOC(Document):
     def set_section(self, section: DOCSection, index: int = -1):
         self._element.body.add_section_break()
         self._element.body.replace(
-            self.sections[index]._sectPr,section._sectPr
+            self.sections[index]._sectPr, section._sectPr
         )
 
     @property

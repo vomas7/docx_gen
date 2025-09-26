@@ -27,7 +27,10 @@ class DOCParagraph(Paragraph):
     @overload
     def __init__(self): ...
 
-    def __init__(self, paragraph: Optional[Paragraph] = None, linked_objects: Optional[list] = None, text: Union[str, Text] = None):
+    def __init__(self,
+                 paragraph: Optional[Paragraph] = None,
+                 linked_objects: Optional[list] = None,
+                 text: Union[str, Text] = None):
         if paragraph is None:
             xml = self._create_default_paragraph()
             super().__init__(xml, StoryPart.part)

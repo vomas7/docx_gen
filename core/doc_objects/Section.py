@@ -28,7 +28,7 @@ class DOCSection(Section):
         if not section:
             super().__init__(self._create_default_sect_pr(), Document().part)
         elif section:
-            self._linked_objects = linked_objects if linked_objects else None
+            self._linked_objects = linked_objects or []
             super().__init__(section._sectPr, section._document_part)
         else:
             raise AttributeError(f"Creating Section object failed!")
