@@ -1,33 +1,22 @@
 from typing import Optional, Union
 
-from docx.shared import Pt
-from docx.shared import Cm
-from docx.shared import Mm
-from docx.shared import Emu
-from docx.shared import Twips
-from docx.shared import Inches
-from docx.shared import RGBColor
-from docx.shared import Length
-
-from docx.enum.text import WD_BREAK
-from docx.enum.text import WD_COLOR
-from docx.enum.text import WD_TAB_LEADER
-from docx.enum.text import WD_TAB_ALIGNMENT
-from docx.enum.text import WD_UNDERLINE
-from docx.enum.text import WD_LINE_SPACING
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.style import WD_STYLE
-from docx.enum.style import WD_STYLE_TYPE
-from docx.enum.dml import MSO_COLOR_TYPE
-from docx.enum.dml import MSO_THEME_COLOR
+from docx.enum.dml import MSO_COLOR_TYPE, MSO_THEME_COLOR
 from docx.enum.shape import WD_INLINE_SHAPE
-
-from docx.styles.style import BaseStyle
-
-# особое внимание обратить на импорты ниже!
+from docx.enum.style import WD_STYLE, WD_STYLE_TYPE
+from docx.enum.text import (
+    WD_ALIGN_PARAGRAPH,
+    WD_BREAK,
+    WD_COLOR,
+    WD_LINE_SPACING,
+    WD_TAB_ALIGNMENT,
+    WD_TAB_LEADER,
+    WD_UNDERLINE,
+)
 from docx.oxml.text.paragraph import CT_P
-from docx.oxml.text.parfmt import CT_PPr, CT_Ind, CT_Jc, CT_Spacing, CT_TabStop
+from docx.oxml.text.parfmt import CT_Ind, CT_Jc, CT_PPr, CT_Spacing, CT_TabStop
 from docx.oxml.text.run import CT_R, CT_Text
+from docx.shared import Cm, Emu, Inches, Length, Mm, Pt, RGBColor, Twips
+from docx.styles.style import BaseStyle
 
 
 class ParagraphStyle(BaseStyle):
@@ -58,21 +47,20 @@ class ParagraphStyle(BaseStyle):
     left_indent: Optional[Union[Length, int]]
     right_indent: Optional[Union[Length, int]]
     hanging_indent: Optional[Union[Length, int]]
-    keep_together: Optional[bool] = False
-    page_break_before: Optional[bool] = False
-    # text_direction
+    keep_together: bool = False
+    page_break_before: bool = False
 
     NAMESPACE: str = "p"
 
     def __init__(self, **kwargs):
         """
-        - <w:p> - контейнер для параграфа. Внутри него будут располагаться все xml-элементы, касающиеся параграфа.
-        - <w:pPr> - контейнер для всех свойств объекта параграфа
-        - <w:ind> - элемент для обозначения отступов
-        - <w:jc> - элемент для обозначения выравнивания
-        - <w:r> - контейнер для текста. Внутри него будут располагаться все xml-элементы, касающиеся текста.
-        Всегда находится внутри параграфа, т.е внутри <w:p>.
-        - <w:t> - внутри данного тэга пишется непосредственно сам текст.
+        - <w:p> - container for paragraphs. All xml elements containing a paragraph will be located inside it.
+        - <w:pPr> - container for all properties of the paragraph object.
+        - <w:ind> - element for marking indents.
+        - <w:jc> - element to indicate alignment.
+        - <w:r> - container for text. All xml elements related to the text will be located inside it.
+        Always located inside a paragraph, i.e. inside <w:p>.
+        - <w:t> - the text itself is written inside this tag..
         """
 
         self._p = CT_P  # <w:p>

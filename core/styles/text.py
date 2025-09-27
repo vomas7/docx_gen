@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 from docx.enum.dml import MSO_COLOR_TYPE, MSO_THEME_COLOR
 from docx.enum.shape import WD_INLINE_SHAPE
@@ -28,10 +28,11 @@ from docx.oxml.text.run import (
     CT_Cr,
     CT_NoBreakHyphen,
 )
-from docx.shared import RGBColor
+from docx.shared import RGBColor, Length
 from docx.text.paragraph import Paragraph
 
 from core.styles.base import BaseStyle
+from docx.oxml.simpletypes import ST_VerticalAlignRun
 
 
 class TextStyle(BaseStyle):
@@ -41,38 +42,42 @@ class TextStyle(BaseStyle):
         BaseStyle (_type_): базовый класс стилей
     """
 
+    # TODO: класс пока не дописан! Не до конца ещё в нем разобралась.
+
     _style_attrs = {
-        "text_size": (),
-        "text_name": (),
-        "text_color": (),
-        "highlight_color": (),
-        "underline": (),
-        "bold": (),
-        "italic": (),
-        "outline": (),
-        "all_caps": (),
-        "small_caps": (),
-        "strike": (),
-        "double_strike": (),
-        "subscript": (),
-        "superscript": (),
-        "complex_script": (),
-        "cs_bold": (),
-        "cs_italic": (),
-        "emboss": (),
-        "hidden": (),
-        "imprint": (),
-        "math": (),
-        "snap_to_grid": (),
-        "spec_vanish": (),
-        "no_proof": (),
-        "shadow": (),
-        "web_hidden": (),
+        "text_size": ("", ""),  #
+        "text_name": ("", ""),  #
+        "text_color": ("_color", ""),  #
+        "highlight_color": ("_highlight", "val"),
+        "underline": ("_underline", "val"),
+        "bold": ("_rPr", "b"),
+        "italic": ("_rPr", "i"),
+        "outline": ("_rPr", "outline"),
+        "all_caps": ("_rPr", "caps"),
+        "small_caps": ("_rPr", "smallCaps"),
+        "strike": ("_rPr", "strike"),
+        "double_strike": ("_rPr", "dstrike"),
+        "subscript": ("_rPr", ""),  #
+        "superscript": ("_rPr", ""),  #
+        "complex_script": ("", ""),  #
+        "cs_bold": ("_rPr", "bCs"),
+        "cs_italic": ("_rPr", "iCs"),
+        "emboss": ("_rPr", "emboss"),
+        "hidden": ("_rPr", ""),  #
+        "imprint": ("_rPr", "imprint"),
+        "math": ("_rPr", "oMath"),
+        "snap_to_grid": ("_rPr", "snapToGrid"),
+        "spec_vanish": ("_rPr", "specVanish"),
+        "no_proof": ("_rPr", "noProof"),
+        "shadow": ("_rPr", "shadow"),
+        "web_hidden": ("_rPr", "webHidden"),
+        "vertical_alignment": ("_rPr", "vertAlign"),
+        "right_to_left": ("_rPr", "rtl"),
     }
 
-    text_size = Optional[]
-    text_name = Optional[]
-    text_color = Optional[]
+    text_size = Optional[Union[Length, int]]
+    font_name = Optional[str]  #
+    text_color = Optional[RGBColor]
     highlight_color = Optional[WD_COLOR_INDEX]
     underline = Optional[WD_UNDERLINE]
     bold = Optional[bool]
@@ -96,6 +101,8 @@ class TextStyle(BaseStyle):
     no_proof = Optional[bool]
     shadow = Optional[bool]
     web_hidden = Optional[bool]
+    vertical_alignment = Optional[ST_VerticalAlignRun]
+    right_to_left = Optional[bool]
 
     NAMESPACE: str = "r"
 
@@ -109,5 +116,7 @@ class TextStyle(BaseStyle):
         self._ptab = CT_PTab
         self._cr = CT_Cr
         self._noBreakHyphen = CT_NoBreakHyphen
+        self._underline = CT_Underline
+        self._color = CT_Color
 
         super().__init__(kwargs)
