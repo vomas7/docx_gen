@@ -2,6 +2,10 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from core.doc import DOC
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from core.doc import DOC
 
 
 class BaseWriter:
