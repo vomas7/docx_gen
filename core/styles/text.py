@@ -36,13 +36,9 @@ from docx.oxml.simpletypes import ST_VerticalAlignRun
 
 
 class TextStyle(BaseStyle):
-    """Класс стилей для текста
+    """Style class for text"""
 
-    Args:
-        BaseStyle (_type_): базовый класс стилей
-    """
-
-    # TODO: класс пока не дописан! Не до конца ещё в нем разобралась.
+    # TODO: The class hasn't been completed yet! I haven’t fully figured it out yet.
 
     _style_attrs = {
         "text_size": ("", ""),  #

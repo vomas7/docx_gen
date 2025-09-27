@@ -20,6 +20,8 @@ from docx.styles.style import BaseStyle
 
 
 class ParagraphStyle(BaseStyle):
+    """Style class for paragraph"""
+
     _style_attrs = {
         "alignment": ("_jc", "val"),
         "tab_leadment": ("_tab", "leader"),
