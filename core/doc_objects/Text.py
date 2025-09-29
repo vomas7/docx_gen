@@ -12,6 +12,7 @@ from core.styles.stylist import set_style
 from docx.oxml import CT_RPr, OxmlElement
 from docx.oxml.xmlchemy import BaseOxmlElement
 from docx.oxml.ns import qn
+from core.constant import LangTag
 
 
 class Text(Run):
@@ -52,20 +53,17 @@ class Text(Run):
                 f"Creating Text object failed: Unknown source {type(r_elem)}!"
             )
 
+        self._linked_objects.extend(self._grab_objects(self._r))
+
     def _create_run_pr(self, text: str = "") -> CT_R:
-        """
-        создаём объект run и учитываем
-        что он может создать несколько объектов за раз
-        """
 
         _r = cast('CT_R', OxmlElement('w:r'))
         _rPr = _r.get_or_add_rPr()
         _lang = OxmlElement('w:lang')
-        _lang.set(qn("w:val"), "ru-RU")
+        _lang.set(qn("w:val"), LangTag.ru)
         _rPr.append(_lang)
         _r.append(_rPr)
         _r.text = text
-        self._linked_objects.extend(self._grab_objects(_r))
         return _r
 
     def _grab_objects(self, _r_elem: CT_R) -> list[BaseOxmlElement]:

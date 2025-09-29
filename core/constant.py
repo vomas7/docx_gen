@@ -1,3 +1,5 @@
+from enum import Enum
+
 ns = {
     'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
     'wp': 'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
@@ -32,3 +34,9 @@ PARAGRAPH_STANDARD = ("""
                 </w:r>
             </w:p>
             """)
+
+
+class LangTag(Enum, str):
+    en = 'en-US'
+    ru = 'ru-RU'
+    de = 'de-DE'
