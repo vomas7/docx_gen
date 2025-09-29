@@ -31,6 +31,7 @@ class DOCParagraph(Paragraph):
                  paragraph: Optional[Paragraph] = None,
                  linked_objects: Optional[list] = None,
                  text: Union[str, Text] = None):
+        self.linked_objects = []
         if paragraph is None:
             xml = self._create_default_paragraph()
             super().__init__(xml, StoryPart.part)

@@ -4,15 +4,17 @@ from typing import overload
 from collections import UserString
 
 from docx.text.run import Run
-from docx.oxml import parse_xml
 from docx.oxml.text.run import CT_R
 from docx.parts.story import StoryPart
 
 from core.styles.text import TextStyle
 from core.styles.stylist import set_style
+from docx.oxml import CT_RPr, OxmlElement
+from docx.oxml.xmlchemy import BaseOxmlElement
+from docx.oxml.ns import qn
 
 
-class Text(UserString, Run):
+class Text(Run):
     """
         A class representing formatted text in a document.
     """
@@ -22,55 +24,53 @@ class Text(UserString, Run):
         ...
 
     @overload
-    def __init__(self, text: Union[str, UserString, Run]):
+    def __init__(self, r_elem: str | UserString | Run):
         ...
 
     @overload
-    def __init__(self, text: Union[str, UserString, Run], linked_objects: list):
+    def __init__(self, r_elem: str | UserString | Run,
+                 linked_objects: list):
         ...
 
-    def __init__(self, *args):
-        if not args:
-            xml = self._create_default_run_pr()
-            Run().__init__(xml, StoryPart.part)
+    def __init__(self,
+                 r_elem: str | UserString | Run = None,
+                 linked_objects: list = None):
+
+        r_elem = r_elem or ""
+
+        self._linked_objects = linked_objects or []
+
+        if isinstance(r_elem, Run):
+            super().__init__(r_elem._r, StoryPart.part)
+
+        elif isinstance(r_elem, (str, UserString)):
+            _r = self._create_run_pr(r_elem)
+            super().__init__(_r, StoryPart.part)
+
         else:
-            source = args[0]
-            linked_objects = None
-            if len(args) == 2:
-                linked_objects = args[1]
-            if isinstance(source, Run):
-                Run().__init__(source._r)
-                self._linked_objects = linked_objects
-            elif isinstance(source, str) or isinstance(source, UserString):
-                xml = self._create_run_pr_with_text(source)
-                Run().__init__(xml, StoryPart.part)
-                self._linked_objects = linked_objects
-            else:
-                raise AttributeError(f"Creating Text object failed:"
-                                     f"Unknown source {type(source)}!")
+            raise AttributeError(
+                f"Creating Text object failed: Unknown source {type(r_elem)}!"
+            )
 
-    def _create_run_pr_with_text(self, text: str) -> CT_R:
-        r = parse_xml(
-            '<w:r>'
-            '<w:rPr>'
-            '<w:lang w:val="ru-RU"/>'
-            '</w:rPr>'
-            f'<w:t xml:space="preserve">{text}</w:t>'
-            '</w:r>'
-        )
-        return cast("CT_R", r)
+    def _create_run_pr(self, text: str = "") -> CT_R:
+        """
+        создаём объект run и учитываем
+        что он может создать несколько объектов за раз
+        """
 
-    @staticmethod
-    def _create_default_run_pr() -> CT_R:
-        r = parse_xml(
-            '<w:r>'
-            '<w:rPr>'
-            '<w:lang w:val="ru-RU"/>'
-            '</w:rPr>'
-            '<w:t xml:space="preserve"> </w:t>'
-            '</w:r>'
-        )
-        return cast("CT_R", r)
+        _r = cast('CT_R', OxmlElement('w:r'))
+        _rPr = _r.get_or_add_rPr()
+        _lang = OxmlElement('w:lang')
+        _lang.set(qn("w:val"), "ru-RU")
+        _rPr.append(_lang)
+        _r.append(_rPr)
+        _r.text = text
+        self._linked_objects.extend(self._grab_objects(_r))
+        return _r
+
+    def _grab_objects(self, _r_elem: CT_R) -> list[BaseOxmlElement]:
+        lst_children = _r_elem.getchildren()
+        return [ch for ch in lst_children if not isinstance(ch, CT_RPr)]
 
     @property
     def linked_objects(self) -> list:
