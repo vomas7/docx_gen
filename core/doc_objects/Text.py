@@ -25,38 +25,37 @@ class Text(Run):
         ...
 
     @overload
-    def __init__(self, r_elem: str | UserString | Run):
+    def __init__(self, elem: str | UserString | Run | CT_R):
         ...
 
     @overload
-    def __init__(self, r_elem: str | UserString | Run,
+    def __init__(self,
+                 elem: str | UserString | Run | CT_R,
                  linked_objects: list):
         ...
 
     def __init__(self,
-                 r_elem: str | UserString | Run = None,
-                 linked_objects: list = None):
+                 elem: str | UserString | Run | CT_R | None = None,
+                 linked_objects: list | None = None):
 
-        r_elem = r_elem or ""
-
-        self._linked_objects = linked_objects or []
-
-        if isinstance(r_elem, Run):
-            super().__init__(r_elem._r, StoryPart.part)
-
-        elif isinstance(r_elem, (str, UserString)):
-            _r = self._create_run_pr(r_elem)
-            super().__init__(_r, StoryPart.part)
-
-        else:
+        if not isinstance(elem, self.__init__.__annotations__["elem"]):
             raise AttributeError(
-                f"Creating Text object failed: Unknown source {type(r_elem)}!"
+                f"Creating Text object failed: Unknown source {type(elem)}!"
             )
 
-        self._linked_objects.extend(self._grab_objects(self._r))
+        elem = elem or self._create_run_pr()
+        self._linked_objects = linked_objects or []
+
+        if isinstance(elem, Run):
+            elem = elem._r
+
+        elif isinstance(elem, (str, UserString)):
+            elem = self._create_run_pr(elem)
+
+        super().__init__(elem, StoryPart.part)
+        self._linked_objects.extend(self._grab_children(self._r))
 
     def _create_run_pr(self, text: str = "") -> CT_R:
-
         _r = cast('CT_R', OxmlElement('w:r'))
         _rPr = _r.get_or_add_rPr()
         _lang = OxmlElement('w:lang')
@@ -66,7 +65,7 @@ class Text(Run):
         _r.text = text
         return _r
 
-    def _grab_objects(self, _r_elem: CT_R) -> list[BaseOxmlElement]:
+    def _grab_children(self, _r_elem: CT_R) -> list[BaseOxmlElement]:
         lst_children = _r_elem.getchildren()
         return [ch for ch in lst_children if not isinstance(ch, CT_RPr)]
 
@@ -77,6 +76,9 @@ class Text(Run):
     @linked_objects.setter
     def linked_objects(self, new: list):
         self._linked_objects = new
+
+    def insert_linked_objects(self, new, index: int = -1):
+        self._linked_objects.insert(index, new)
 
     def __str__(self):
         return "<DOC.TEXT object>"

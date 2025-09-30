@@ -6,6 +6,7 @@ from core.doc_objects.Paragraph import DOCParagraph
 
 class ParagraphWriter(BaseWriter):
     """Class provides methods for writing DOCParagraphs objects"""
+
     def add_paragraph(self,
                       paragraph: Union[DOCParagraph, str],
                       section_index: int = -1,
@@ -17,3 +18,4 @@ class ParagraphWriter(BaseWriter):
             paragraph,
             paragraph_index
         )
+        return paragraph

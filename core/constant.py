@@ -28,15 +28,11 @@ PARAGRAPH_STANDARD = ("""
                 <w:pPr>
                     <w:rPr/>
                 </w:pPr>
-                <w:r>
-                    <w:rPr/>
-                    <w:t></w:t>
-                </w:r>
             </w:p>
             """)
 
 
-class LangTag(Enum, str):
+class LangTag(str, Enum):
     en = 'en-US'
     ru = 'ru-RU'
     de = 'de-DE'
