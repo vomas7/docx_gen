@@ -11,6 +11,9 @@ from core.io.export import DocumentExporter
 from core.reader import Reader
 from core.writers.Writer import Writer
 from core.doc_objects.Section import DOCSection
+from docx.document import _Body
+import docx.types as t
+from docx.oxml import CT_Body
 
 
 def get_default_docx_path() -> str | Path:
@@ -47,14 +50,17 @@ class DOC(Document):
         document_part = Package.open(str(template_path)).main_document_part
 
         if document_part.content_type != CT.WML_DOCUMENT_MAIN:
+            tmpl = "file '%s' is not a Word file, content type is '%s'"
             raise ValueError(
-                f"File {template_path} is not a Word file,"
-                f"content type is {document_part.content_type}!"
+                tmpl % (template_path, document_part.content_type)
             )
 
         document = document_part.document
         element = getattr(document, "_element", None)
         Document.__init__(self, element, document_part)
+
+
+        self.__body = None
 
         self.doc_sections: list[DOCSection] = [
             DOCSection(
@@ -71,6 +77,12 @@ class DOC(Document):
         self._element.body.replace(
             self.sections[index]._sectPr, section._sectPr
         )
+
+    @property
+    def _body(self):
+        if self.__body is None:
+            self.__body = _DOCBody(self._element.body, self)
+        return self.__body
 
     @property
     def doc_bytes(self) -> bytes:
@@ -90,3 +102,33 @@ class DOC(Document):
 
     def __str__(self):
         return f"<DOC object: {self.file if self.file else 'not saved'}>"
+
+
+class _DOCBody(_Body, t.ProvidesStoryPart):
+    def __init__(self, obj: CT_Body, parent: DOC):
+        super(_Body).__init__(obj, parent)
+        sections = self._parent.sections # noqa
+        p_lst = self._element.p_lst
+
+        tbl_lst = self._element.tbl_lst # soon
+
+
+
+
+        self.__linked_object = []
+
+
+
+    @property
+    def linked_objects(self):
+        return self.__linked_object
+
+    @linked_objects.setter
+    def linked_objects(self, value):
+        self.__linked_object = value
+
+    def insert_linked_object(self, value, index: int = - 1):
+        self.__linked_object.insert(index, value)
+
+    def remove_linked_object(self, index: int = - 1):
+        self.__linked_object.pop(index)
