@@ -1,6 +1,5 @@
 import random
 from typing import overload, cast
-from typing import Optional, Union
 from core.constant import PARAGRAPH_STANDARD
 from docx.parts.story import StoryPart
 from docx.text.paragraph import Paragraph
@@ -9,9 +8,10 @@ from core.doc_objects.Text import Text
 from core.styles.stylist import set_style
 from core.styles.paragraph import ParagraphStyle
 from docx.oxml.xmlchemy import BaseOxmlElement
+from core.doc_objects.base import BaseDOC
 
 
-class DOCParagraph(Paragraph):
+class DOCParagraph(BaseDOC, Paragraph):
     """
         Document paragraph
     """
@@ -21,22 +21,24 @@ class DOCParagraph(Paragraph):
         ...
 
     @overload
-    def __init__(self, elem: Paragraph | str | Text):
+    def __init__(self, elem: Paragraph | str | Text | CT_P):
         ...
 
     @overload
-    def __init__(self, elem: Paragraph | str | Text, linked_objects: list):
+    def __init__(self,
+                 elem: Paragraph | str | Text | CT_P,
+                 linked_objects: list):
         ...
 
     def __init__(self,
-                 elem: Paragraph | str | Text | None = None,
+                 elem: Paragraph | str | Text | CT_P | None = None,
                  linked_objects: list | None = None):
 
-        if not isinstance(elem, self.__init__.__annotations__["elem"]):
-            raise AttributeError(
-                f"Creating Paragraph object failed: "
-                f"Unknown source {type(elem)}!"
-            )
+        BaseDOC.validate_annotation(
+            self,
+            elem=elem,
+            linked_objects=linked_objects
+        )
 
         self._linked_objects = linked_objects or []
 
@@ -54,7 +56,10 @@ class DOCParagraph(Paragraph):
             self._linked_objects.append(uniform_text)
             p.append(uniform_text._r)
 
-        super().__init__(p, StoryPart.part)
+        elif isinstance(elem, CT_P):
+            p = elem
+
+        Paragraph.__init__(p, StoryPart.part)
 
     def _grab_children(self, _p_elem: CT_P) -> list[BaseOxmlElement]:
         lst_children = _p_elem.getchildren()

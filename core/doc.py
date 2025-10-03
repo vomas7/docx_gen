@@ -103,19 +103,35 @@ class DOC(Document):
     def __str__(self):
         return f"<DOC object: {self.file if self.file else 'not saved'}>"
 
+from core.doc_objects.Section import DOCSection
+from core.doc_objects.Text import Text
+from core.doc_objects.Paragraph import DOCParagraph
+from docx.oxml import CT_P, CT_Body, CT_R, CT_Tbl, CT_RPr, CT_SectPr
+
+
+
 
 class _DOCBody(_Body, t.ProvidesStoryPart):
     def __init__(self, obj: CT_Body, parent: DOC):
         super(_Body).__init__(obj, parent)
-        sections = self._parent.sections # noqa
-        p_lst = self._element.p_lst
-
-        tbl_lst = self._element.tbl_lst # soon
-
-
-
-
         self.__linked_object = []
+
+
+
+    def __put_in(self):
+        """
+            fills with object in self._linked_object,
+            which are placed in doc.
+        """
+
+        for elem in self._body.getchildren():
+            _inner = []
+            if isinstance(elem, CT_P):
+                _inner.append(DOCParagraph(elem))
+            elif isinstance(elem, CT_Tbl):
+                _inner.append(None)  #TODO Soon!!!
+            elif isinstance(elem, CT_RPr):
+                self.__linked_object.append(DOCSection(elem, _inner))
 
 
 
