@@ -1,5 +1,9 @@
 class BaseDOC:
 
+    def __init__(self):
+        self.parent = None
+        self._linked_objects = []
+
     @staticmethod
     def validate_annotation(obj, **kwargs):
         """
@@ -7,7 +11,7 @@ class BaseDOC:
                 obj: class instance
                 **kwargs: key-value pairs for checking received arguments
         """
-        #todo не обрабатываает генерики
+        # todo не обрабатываает генерики
 
         if not kwargs:
             raise ValueError("arguments are required")
@@ -22,3 +26,6 @@ class BaseDOC:
                     f"Creating {obj} object failed: "
                     f"Unknown source {type(value)}!"
                 )
+
+
+#todo добавить разделение на объекты, которые хранят элементы и не хранят

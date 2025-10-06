@@ -29,6 +29,9 @@ def is_default_template_path(path: Path) -> bool:
     return Path(get_default_docx_path()) == Path(path)
 
 
+from typing_extensions import TypeAlias
+
+
 class DOC(Document):
     __standard_left_margin: Cm = Cm(3)
     __standard_right_margin: Cm = Cm(1.5)
@@ -58,7 +61,6 @@ class DOC(Document):
         document = document_part.document
         element = getattr(document, "_element", None)
         Document.__init__(self, element, document_part)
-
 
         self.__body = None
 
@@ -103,20 +105,22 @@ class DOC(Document):
     def __str__(self):
         return f"<DOC object: {self.file if self.file else 'not saved'}>"
 
+
 from core.doc_objects.Section import DOCSection
-from core.doc_objects.Text import Text
 from core.doc_objects.Paragraph import DOCParagraph
-from docx.oxml import CT_P, CT_Body, CT_R, CT_Tbl, CT_RPr, CT_SectPr
+from docx.oxml import CT_P, CT_Body, CT_Tbl, CT_SectPr
+from core.doc_objects.base import BaseDOC
+
+CONTAIN_TYPES: TypeAlias = "DOCSection | None"  # todo the table obj should be added
 
 
+class _DOCBody(BaseDOC):
 
-
-class _DOCBody(_Body, t.ProvidesStoryPart):
     def __init__(self, obj: CT_Body, parent: DOC):
-        super(_Body).__init__(obj, parent)
-        self.__linked_object = []
-
-
+        BaseDOC.__init__(self)
+        self.parent = parent
+        self._element = obj
+        self.__put_in()
 
     def __put_in(self):
         """
@@ -124,27 +128,33 @@ class _DOCBody(_Body, t.ProvidesStoryPart):
             which are placed in doc.
         """
 
-        for elem in self._body.getchildren():
-            _inner = []
+        for elem in self._element.getchildren():
+            _section = DOCSection()
             if isinstance(elem, CT_P):
-                _inner.append(DOCParagraph(elem))
+                _section.insert_linked_object(DOCParagraph(elem))
             elif isinstance(elem, CT_Tbl):
-                _inner.append(None)  #TODO Soon!!!
-            elif isinstance(elem, CT_RPr):
-                self.__linked_object.append(DOCSection(elem, _inner))
-
-
+                _section.insert_linked_object(None)  # TODO Soon!!!
+            elif isinstance(elem, CT_SectPr):
+                _section._element = elem
+                self.insert_linked_object(_section)
 
     @property
     def linked_objects(self):
-        return self.__linked_object
+        return self._linked_objects
 
     @linked_objects.setter
     def linked_objects(self, value):
-        self.__linked_object = value
+        self._linked_objects = value
 
-    def insert_linked_object(self, value, index: int = - 1):
-        self.__linked_object.insert(index, value)
+    # todo это будет повторяться у элементов, которые хранят объекты
+
+    def insert_linked_object(self, value: CONTAIN_TYPES, index: int = - 1):
+        if not isinstance(value, CONTAIN_TYPES):
+            raise TypeError(f"linked_objects must be a {CONTAIN_TYPES}")
+        value.parent = self
+        self._linked_objects.insert(index, value)
 
     def remove_linked_object(self, index: int = - 1):
-        self.__linked_object.pop(index)
+        _elem = self._linked_objects.pop(index)
+        _elem.parent = None
+        return _elem

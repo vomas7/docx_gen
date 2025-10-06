@@ -6,10 +6,16 @@ from core.constant import SECTION_STANDARD
 from core.styles.stylist import set_style
 from core.styles.section import SectionStyle
 from core.doc_objects.base import BaseDOC
+from typing import TYPE_CHECKING
+from typing_extensions import TypeAlias
+
+if TYPE_CHECKING:
+    from core.doc_objects.Paragraph import DOCParagraph
+
+CONTAIN_TYPES: TypeAlias = "DOCParagraph | None"
 
 
-
-class DOCSection(BaseDOC, Section):
+class DOCSection(BaseDOC):
     """
         Document section, providing access to section and page setup.
         Also provides access to headers and footers.
@@ -31,24 +37,23 @@ class DOCSection(BaseDOC, Section):
                  elem: Section | CT_SectPr = None,
                  linked_objects: list | None = None):
 
-
         BaseDOC.validate_annotation(self,
                                     elem=elem,
                                     linked_objects=linked_objects)
 
+        BaseDOC.__init__(self)
         self._linked_objects = linked_objects or []
 
-        elem = elem or self._create_default_sect_pr()
+        self._element = self.__convert_to_element(elem)
 
+    def __convert_to_element(self, elem):
+        """convert element with validate"""
+        elem = elem or self.__create_default_sect_pr()
         if isinstance(elem, Section):
             elem = elem._sectPr
+        return elem
 
-        #todo не работает, как передать document part?
-        Section.__init__(self, elem, self.part)
-
-
-    @staticmethod
-    def _create_default_sect_pr() -> CT_SectPr:
+    def __create_default_sect_pr(self) -> CT_SectPr:
         """Creates standard section settings"""
         sect_pr = parse_xml(SECTION_STANDARD)
         return cast("CT_SectPr", sect_pr)
@@ -61,8 +66,18 @@ class DOCSection(BaseDOC, Section):
     def linked_objects(self, new: list):
         self._linked_objects = new
 
-    def insert_linked_objects(self, new, index: int = -1):
-        self._linked_objects.insert(index, new)
+    # todo это будет повторяться у элементов, которые хранят объекты
+
+    def insert_linked_object(self, value: CONTAIN_TYPES, index: int = - 1):
+        if not isinstance(value, CONTAIN_TYPES):
+            raise TypeError(f"linked_objects must be a {CONTAIN_TYPES}")
+        value.parent = self
+        self._linked_objects.insert(index, value)
+
+    def remove_linked_object(self, index: int = - 1):
+        _elem = self._linked_objects.pop(index)
+        _elem.parent = None
+        return _elem
 
     def __str__(self):
         return "<DOC.SECTION object>"
