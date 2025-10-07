@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from core.doc_objects import DOCParagraph, DOCSection, BaseDOC, Text
 
 import docx2pdf
-
+from docx.oxml.xmlchemy import BaseOxmlElement
 from core.validators.doc_utils import validate_filepath
 
 if TYPE_CHECKING:
@@ -28,7 +28,7 @@ class DocumentExporter:
         def run_through_obects(objects: list):
             """recursion for filling DocumentPart xml"""
             for obj in objects:
-                if isinstance(obj, Text):
+                if isinstance(obj, BaseOxmlElement):
                     # todo временная мера т.к элементы Text относятся к _Element
                     continue
                 if isinstance(obj.parent, DOCSection):

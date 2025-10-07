@@ -128,9 +128,9 @@ class _DOCBody(BaseDOC):
             fills with object in self._linked_object,
             which are placed in doc.
         """
-
+        #todo работает не корректно, берёт только SrctPr, не учитывает SectPr вложенных в паранпаф
+        _section = DOCSection(self._element.get_or_add_sectPr())
         for elem in self._element.getchildren():
-            _section = DOCSection()
             if isinstance(elem, CT_P):
                 _section.insert_linked_object(DOCParagraph(elem))
             elif isinstance(elem, CT_Tbl):

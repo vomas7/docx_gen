@@ -86,6 +86,9 @@ class Text(BaseDOC):
     def linked_objects(self, new: list):
         self._linked_objects = new
 
+    # todo это будет повторяться у элементов, которые хранят объекты
+
+
     def insert_linked_object(self, value: CONTAIN_TYPES, index: int = - 1):
         if not isinstance(value, CONTAIN_TYPES):
             raise TypeError(f"linked_objects must be a {CONTAIN_TYPES}")

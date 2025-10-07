@@ -5,9 +5,9 @@ from docx.text.paragraph import Paragraph
 from docx.oxml import parse_xml, CT_P, CT_PPr, CT_R
 from core.styles.stylist import set_style
 from core.styles.paragraph import ParagraphStyle
+from docx.oxml import OxmlElement
 from docx.oxml.xmlchemy import BaseOxmlElement
 from core.doc_objects.base import BaseDOC
-from typing_extensions import TypeAlias
 from core.doc_objects.Text import Text
 from typing import Union
 
@@ -66,7 +66,7 @@ class DOCParagraph(BaseDOC):
         elif isinstance(elem, (Text, str)):
             _text = Text(elem) if isinstance(elem, str) else elem
             self.insert_linked_object(_text)
-            return _text._element
+            return cast("CT_P", OxmlElement("w:p"))
 
     def __grab_children(self, _p_elem: CT_P) -> list[BaseOxmlElement]:
         lst_children = _p_elem.getchildren()

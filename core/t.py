@@ -18,6 +18,8 @@ from docx.text.run import Run
 from docx.text.paragraph import Paragraph
 from docx.parts.story import StoryPart
 from docx.oxml.parser import parse_xml
+from docx.oxml import OxmlElement
+from docx.oxml.xmlchemy import BaseOxmlElement
 
 # adder (add_x) - принимает в себя аргументы и записывает их внуть добавляемого элемента add_t(text = 'text') - Добавит внутрь _Text() атрибут text со значение "text"
 # Также сам pydocs внутри метакласса формирует у объектов - xml на основе self.append и self.appprevios (::_EtreeXML либы)
@@ -37,103 +39,31 @@ from docx.oxml.parser import parse_xml
 
 #todo сделать нормльно section и стори саилд для всех елементов и добавить базовый класс
 
-
-doss = Document()
-section = doss.add_section()
-
-doc = DOCSection(section)
-
-print(doc.linked_objects)
+#todo добавить нормальное добавление word файла, без указания пути
+#todo сделать полную перезапись файла word, неважно файл пустой или взятый шаблон
+#todo оформить элемент doc
+#todo подправить косячки
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-# class Base:
+# doss = Document()
+# section = doss.add_section()
 #
-#     @staticmethod
-#     def validate_annotation(obj, **kwargs):
-#         """
-#             args:
-#                 obj: class instance
-#                 **kwargs: key-value pairs for checking received arguments
-#         """
-#         if not kwargs:
-#             raise ValueError("arguments are required")
-#         annotation = obj.__init__.__annotations__
+# doc = DOCSection(section)
 #
-#         for key, value in kwargs.items():
-#             if key not in annotation:
-#                 continue
+# print(doc.linked_objects)
 #
-#             if not type(value) in (annotation[key]):
-#                 raise AttributeError(
-#                     f"Creating Text object failed: "
-#                     f"Unknown source {type(value)}!"
-#                 )
-#
-#
-# class Any:
-#     def __init__(self, abra):
-#         self.abra = abra
-#
-# from typing import List, Iterable
-#
-# class MySection(Base, Any):
-#
-#     def __init__(self, section: Iterable[int]):
-#         print(section)
-#         Base.validate_annotation(self, section=section)
-#         self.section = section
-#         Any.__init__(self, "111")
-#
-#
-# se = MySection(section=[12,])
-#
-# print(se.section)
-
-
-
-
-# fff = Document(r'C:\Users\AkentevDV\Desktop\пара\rename.docx')
-#
-# all_elem = fff._element.body.getchildren()
-#
-# sec_elem = []
-# sub_sect = []
-# for elem in all_elem:
-#     if isinstance(elem, CT_SectPr):
-#         sec_elem.append(DOCSection(elem))
-
-
-
-# sections = map(lambda x: x, fff._element.sectPr_lst)
-# print(next(sections))
-
-
-# print(all_ellem.index(next(sections)))
-
-#xpath('./w:p/w:r/w:drawing')
-# print(list(map(lambda x: x._sectPr, fff.sections)))
-
-# print(fff._element.body.getchildren())
-# print(list(map(lambda x: x.text, lst_p)))
-# print(fff.inline_shapes._inline_lst)
-
-
-# cast_doc = DOC()
-
-# print(    cast_doc._element.sectPr_lst)
-
+save_file = os.path.join(current_path, "abra.docx")
+doc = DOC()
+body = doc.body
+sec2 = DOCSection()
+# doc.writer.add_paragraph()
+text = Text("Hello World\n\t")
+par = DOCParagraph(text)
+sec = body.linked_objects[0]
+sec.insert_linked_object(par)
+body.insert_linked_object(sec)
+doc.export.commit()
+doc.export.to_docx(save_file)
 
 
 
