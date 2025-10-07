@@ -64,9 +64,9 @@ class DOCParagraph(BaseDOC):
             return elem
 
         elif isinstance(elem, (Text, str)):
-            elem = Text(elem) if isinstance(elem, str) else elem
-            self.insert_linked_object(elem)
-            return elem
+            _text = Text(elem) if isinstance(elem, str) else elem
+            self.insert_linked_object(_text)
+            return _text._element
 
     def __grab_children(self, _p_elem: CT_P) -> list[BaseOxmlElement]:
         lst_children = _p_elem.getchildren()

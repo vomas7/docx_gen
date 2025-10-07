@@ -14,6 +14,7 @@ SECTION_STANDARD = ('<w:sectPr xmlns:w="http://schemas.openxmlformats.org'
                     '  <w:cols w:space="720"/>'
                     '  <w:docGrid w:linePitch="360"/>'
                     '</w:sectPr>')
+
 PARAGRAPH_STANDARD = ("""
             <w:p 
                 xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"

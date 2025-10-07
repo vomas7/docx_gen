@@ -9,6 +9,7 @@ from core.doc_objects.base import BaseDOC
 from typing import TYPE_CHECKING
 from typing_extensions import TypeAlias
 from typing import Union
+from docx.oxml import OxmlElement, CT_P
 
 from core.doc_objects.Paragraph import DOCParagraph
 
@@ -78,6 +79,13 @@ class DOCSection(BaseDOC):
         _elem = self._linked_objects.pop(index)
         _elem.parent = None
         return _elem
+
+    def wrap_to_paragraph(self):
+        if self._element.xpath("./w:pPr"):
+            return
+        _p: CT_P = OxmlElement('w:p')
+        _p.set_sectPr(self._element)
+        self._element = _p
 
     def __str__(self):
         return "<DOC.SECTION object>"

@@ -1,6 +1,7 @@
 from pathlib import Path
 import tempfile
 from typing import TYPE_CHECKING
+from core.doc_objects import DOCParagraph, DOCSection, BaseDOC, Text
 
 import docx2pdf
 
@@ -15,6 +16,33 @@ class DocumentExporter:
 
     def __init__(self, doc: "DOC"):
         self.doc = doc
+
+    def commit(self):
+        """
+        assembles a DocumentPart from all linked_objects.
+        wraps all SectPr into pPr, before implementing xml filling
+        """
+        #todo не учитывает уже имеющиеся элементы ворда
+        _body = self.doc.body
+
+        def run_through_obects(objects: list):
+            """recursion for filling DocumentPart xml"""
+            for obj in objects:
+                if isinstance(obj, Text):
+                    # todo временная мера т.к элементы Text относятся к _Element
+                    continue
+                if isinstance(obj.parent, DOCSection):
+                    obj.parent._element.addprevious(obj._element)
+                else:
+                    obj.parent._element.append(obj._element)
+                if hasattr(obj, "linked_objects"):
+                    run_through_obects(obj.linked_objects)
+            return
+
+        for section in _body.linked_objects[:-1]:
+            section.wrap_to_paragraph()
+
+        run_through_obects(_body.linked_objects)
 
     def to_docx(self, file: Path = None):
         """Export file as .doc, .docx, .rtf"""
