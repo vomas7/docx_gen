@@ -29,9 +29,6 @@ def is_default_template_path(path: Path) -> bool:
     return Path(get_default_docx_path()) == Path(path)
 
 
-from typing_extensions import TypeAlias
-
-
 class DOC(Document):
     __standard_left_margin: Cm = Cm(3)
     __standard_right_margin: Cm = Cm(1.5)
@@ -39,6 +36,8 @@ class DOC(Document):
     valid_extensions: Iterable[str] = (".pdf", ".docx", ".doc", ".rtf")
     _file: str | Path = None
     system_template_path: Path = None
+
+    #todo адаптировать body под docx_gen - убрать ненужные хзависимости
 
     def __init__(self, template_path: str | Path = None):
 
@@ -81,7 +80,7 @@ class DOC(Document):
         )
 
     @property
-    def _body(self):
+    def body(self):
         if self.__body is None:
             self.__body = _DOCBody(self._element.body, self)
         return self.__body
@@ -102,6 +101,7 @@ class DOC(Document):
     def file(self, value: Path):
         self._file = validate_filepath(Path(value))
 
+
     def __str__(self):
         return f"<DOC object: {self.file if self.file else 'not saved'}>"
 
@@ -110,8 +110,9 @@ from core.doc_objects.Section import DOCSection
 from core.doc_objects.Paragraph import DOCParagraph
 from docx.oxml import CT_P, CT_Body, CT_Tbl, CT_SectPr
 from core.doc_objects.base import BaseDOC
+from typing import Union
 
-CONTAIN_TYPES: TypeAlias = "DOCSection | None"  # todo the table obj should be added
+CONTAIN_TYPES = Union[DOCSection]
 
 
 class _DOCBody(BaseDOC):
@@ -150,7 +151,7 @@ class _DOCBody(BaseDOC):
 
     def insert_linked_object(self, value: CONTAIN_TYPES, index: int = - 1):
         if not isinstance(value, CONTAIN_TYPES):
-            raise TypeError(f"linked_objects must be a {CONTAIN_TYPES}")
+            raise TypeError(f'linked_objects must be a {CONTAIN_TYPES}') # noqa
         value.parent = self
         self._linked_objects.insert(index, value)
 

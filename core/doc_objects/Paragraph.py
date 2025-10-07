@@ -9,8 +9,9 @@ from docx.oxml.xmlchemy import BaseOxmlElement
 from core.doc_objects.base import BaseDOC
 from typing_extensions import TypeAlias
 from core.doc_objects.Text import Text
+from typing import Union
 
-CONTAIN_TYPES: TypeAlias = "Text"  # todo также должен уметь хранить картинки
+CONTAIN_TYPES = Union[Text]  # todo также должен уметь хранить картинки
 
 
 class DOCParagraph(BaseDOC):

@@ -11,10 +11,10 @@ from docx.oxml import CT_RPr, OxmlElement, CT_Text, CT_Br, CT_TabStop
 from docx.oxml.xmlchemy import BaseOxmlElement
 from docx.oxml.ns import qn
 from core.constant import LangTag
-from typing_extensions import TypeAlias
 from core.doc_objects.base import BaseDOC
+from typing import Union
 
-CONTAIN_TYPES: TypeAlias = "CT_Text | CT_Br | CT_TabStop"  # todo Нужно реализоать свои объекты
+CONTAIN_TYPES = Union[CT_Text, CT_Br, CT_TabStop]  # todo Нужно реализоать свои объекты
 
 
 class Text(BaseDOC):

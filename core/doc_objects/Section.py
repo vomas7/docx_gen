@@ -8,11 +8,11 @@ from core.styles.section import SectionStyle
 from core.doc_objects.base import BaseDOC
 from typing import TYPE_CHECKING
 from typing_extensions import TypeAlias
+from typing import Union
 
-if TYPE_CHECKING:
-    from core.doc_objects.Paragraph import DOCParagraph
+from core.doc_objects.Paragraph import DOCParagraph
 
-CONTAIN_TYPES: TypeAlias = "DOCParagraph | None"
+CONTAIN_TYPES = Union[DOCParagraph, None]
 
 
 class DOCSection(BaseDOC):
@@ -34,7 +34,7 @@ class DOCSection(BaseDOC):
         ...
 
     def __init__(self,
-                 elem: Section | CT_SectPr = None,
+                 elem: Section | CT_SectPr | None = None,
                  linked_objects: list | None = None):
 
         BaseDOC.validate_annotation(self,
