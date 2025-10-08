@@ -69,11 +69,15 @@ class DOCSection(BaseDOC):
 
     # todo это будет повторяться у элементов, которые хранят объекты
 
-    def insert_linked_object(self, value: CONTAIN_TYPES, index: int = - 1):
+    def insert_linked_object(self, value: CONTAIN_TYPES, index: int = None):
         if not isinstance(value, CONTAIN_TYPES):
-            raise TypeError(f"linked_objects must be a {CONTAIN_TYPES}")
+            raise TypeError(
+                f'linked_objects must be a {CONTAIN_TYPES}')  # noqa
         value.parent = self
-        self._linked_objects.insert(index, value)
+        if index is not None:
+            self._linked_objects.insert(index, value)
+        else:
+            self._linked_objects.append(value)
 
     def remove_linked_object(self, index: int = - 1):
         _elem = self._linked_objects.pop(index)

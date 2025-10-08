@@ -1,19 +1,21 @@
-from collections.abc import Iterable
-from importlib import resources
-from io import BytesIO
-from pathlib import Path
-from docx.document import Document, Section
+from docx.oxml import CT_P, CT_Body, CT_Tbl, CT_SectPr, CT_Document
 from docx.opc.constants import CONTENT_TYPE as CT
-from docx.package import Package
 from docx.shared import Cm
+from docx.package import Package
+from docx.settings import Settings
+from docx.parts.document import DocumentPart
+from core.doc_objects.Section import DOCSection
+from core.doc_objects.Paragraph import DOCParagraph
+from core.doc_objects.base import BaseDOC
 from core.validators.doc_utils import validate_filepath
 from core.io.export import DocumentExporter
 from core.reader import Reader
 from core.writers.Writer import Writer
-from core.doc_objects.Section import DOCSection
-from docx.document import _Body
-import docx.types as t
-from docx.oxml import CT_Body
+from collections.abc import Iterable
+from importlib import resources
+from io import BytesIO
+from pathlib import Path
+from typing import IO, cast, Union
 
 
 def get_default_docx_path() -> str | Path:
@@ -29,61 +31,79 @@ def is_default_template_path(path: Path) -> bool:
     return Path(get_default_docx_path()) == Path(path)
 
 
-class DOC(Document):
+class DOC(BaseDOC):
     __standard_left_margin: Cm = Cm(3)
     __standard_right_margin: Cm = Cm(1.5)
     valid_inputs: Iterable[str] = (".docx", ".doc", ".rtf")
     valid_extensions: Iterable[str] = (".pdf", ".docx", ".doc", ".rtf")
     _file: str | Path = None
-    system_template_path: Path = None
-
-    #todo адаптировать body под docx_gen - убрать ненужные хзависимости
+    __system_template_path: Path = None
+    __part: DocumentPart = None
+    __body: "_DOCBody" = None
 
     def __init__(self, template_path: str | Path = None):
+        super().__init__()
+        self.file = template_path or self.system_template_path
+        self.parent = self.part
+        self._element: CT_Document = self.part._element
 
-        self.system_template_path = Path(get_default_docx_path())
+        self.export = DocumentExporter(self)
+        # self.reader = Reader(self)
+        # self.writer = Writer(self)
 
-        if not template_path:
-            template_path = self.system_template_path
-
-        if Path(template_path).suffix not in self.valid_inputs:
+    def __create_document_part(self):
+        if Path(self.file).suffix not in self.valid_inputs:
             raise ValueError(f"File format not in {self.valid_extensions}")
 
-        document_part = Package.open(str(template_path)).main_document_part
+        document_part = cast(
+            "DocumentPart",
+            Package.open(str(self.file)).main_document_part
+        )
 
         if document_part.content_type != CT.WML_DOCUMENT_MAIN:
             tmpl = "file '%s' is not a Word file, content type is '%s'"
-            raise ValueError(
-                tmpl % (template_path, document_part.content_type)
-            )
+            raise ValueError(tmpl % (self.file, document_part.content_type))
 
-        document = document_part.document
-        element = getattr(document, "_element", None)
-        Document.__init__(self, element, document_part)
+        return document_part
 
-        self.__body = None
+    def save(self, path_or_stream: str | IO[bytes]):
+        """Save this document to `path_or_stream`.
 
-        self.doc_sections: list[DOCSection] = [
-            DOCSection(
-                Section(self._body._element.get_or_add_sectPr, document_part)
-            )
-        ]
+        `path_or_stream` can be either a path to a filesystem location (a string) or a
+        file-like object.
+        """
+        self.part.save(path_or_stream)
 
-        self.export = DocumentExporter(self)
-        self.reader = Reader(self)
-        self.writer = Writer(self)
-
-    def set_section(self, section: DOCSection, index: int = -1):
-        self._element.body.add_section_break()
-        self._element.body.replace(
-            self.sections[index]._sectPr, section._sectPr
-        )
+    @property
+    def doc_sections(self) -> list[DOCSection]:
+        return [DOCSection(_s) for _s in self._element.sectPr_lst]
 
     @property
     def body(self):
         if self.__body is None:
             self.__body = _DOCBody(self._element.body, self)
         return self.__body
+
+    @property
+    def part(self) -> DocumentPart:
+        if self.__part is None:
+            self.__part = self.__create_document_part()
+        return self.__part
+
+    @property
+    def core_properties(self):
+        """A |CoreProperties| object providing Dublin Core properties of document."""
+        return self.part.core_properties
+
+    @property
+    def settings(self) -> Settings:
+        """A |Settings| object providing access to the document-level settings."""
+        return self.part.settings
+
+    @property
+    def styles(self):
+        """A |Styles| object providing access to the styles in this document."""
+        return self.part.styles
 
     @property
     def doc_bytes(self) -> bytes:
@@ -101,16 +121,15 @@ class DOC(Document):
     def file(self, value: Path):
         self._file = validate_filepath(Path(value))
 
+    @property
+    def system_template_path(self):
+        if self.__system_template_path is None:
+            self.__system_template_path = get_default_docx_path()
+        return self.__system_template_path
 
     def __str__(self):
         return f"<DOC object: {self.file if self.file else 'not saved'}>"
 
-
-from core.doc_objects.Section import DOCSection
-from core.doc_objects.Paragraph import DOCParagraph
-from docx.oxml import CT_P, CT_Body, CT_Tbl, CT_SectPr
-from core.doc_objects.base import BaseDOC
-from typing import Union
 
 CONTAIN_TYPES = Union[DOCSection]
 
@@ -128,7 +147,7 @@ class _DOCBody(BaseDOC):
             fills with object in self._linked_object,
             which are placed in doc.
         """
-        #todo работает не корректно, берёт только SrctPr, не учитывает SectPr вложенных в паранпаф
+        # todo работает не корректно, берёт только SrctPr, не учитывает SectPr вложенных в паранпаф
         _section = DOCSection(self._element.get_or_add_sectPr())
         for elem in self._element.getchildren():
             if isinstance(elem, CT_P):
@@ -149,11 +168,15 @@ class _DOCBody(BaseDOC):
 
     # todo это будет повторяться у элементов, которые хранят объекты
 
-    def insert_linked_object(self, value: CONTAIN_TYPES, index: int = - 1):
+    def insert_linked_object(self, value: CONTAIN_TYPES, index: int = None):
         if not isinstance(value, CONTAIN_TYPES):
-            raise TypeError(f'linked_objects must be a {CONTAIN_TYPES}') # noqa
+            raise TypeError(
+                f'linked_objects must be a {CONTAIN_TYPES}')  # noqa
         value.parent = self
-        self._linked_objects.insert(index, value)
+        if index is not None:
+            self._linked_objects.insert(index, value)
+        else:
+            self._linked_objects.append(value)
 
     def remove_linked_object(self, index: int = - 1):
         _elem = self._linked_objects.pop(index)

@@ -25,10 +25,10 @@ from docx.oxml.xmlchemy import BaseOxmlElement
 # Также сам pydocs внутри метакласса формирует у объектов - xml на основе self.append и self.appprevios (::_EtreeXML либы)
 
 
-#TODO создать генератор xml для всех элементов!
-#TODO создать DOCBODY
-#TODO а что если сделать реализацию такой же как и в storyhcild
-#TODO добавить _parent для элементов
+#TODO создать генератор xml для всех элементов! +
+#TODO создать DOCBODY +
+#TODO а что если сделать реализацию такой же как и в storyhcild +
+#TODO добавить _parent для элементов +
 #TODO проблема с объектами которые по своей сути включают парграфы в сой объект - такие как пикча и таблица, в списке парграфов они учитываются - ХОТЯ ...
 # может и не нужно удалять picture из параграфов потому что параграф это строка по  факту
 #todo расклад такой - таблицы это отдельный элемент, который не хранится в параграфе, а вот пикча хранится в параграфе. поэтому я думаю есть смысл не удалять пикчи из списка паранрафов
@@ -43,17 +43,25 @@ from docx.oxml.xmlchemy import BaseOxmlElement
 #todo сделать полную перезапись файла word, неважно файл пустой или взятый шаблон
 #todo оформить элемент doc
 #todo подправить косячки
+#todo base элемен и его подбазисы, + убрат чуваков py-docx
+#todo перерабоать writer'ов. Идея в том чтобы без заморочек записыывать оъекты непосредственно в документ  (сам определяет создавать ему сопутствующие элементы или использовать стандартные)
+#todo insert_linked_object  более низкоуровненвая тема
+
+doss = Document()
+section = doss.add_section()
 
 
-# doss = Document()
-# section = doss.add_section()
-#
-# doc = DOCSection(section)
-#
+
+# docx = DOC()
+
+
 # print(doc.linked_objects)
-#
+
 save_file = os.path.join(current_path, "abra.docx")
+
 doc = DOC()
+
+sec1 = DOCSection(section)
 body = doc.body
 sec2 = DOCSection()
 # doc.writer.add_paragraph()
@@ -61,9 +69,11 @@ text = Text("Hello World\n\t")
 par = DOCParagraph(text)
 sec = body.linked_objects[0]
 sec.insert_linked_object(par)
-body.insert_linked_object(sec)
+body.insert_linked_object(sec1)
 doc.export.commit()
 doc.export.to_docx(save_file)
-
+print(
+    doc.part._element,
+)
 
 

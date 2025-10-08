@@ -25,7 +25,7 @@ class DocumentExporter:
         #todo не учитывает уже имеющиеся элементы ворда
         _body = self.doc.body
 
-        def run_through_obects(objects: list):
+        def run_through_objects(objects: list):
             """recursion for filling DocumentPart xml"""
             for obj in objects:
                 if isinstance(obj, BaseOxmlElement):
@@ -36,13 +36,13 @@ class DocumentExporter:
                 else:
                     obj.parent._element.append(obj._element)
                 if hasattr(obj, "linked_objects"):
-                    run_through_obects(obj.linked_objects)
+                    run_through_objects(obj.linked_objects)
             return
 
         for section in _body.linked_objects[:-1]:
             section.wrap_to_paragraph()
 
-        run_through_obects(_body.linked_objects)
+        run_through_objects(_body.linked_objects)
 
     def to_docx(self, file: Path = None):
         """Export file as .doc, .docx, .rtf"""
