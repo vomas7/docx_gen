@@ -58,14 +58,15 @@ class DocumentExporter:
                     f"Unsupported file format to export: {output.suffix}. "
                     f"Only {self.valid_docx_formats} are allowed."
                 )
-        if self.doc.system_template_path == output:
+        if self.doc._system_template_path == output:
             raise FileExistsError(
                 "Export failed: "
                 "Can not rewrite template document!"
                 " Please specify output filepath"
             )
-        self.doc.save(str(output.resolve()))
-        self.doc.file = output
+
+        _part = self.doc._create_document_part(self.doc._system_template_path)
+        _part.save(str(output.resolve()))
 
     def to_pdf(self, file: Path = None):
         """Creates a tempdir to generate a .docx file there, then converts it to PDF."""

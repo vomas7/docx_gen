@@ -43,28 +43,13 @@ class DOC(BaseDOC):
 
     def __init__(self, template_path: str | Path = None):
         super().__init__()
-        self.file = template_path or self.system_template_path
+        self.file = template_path or self._system_template_path
         self.parent = self.part
         self._element: CT_Document = self.part._element
 
         self.export = DocumentExporter(self)
-        # self.reader = Reader(self)
-        # self.writer = Writer(self)
-
-    def __create_document_part(self):
-        if Path(self.file).suffix not in self.valid_inputs:
-            raise ValueError(f"File format not in {self.valid_extensions}")
-
-        document_part = cast(
-            "DocumentPart",
-            Package.open(str(self.file)).main_document_part
-        )
-
-        if document_part.content_type != CT.WML_DOCUMENT_MAIN:
-            tmpl = "file '%s' is not a Word file, content type is '%s'"
-            raise ValueError(tmpl % (self.file, document_part.content_type))
-
-        return document_part
+        # self.reader = Reader(self) #todo наладить ридер
+        # self.writer = Writer(self) #todo наладить вритер
 
     def save(self, path_or_stream: str | IO[bytes]):
         """Save this document to `path_or_stream`.
@@ -73,6 +58,24 @@ class DOC(BaseDOC):
         file-like object.
         """
         self.part.save(path_or_stream)
+
+    @classmethod
+    def _create_document_part(cls, file: str | Path):
+        if Path(file).suffix not in cls.valid_inputs:
+            raise ValueError(f"File format not in {cls.valid_extensions}")
+
+        document_part = cast(
+            "DocumentPart",
+            Package.open(str(file)).main_document_part
+        )
+
+        if document_part.content_type != CT.WML_DOCUMENT_MAIN:
+            tmpl = "file '%s' is not a Word file, content type is '%s'"
+            raise ValueError(
+                tmpl % (file, document_part.content_type)
+            )
+
+        return document_part
 
     @property
     def doc_sections(self) -> list[DOCSection]:
@@ -87,7 +90,7 @@ class DOC(BaseDOC):
     @property
     def part(self) -> DocumentPart:
         if self.__part is None:
-            self.__part = self.__create_document_part()
+            self.__part = self._create_document_part(self.file)
         return self.__part
 
     @property
@@ -118,21 +121,24 @@ class DOC(BaseDOC):
         return self._file
 
     @file.setter
-    def file(self, value: Path):
+    def file(self, value: Path | str):
         self._file = validate_filepath(Path(value))
 
     @property
-    def system_template_path(self):
+    def _system_template_path(self):
         if self.__system_template_path is None:
             self.__system_template_path = get_default_docx_path()
         return self.__system_template_path
+
+    @_system_template_path.setter
+    def _system_template_path(self, value):
+        raise AttributeError(f"Property is read-only!")
 
     def __str__(self):
         return f"<DOC object: {self.file if self.file else 'not saved'}>"
 
 
 class _DOCBody(BaseContainerDOC):
-
     CONTAIN_TYPES = Union[DOCSection]
 
     def __init__(self, obj: CT_Body, parent: DOC):
