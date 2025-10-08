@@ -11,16 +11,17 @@ from docx.oxml import CT_RPr, OxmlElement, CT_Text, CT_Br, CT_TabStop
 from docx.oxml.xmlchemy import BaseOxmlElement
 from docx.oxml.ns import qn
 from core.constant import LangTag
-from core.doc_objects.base import BaseDOC
+from core.doc_objects.base import BaseContainerDOC
 from typing import Union
 
-CONTAIN_TYPES = Union[CT_Text, CT_Br, CT_TabStop]  # todo Нужно реализоать свои объекты
 
-
-class Text(BaseDOC):
+class Text(BaseContainerDOC):
     """
         A class representing formatted text in a document.
     """
+
+    # todo Нужно реализоать свои объекты
+    CONTAIN_TYPES = Union[CT_Text, CT_Br, CT_TabStop]
 
     @overload
     def __init__(self):
@@ -39,15 +40,9 @@ class Text(BaseDOC):
     def __init__(self,
                  elem: str | UserString | Run | CT_R | None = None,
                  linked_objects: list | None = None):
-
-        BaseDOC.validate_annotation(
-            self,
-            elem=elem,
-            linked_objects=linked_objects
-        )
-
+        super().__init__()
+        self.validate_annotation(elem=elem, linked_objects=linked_objects)
         self._element = self.__convert_to_element(elem)
-
         self._linked_objects = linked_objects or []
 
         self._linked_objects.extend(self.__grab_children(self._element))
@@ -55,16 +50,15 @@ class Text(BaseDOC):
     def __convert_to_element(self, elem):
         """converts and validates with inserting to self._linked_objects"""
 
-        elem = elem or self.__create_run_pr()
+        elem = elem or self.__create_run()
         if isinstance(elem, Run):
             elem = elem._r
-
         elif isinstance(elem, (str, UserString)):
-            elem = self.__create_run_pr(elem)
-
+            elem = self.__create_run(elem)
         return elem
 
-    def __create_run_pr(self, text: str = "") -> CT_R:
+    @staticmethod
+    def __create_run(text: str = "") -> CT_R:
         _r = cast('CT_R', OxmlElement('w:r'))
         _rPr = _r.get_or_add_rPr()
         _lang = OxmlElement('w:lang')
@@ -74,37 +68,13 @@ class Text(BaseDOC):
         _r.text = text
         return _r
 
-    def __grab_children(self, _r_elem: CT_R) -> list[BaseOxmlElement]:
+    @staticmethod
+    def __grab_children(_r_elem: CT_R) -> list[BaseOxmlElement]:
         lst_children = _r_elem.getchildren()
         return [ch for ch in lst_children if not isinstance(ch, CT_RPr)]
 
-    @property
-    def linked_objects(self) -> list:
-        return self._linked_objects
-
-    @linked_objects.setter
-    def linked_objects(self, new: list):
-        self._linked_objects = new
-
-    # todo это будет повторяться у элементов, которые хранят объекты
-
-    def insert_linked_object(self, value: CONTAIN_TYPES, index: int = None):
-        if not isinstance(value, CONTAIN_TYPES):
-            raise TypeError(
-                f'linked_objects must be a {CONTAIN_TYPES}')  # noqa
-        value.parent = self
-        if index is not None:
-            self._linked_objects.insert(index, value)
-        else:
-            self._linked_objects.append(value)
-
-    def remove_linked_object(self, index: int = - 1):
-        _elem = self._linked_objects.pop(index)
-        _elem.parent = None
-        return _elem
-
     def add_style(self, dc_style: TextStyle):
-        set_style(self._r, dc_style)
+        set_style(self._element, dc_style)
 
     def __str__(self):
         return "<DOC.TEXT object>"

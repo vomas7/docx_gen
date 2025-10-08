@@ -1,23 +1,19 @@
 import random
-from typing import overload, cast
-from core.constant import PARAGRAPH_STANDARD
+from typing import overload, cast, Union
 from docx.text.paragraph import Paragraph
-from docx.oxml import parse_xml, CT_P, CT_PPr, CT_R
-from core.styles.stylist import set_style
-from core.styles.paragraph import ParagraphStyle
-from docx.oxml import OxmlElement
+from docx.oxml import parse_xml, CT_P, CT_PPr, CT_R, OxmlElement
 from docx.oxml.xmlchemy import BaseOxmlElement
-from core.doc_objects.base import BaseDOC
+from core.constant import PARAGRAPH_STANDARD
+from core.doc_objects.base import BaseContainerDOC
 from core.doc_objects.Text import Text
-from typing import Union
-
-CONTAIN_TYPES = Union[Text]  # todo также должен уметь хранить картинки
 
 
-class DOCParagraph(BaseDOC):
+class DOCParagraph(BaseContainerDOC):
     """
         Document paragraph
     """
+
+    CONTAIN_TYPES = Union[Text]  # todo также должен уметь хранить картинки
 
     @overload
     def __init__(self):
@@ -36,16 +32,9 @@ class DOCParagraph(BaseDOC):
     def __init__(self,
                  elem: Paragraph | str | Text | CT_P | None = None,
                  linked_objects: list | None = None):
-
-        BaseDOC.validate_annotation(
-            self,
-            elem=elem,
-            linked_objects=linked_objects
-        )
-        BaseDOC.__init__(self)
-
+        super().__init__()
+        self.validate_annotation(elem=elem, linked_objects=linked_objects)
         self._linked_objects = linked_objects or []
-
         self._element = self.__convert_to_element(elem)
 
     def __from_paragraph(self, elem: CT_P):
@@ -61,14 +50,15 @@ class DOCParagraph(BaseDOC):
         if isinstance(elem, (Paragraph, CT_P)):
             elem = elem._p if isinstance(elem, Paragraph) else elem
             self.__from_paragraph(elem)
-            return elem
 
         elif isinstance(elem, (Text, str)):
             _text = Text(elem) if isinstance(elem, str) else elem
             self.insert_linked_object(_text)
-            return cast("CT_P", OxmlElement("w:p"))
+            elem = cast("CT_P", OxmlElement("w:p"))
+        return elem
 
-    def __grab_children(self, _p_elem: CT_P) -> list[BaseOxmlElement]:
+    @staticmethod
+    def __grab_children(_p_elem: CT_P) -> list[BaseOxmlElement]:
         lst_children = _p_elem.getchildren()
         return [ch for ch in lst_children if not isinstance(ch, CT_PPr)]
 
@@ -81,37 +71,10 @@ class DOCParagraph(BaseDOC):
         )
         return cast("CT_P", default_paragraph)
 
-    def __gen_random_paragraph_id(cls, length: int = 8) -> str:
+    @staticmethod
+    def __gen_random_paragraph_id(length: int = 8) -> str:
         """Generate random id for attributes in paragraph"""
         return f"{random.getrandbits(32 * length):0{length}x}"
-
-    @property
-    def linked_objects(self) -> list:
-        return self._linked_objects
-
-    @linked_objects.setter
-    def linked_objects(self, new: list):
-        self._linked_objects = new
-
-    # todo это будет повторяться у элементов, которые хранят объекты
-
-    def insert_linked_object(self, value: CONTAIN_TYPES, index: int = None):
-        if not isinstance(value, CONTAIN_TYPES):
-            raise TypeError(
-                f'linked_objects must be a {CONTAIN_TYPES}')  # noqa
-        value.parent = self
-        if index is not None:
-            self._linked_objects.insert(index, value)
-        else:
-            self._linked_objects.append(value)
-
-    def remove_linked_object(self, index: int = - 1):
-        _elem = self._linked_objects.pop(index)
-        _elem.parent = None
-        return _elem
-
-    def add_style(self, dc_style: ParagraphStyle):
-        set_style(self._r, dc_style)
 
     def __str__(self):
         return "<DOC.PARAGRAPH object>"

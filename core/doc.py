@@ -6,7 +6,7 @@ from docx.settings import Settings
 from docx.parts.document import DocumentPart
 from core.doc_objects.Section import DOCSection
 from core.doc_objects.Paragraph import DOCParagraph
-from core.doc_objects.base import BaseDOC
+from core.doc_objects.base import BaseDOC, BaseContainerDOC
 from core.validators.doc_utils import validate_filepath
 from core.io.export import DocumentExporter
 from core.reader import Reader
@@ -131,13 +131,12 @@ class DOC(BaseDOC):
         return f"<DOC object: {self.file if self.file else 'not saved'}>"
 
 
-CONTAIN_TYPES = Union[DOCSection]
+class _DOCBody(BaseContainerDOC):
 
-
-class _DOCBody(BaseDOC):
+    CONTAIN_TYPES = Union[DOCSection]
 
     def __init__(self, obj: CT_Body, parent: DOC):
-        BaseDOC.__init__(self)
+        super().__init__()
         self.parent = parent
         self._element = obj
         self.__put_in()
@@ -157,28 +156,3 @@ class _DOCBody(BaseDOC):
             elif isinstance(elem, CT_SectPr):
                 _section._element = elem
                 self.insert_linked_object(_section)
-
-    @property
-    def linked_objects(self):
-        return self._linked_objects
-
-    @linked_objects.setter
-    def linked_objects(self, value):
-        self._linked_objects = value
-
-    # todo это будет повторяться у элементов, которые хранят объекты
-
-    def insert_linked_object(self, value: CONTAIN_TYPES, index: int = None):
-        if not isinstance(value, CONTAIN_TYPES):
-            raise TypeError(
-                f'linked_objects must be a {CONTAIN_TYPES}')  # noqa
-        value.parent = self
-        if index is not None:
-            self._linked_objects.insert(index, value)
-        else:
-            self._linked_objects.append(value)
-
-    def remove_linked_object(self, index: int = - 1):
-        _elem = self._linked_objects.pop(index)
-        _elem.parent = None
-        return _elem

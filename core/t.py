@@ -65,7 +65,7 @@ sec1 = DOCSection(section)
 body = doc.body
 sec2 = DOCSection()
 # doc.writer.add_paragraph()
-text = Text("Hello World\n\t")
+text = Text("HellodddWorld\n\t")
 par = DOCParagraph(text)
 sec = body.linked_objects[0]
 sec.insert_linked_object(par)
