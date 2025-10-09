@@ -1,10 +1,11 @@
 from pathlib import Path
 import tempfile
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 from core.doc_objects import DOCParagraph, DOCSection, BaseDOC, Text
 
 import docx2pdf
 from docx.oxml.xmlchemy import BaseOxmlElement
+from docx.oxml import CT_Document
 from core.validators.doc_utils import validate_filepath
 
 if TYPE_CHECKING:
@@ -14,17 +15,14 @@ if TYPE_CHECKING:
 class DocumentExporter:
     valid_docx_formats = (".docx", ".doc", ".rtf")
 
-    def __init__(self, doc: "DOC"):
-        self.doc = doc
+    def __init__(self, document: "DOC"):
+        self.doc = document
 
     def commit(self):
         """
         assembles a DocumentPart from all linked_objects.
         wraps all SectPr into pPr, before implementing xml filling
         """
-        #todo не учитывает уже имеющиеся элементы ворда
-        _body = self.doc.body
-
         def run_through_objects(objects: list):
             """recursion for filling DocumentPart xml"""
             for obj in objects:
@@ -39,10 +37,10 @@ class DocumentExporter:
                     run_through_objects(obj.linked_objects)
             return
 
-        for section in _body.linked_objects[:-1]:
+        for section in self.doc.body.linked_objects[:-1]:
             section.wrap_to_paragraph()
 
-        run_through_objects(_body.linked_objects)
+        run_through_objects(self.doc.body.linked_objects)
 
     def to_docx(self, file: Path = None):
         """Export file as .doc, .docx, .rtf"""
@@ -65,8 +63,9 @@ class DocumentExporter:
                 " Please specify output filepath"
             )
 
-        _part = self.doc._create_document_part(self.doc._system_template_path)
-        _part.save(str(output.resolve()))
+        self.doc._clear_document_part()
+        self.commit()
+        self.doc.save(str(output.resolve()))
 
     def to_pdf(self, file: Path = None):
         """Creates a tempdir to generate a .docx file there, then converts it to PDF."""

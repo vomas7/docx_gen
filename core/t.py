@@ -44,7 +44,7 @@ from docx.oxml.xmlchemy import BaseOxmlElement
 #todo сделать нормальное сохранение файла и чтобы небыло противоречий с текущим файлом и системным дефолтным +
 #todo оформить элемент doc +
 #todo base элемен и его подбазисы, + убрат чуваков py-docx +
-#todo сделать полную перезапись файла word, неважно файл пустой или взятый шаблон
+#todo сделать полную перезапись файла word, неважно файл пустой или взятый шаблон +
 #todo перерабоать writer'ов.
 # Идея в том чтобы без заморочек записыывать оъекты непосредственно в документ  (сам определяет создавать ему сопутствующие элементы или использовать стандартные) insert_linked_object  более низкоуровненвая тема
 #todo подправить косячки
@@ -60,20 +60,19 @@ section = doss.add_section()
 # print(doc.linked_objects)
 
 save_file = os.path.join("abra.docx")
-print(type(save_file))
-print(save_file)
-doc = DOC()
-
+# print(type(save_file))
+# print(save_file)
+doc = DOC('abra.docx')
+doc._clear_document_part()
 sec1 = DOCSection(section)
 body = doc.body
 sec2 = DOCSection()
 # doc.writer.add_paragraph()
-text = Text("HellodddWorld\n\t")
+text = Text("nEwYourc\n\t")
 par = DOCParagraph(text)
 sec = body.linked_objects[0]
 sec.insert_linked_object(par)
 body.insert_linked_object(sec1)
-doc.export.commit()
 doc.export.to_docx(save_file)
 
 

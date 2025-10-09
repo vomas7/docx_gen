@@ -35,17 +35,15 @@ class DOC(BaseDOC):
     __standard_left_margin: Cm = Cm(3)
     __standard_right_margin: Cm = Cm(1.5)
     valid_inputs: Iterable[str] = (".docx", ".doc", ".rtf")
-    valid_extensions: Iterable[str] = (".pdf", ".docx", ".doc", ".rtf")
     _file: str | Path = None
     __system_template_path: Path = None
     __part: DocumentPart = None
-    __body: "_DOCBody" = None
+    __body: "_DOCBody | None" = None
 
     def __init__(self, template_path: str | Path = None):
         super().__init__()
         self.file = template_path or self._system_template_path
         self.parent = self.part
-        self._element: CT_Document = self.part._element
 
         self.export = DocumentExporter(self)
         # self.reader = Reader(self) #todo наладить ридер
@@ -59,10 +57,15 @@ class DOC(BaseDOC):
         """
         self.part.save(path_or_stream)
 
+    def _clear_document_part(self):
+        """Clear xml of this document."""
+        new_part = self._create_document_part(self._system_template_path)
+        self.part._element = new_part._element
+
     @classmethod
     def _create_document_part(cls, file: str | Path):
         if Path(file).suffix not in cls.valid_inputs:
-            raise ValueError(f"File format not in {cls.valid_extensions}")
+            raise ValueError(f"File format not in {cls.valid_inputs}")
 
         document_part = cast(
             "DocumentPart",
@@ -78,13 +81,18 @@ class DOC(BaseDOC):
         return document_part
 
     @property
+    def _element(self) -> CT_Document:
+        """Indirect reference to | _element | of documentPart"""
+        return self.part._element
+
+    @property
     def doc_sections(self) -> list[DOCSection]:
         return [DOCSection(_s) for _s in self._element.sectPr_lst]
 
     @property
     def body(self):
         if self.__body is None:
-            self.__body = _DOCBody(self._element.body, self)
+            self.__body = _DOCBody(self)
         return self.__body
 
     @property
@@ -118,6 +126,7 @@ class DOC(BaseDOC):
 
     @property
     def file(self) -> Path:
+        """Active document file"""
         return self._file
 
     @file.setter
@@ -130,10 +139,6 @@ class DOC(BaseDOC):
             self.__system_template_path = get_default_docx_path()
         return self.__system_template_path
 
-    @_system_template_path.setter
-    def _system_template_path(self, value):
-        raise AttributeError(f"Property is read-only!")
-
     def __str__(self):
         return f"<DOC object: {self.file if self.file else 'not saved'}>"
 
@@ -141,11 +146,15 @@ class DOC(BaseDOC):
 class _DOCBody(BaseContainerDOC):
     CONTAIN_TYPES = Union[DOCSection]
 
-    def __init__(self, obj: CT_Body, parent: DOC):
+    def __init__(self, parent: DOC):
         super().__init__()
         self.parent = parent
-        self._element = obj
         self.__put_in()
+
+    @property
+    def _element(self) -> CT_Body:
+        """Indirect reference to | _element | of Body element"""
+        return self.parent._element.body
 
     def __put_in(self):
         """
