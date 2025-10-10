@@ -5,17 +5,15 @@ from core.doc_objects.Paragraph import DOCParagraph
 
 
 class ParagraphWriter(BaseWriter):
-    """Class provides methods for writing DOCParagraphs objects"""
+    """Class provides easily access to write objects to Document"""
 
-    def add_paragraph(self,
-                      paragraph: Union[DOCParagraph, str],
-                      section_index: int = -1,
-                      paragraph_index: int = -1):
-        if isinstance(paragraph, str):
-            paragraph = DOCParagraph(text=paragraph)
-        self.doc.add_paragraph(text=paragraph.text)
-        self.doc.doc_sections[section_index].insert_linked_objects(
-            paragraph,
-            paragraph_index
-        )
-        return paragraph
+    def add_paragraph(
+            self,
+            elem: DOCParagraph | str,
+            p_index: int | None,
+            s_index: int = -1
+    ):
+        elem = DOCParagraph(elem) if isinstance(elem, str) else elem
+        section = self.doc.body.linked_objects[s_index]
+        section.insert_linked_object(elem, p_index)
+

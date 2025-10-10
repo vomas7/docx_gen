@@ -47,7 +47,7 @@ class DOC(BaseDOC):
 
         self.export = DocumentExporter(self)
         # self.reader = Reader(self) #todo наладить ридер
-        # self.writer = Writer(self) #todo наладить вритер
+        self.writer = Writer(self)
 
     def save(self, path_or_stream: str | IO[bytes]):
         """Save this document to `path_or_stream`.
