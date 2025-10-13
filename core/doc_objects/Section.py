@@ -36,7 +36,6 @@ class DOCSection(BaseContainerDOC):
         self.validate_annotation(elem=elem, linked_objects=linked_objects)
         self._linked_objects = linked_objects or []
         self._element = self.__convert_to_element(elem)
-        # todo унифицировать обработку детей элемента и наполнение linked_objects
 
     def __convert_to_element(self, elem):
         """convert element with validate"""
@@ -45,20 +44,20 @@ class DOCSection(BaseContainerDOC):
             elem = elem._sectPr
         return elem
 
-    #todo сделать абстрактным в базовым классе
-    @staticmethod
-    def convert_to_linked_object(elem: BaseOxmlElement):
-        if isinstance(elem, CT_P):
-            return DOCParagraph(elem)
-        elif isinstance(elem, CT_Tbl):
-            return None # todo soon!
-        return None
-
     @staticmethod
     def __create_default_sect_pr() -> CT_SectPr:
         """Creates standard section settings"""
         sect_pr = parse_xml(SECTION_STANDARD)
         return cast("CT_SectPr", sect_pr)
+
+    @staticmethod
+    def convert_to_linked_object(elem: BaseOxmlElement):
+        """converts all possible cases for this object"""
+        if isinstance(elem, CT_P):
+            return DOCParagraph(elem)
+        elif isinstance(elem, CT_Tbl):
+            return None  # todo soon!
+        return None
 
     def wrap_to_paragraph(self):
         if self._element.xpath("./w:pPr"):

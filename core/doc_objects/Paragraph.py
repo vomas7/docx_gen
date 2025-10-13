@@ -1,11 +1,12 @@
 import random
 from typing import overload, cast, Union
 from docx.text.paragraph import Paragraph
-from docx.oxml import parse_xml, CT_P, CT_PPr, CT_R, OxmlElement
+from docx.oxml import parse_xml, CT_P, CT_PPr, CT_R, OxmlElement, CT_Inline
 from docx.oxml.xmlchemy import BaseOxmlElement
 from core.constant import PARAGRAPH_STANDARD
 from core.doc_objects.base import BaseContainerDOC
 from core.doc_objects.Text import Text
+from docx.text.run import Run
 
 
 class DOCParagraph(BaseContainerDOC):
@@ -36,13 +37,17 @@ class DOCParagraph(BaseContainerDOC):
         self.validate_annotation(elem=elem, linked_objects=linked_objects)
         self._linked_objects = linked_objects or []
         self._element = self.__convert_to_element(elem)
-        # todo унифицировать обработку детей элемента и наполнение linked_objects
 
-    def __from_paragraph(self, elem: CT_P):
-        for ch in self.__grab_children(elem):
-            if isinstance(ch, CT_R):
-                self.insert_linked_object(Text(ch))
-            # todo elif isinstance(ch, CT_tbl) and etc.
+    @staticmethod
+    def convert_to_linked_object(elem: BaseOxmlElement | str):
+        """converts all possible cases for this object"""
+        if isinstance(elem, Text):
+            return elem
+        elif isinstance(elem, (CT_R, str)):
+            return Text(elem)
+        elif isinstance(elem, CT_Inline):
+            return None  # todo soon!
+        return None
 
     def __convert_to_element(self, elem):
         """converts and validates with inserting to self._linked_objects"""
@@ -53,14 +58,13 @@ class DOCParagraph(BaseContainerDOC):
             self.__from_paragraph(elem)
 
         elif isinstance(elem, (Text, str)):
-            _text = Text(elem) if isinstance(elem, str) else elem # todo поместить в конвретер
-            self.insert_linked_object(_text)
+            self.insert_linked_object(self.convert_to_linked_object(elem))
             elem = cast("CT_P", OxmlElement("w:p"))
         return elem
 
-    @staticmethod
-    def __grab_children(_p_elem: CT_P) -> list[BaseOxmlElement]:
-        return [ch for ch in _p_elem if not isinstance(ch, CT_PPr)]
+    def __from_paragraph(self, elem: CT_P):
+        for ch in self.__grab_children(elem):
+            self.insert_linked_object(self.convert_to_linked_object(ch))
 
     def __create_default_paragraph(self) -> CT_P:
         """Creates standard paragraph settings"""
@@ -70,6 +74,10 @@ class DOCParagraph(BaseContainerDOC):
             )
         )
         return cast("CT_P", default_paragraph)
+
+    @staticmethod
+    def __grab_children(_p_elem: CT_P) -> list[BaseOxmlElement]:
+        return [ch for ch in _p_elem if not isinstance(ch, CT_PPr)]
 
     @staticmethod
     def __gen_random_paragraph_id(length: int = 8) -> str:

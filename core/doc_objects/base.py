@@ -1,4 +1,6 @@
 from typing import Union
+from abc import ABC, abstractmethod
+from docx.oxml.xmlchemy import BaseOxmlElement
 
 
 class BaseDOC:
@@ -29,7 +31,7 @@ class BaseDOC:
                 )
 
 
-class BaseContainerDOC(BaseDOC):
+class BaseContainerDOC(BaseDOC, ABC):
     CONTAIN_TYPES = Union[BaseDOC]
 
     def __init__(self):
@@ -60,6 +62,12 @@ class BaseContainerDOC(BaseDOC):
         _elem = self._linked_objects.pop(index)
         _elem.parent = None
         return _elem
+
+    @staticmethod
+    @abstractmethod
+    def convert_to_linked_object(elem):
+        """abstract implementation of stored object transformation"""
+        pass
 
 
 class BaseNonContainerDOC(BaseDOC):

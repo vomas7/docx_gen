@@ -48,6 +48,11 @@ class Text(BaseContainerDOC):
         self._linked_objects.extend(self.__grab_children(self._element))
         # todo унифицировать обработку детей элемента и наполнение linked_objects
 
+    @staticmethod
+    def convert_to_linked_object(elem: BaseOxmlElement):
+        pass
+
+
     def __convert_to_element(self, elem):
         """converts and validates with inserting to self._linked_objects"""
 
