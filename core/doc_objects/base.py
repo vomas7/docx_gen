@@ -36,7 +36,9 @@ class BaseContainerDOC(BaseDOC):
         super().__init__()
         self._linked_objects = []
 
-    def insert_linked_object(self, value: CONTAIN_TYPES, index: int | None):
+    def insert_linked_object(self,
+                             value: CONTAIN_TYPES,
+                             index: int | None = None):
         if not isinstance(value, self.CONTAIN_TYPES):
             # noqa
             raise TypeError(f'linked_objects must be a {self.CONTAIN_TYPES}')

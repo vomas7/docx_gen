@@ -1,11 +1,12 @@
 from typing import overload, cast, Union
-from docx.oxml import parse_xml, OxmlElement, CT_SectPr, CT_P
+from docx.oxml import parse_xml, OxmlElement, CT_SectPr, CT_P, CT_Tbl
 from docx.section import Section
 from core.constant import SECTION_STANDARD
 from core.styles.stylist import set_style
 from core.styles.section import SectionStyle
 from core.doc_objects.base import BaseContainerDOC
 from core.doc_objects.Paragraph import DOCParagraph
+from docx.oxml.xmlchemy import BaseOxmlElement
 
 
 class DOCSection(BaseContainerDOC):
@@ -35,6 +36,7 @@ class DOCSection(BaseContainerDOC):
         self.validate_annotation(elem=elem, linked_objects=linked_objects)
         self._linked_objects = linked_objects or []
         self._element = self.__convert_to_element(elem)
+        # todo унифицировать обработку детей элемента и наполнение linked_objects
 
     def __convert_to_element(self, elem):
         """convert element with validate"""
@@ -42,6 +44,15 @@ class DOCSection(BaseContainerDOC):
         if isinstance(elem, Section):
             elem = elem._sectPr
         return elem
+
+    #todo сделать абстрактным в базовым классе
+    @staticmethod
+    def convert_to_linked_object(elem: BaseOxmlElement):
+        if isinstance(elem, CT_P):
+            return DOCParagraph(elem)
+        elif isinstance(elem, CT_Tbl):
+            return None # todo soon!
+        return None
 
     @staticmethod
     def __create_default_sect_pr() -> CT_SectPr:

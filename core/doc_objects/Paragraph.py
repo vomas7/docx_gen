@@ -36,6 +36,7 @@ class DOCParagraph(BaseContainerDOC):
         self.validate_annotation(elem=elem, linked_objects=linked_objects)
         self._linked_objects = linked_objects or []
         self._element = self.__convert_to_element(elem)
+        # todo унифицировать обработку детей элемента и наполнение linked_objects
 
     def __from_paragraph(self, elem: CT_P):
         for ch in self.__grab_children(elem):
@@ -52,15 +53,14 @@ class DOCParagraph(BaseContainerDOC):
             self.__from_paragraph(elem)
 
         elif isinstance(elem, (Text, str)):
-            _text = Text(elem) if isinstance(elem, str) else elem
+            _text = Text(elem) if isinstance(elem, str) else elem # todo поместить в конвретер
             self.insert_linked_object(_text)
             elem = cast("CT_P", OxmlElement("w:p"))
         return elem
 
     @staticmethod
     def __grab_children(_p_elem: CT_P) -> list[BaseOxmlElement]:
-        lst_children = _p_elem.getchildren()
-        return [ch for ch in lst_children if not isinstance(ch, CT_PPr)]
+        return [ch for ch in _p_elem if not isinstance(ch, CT_PPr)]
 
     def __create_default_paragraph(self) -> CT_P:
         """Creates standard paragraph settings"""
