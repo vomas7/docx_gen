@@ -1,4 +1,7 @@
+from multiprocessing.spawn import set_executable
+
 from docx.oxml import CT_P, CT_Body, CT_Tbl, CT_SectPr, CT_Document
+from docx.oxml.xmlchemy import BaseOxmlElement
 from docx.opc.constants import CONTENT_TYPE as CT
 from docx.shared import Cm
 from docx.package import Package
@@ -16,6 +19,7 @@ from importlib import resources
 from io import BytesIO
 from pathlib import Path
 from typing import IO, cast, Union
+from docx.oxml.ns import nsmap
 
 
 def get_default_docx_path() -> str | Path:
@@ -57,10 +61,10 @@ class DOC(BaseDOC):
         """
         self.part.save(path_or_stream)
 
-    def _clear_document_part(self):
+    def _clear_document_content(self):
         """Clear xml of this document."""
-        new_part = self._create_document_part(self._system_template_path)
-        self.part._element = new_part._element
+        self._element._remove_body()
+        self._element._add_body()
 
     @classmethod
     def _create_document_part(cls, file: str | Path):
@@ -156,18 +160,36 @@ class _DOCBody(BaseContainerDOC):
         """Indirect reference to | _element | of Body element"""
         return self.parent._element.body
 
+    @staticmethod
+    def __reveal_sections(lst_elem: list[BaseOxmlElement]):
+        """detects sections and extracts them from a paragraph"""
+        for index, elem in enumerate(lst_elem):
+            if isinstance(elem, CT_SectPr):
+                continue
+
+            section = elem.find("./w:pPr/w:sectPr", namespaces=nsmap)
+            if section is not None:
+                lst_elem.pop(index)
+                lst_elem.insert(index, section)
+
+    def __uniform_oxml_elements(self) -> list[BaseOxmlElement]:
+        _uniform_lst = list(self._element)
+        self.__reveal_sections(_uniform_lst)
+        # todo будет обрабатывать и картинки, возможно таблицы!
+        return _uniform_lst
+
     def __put_in(self):
         """
             fills with object in self._linked_object,
             which are placed in doc.
         """
-        # todo работает не корректно, берёт только SrctPr, не учитывает SectPr вложенных в паранпаф
-        _section = DOCSection(self._element.get_or_add_sectPr())
-        for elem in self._element.getchildren():
-            if isinstance(elem, CT_P):
-                _section.insert_linked_object(DOCParagraph(elem))
-            elif isinstance(elem, CT_Tbl):
-                _section.insert_linked_object(None)  # TODO Soon!!!
-            elif isinstance(elem, CT_SectPr):
-                _section._element = elem
-                self.insert_linked_object(_section)
+        elem_lst = self.__uniform_oxml_elements()
+        _inner = []
+        for elem in elem_lst:
+            if isinstance(elem, CT_SectPr):
+                self.insert_linked_object(
+                    DOCSection(elem, linked_objects=_inner)
+                )
+                _inner = []
+            else:
+                _inner.append(DOCSection.convert_to_linked_object(elem))

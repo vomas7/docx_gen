@@ -10,7 +10,7 @@ class ParagraphWriter(BaseWriter):
     def add_paragraph(
             self,
             elem: DOCParagraph | str,
-            p_index: int | None,
+            p_index: int | None = None,
             s_index: int = -1
     ):
         elem = DOCParagraph(elem) if isinstance(elem, str) else elem

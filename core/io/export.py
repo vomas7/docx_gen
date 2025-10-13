@@ -63,7 +63,7 @@ class DocumentExporter:
                 " Please specify output filepath"
             )
 
-        self.doc._clear_document_part()
+        self.doc._clear_document_content()
         self.commit()
         self.doc.save(str(output.resolve()))
 
