@@ -1,7 +1,7 @@
 import random
 from typing import overload, cast, Union
 from docx.text.paragraph import Paragraph
-from docx.oxml import parse_xml, CT_P, CT_PPr, CT_R, OxmlElement, CT_Inline
+from docx.oxml import parse_xml, CT_P, CT_PPr, CT_R, OxmlElement, CT_Inline, CT_SectPr
 from docx.oxml.xmlchemy import BaseOxmlElement
 from core.constant import PARAGRAPH_STANDARD
 from core.doc_objects.base import BaseContainerDOC
@@ -77,7 +77,8 @@ class DOCParagraph(BaseContainerDOC):
 
     @staticmethod
     def __grab_children(_p_elem: CT_P) -> list[BaseOxmlElement]:
-        return [ch for ch in _p_elem if not isinstance(ch, CT_PPr)]
+        # todo улучшить типы (сделать динамичесскую подставку) + во всём объекте + для других чуваков тоже
+        return [ch for ch in _p_elem if isinstance(ch, (CT_R, CT_Inline, CT_SectPr))]
 
     @staticmethod
     def __gen_random_paragraph_id(length: int = 8) -> str:

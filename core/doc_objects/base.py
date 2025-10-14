@@ -43,7 +43,8 @@ class BaseContainerDOC(BaseDOC, ABC):
                              index: int | None = None):
         if not isinstance(value, self.CONTAIN_TYPES):
             # noqa
-            raise TypeError(f'linked_objects must be a {self.CONTAIN_TYPES}')
+            tmpl = 'linked_objects must be a %s, you are provide %s'
+            raise TypeError(tmpl % (self.CONTAIN_TYPES, value))
         value.parent = self
         if index is not None:
             self._linked_objects.insert(index, value)

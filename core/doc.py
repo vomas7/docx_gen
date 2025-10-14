@@ -161,6 +161,13 @@ class _DOCBody(BaseContainerDOC):
         return self.parent._element.body
 
     @staticmethod
+    def convert_to_linked_object(elem: BaseOxmlElement):
+        """converts all possible cases for this object"""
+        if isinstance(elem, CT_SectPr):
+            return DOCSection(elem)
+        return None
+
+    @staticmethod
     def __reveal_sections(lst_elem: list[BaseOxmlElement]):
         """detects sections and extracts them from a paragraph"""
         for index, elem in enumerate(lst_elem):

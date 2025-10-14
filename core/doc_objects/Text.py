@@ -47,11 +47,12 @@ class Text(BaseContainerDOC):
 
         self._linked_objects.extend(self.__grab_children(self._element))
         # todo унифицировать обработку детей элемента и наполнение linked_objects
+        # сделать такую же реализацию как и у других объектов (после добавления необходимых объектов!)
 
     @staticmethod
     def convert_to_linked_object(elem: BaseOxmlElement):
+        # todo реализовать как и у остальных объектов!
         pass
-
 
     def __convert_to_element(self, elem):
         """converts and validates with inserting to self._linked_objects"""
@@ -77,7 +78,8 @@ class Text(BaseContainerDOC):
     @staticmethod
     def __grab_children(_r_elem: CT_R) -> list[BaseOxmlElement]:
         lst_children = _r_elem.getchildren()
-        return [ch for ch in lst_children if not isinstance(ch, CT_RPr)]
+        return [ch for ch in lst_children if
+                not isinstance(ch, (CT_Br, CT_TabStop, CT_Text))]
 
     def add_style(self, dc_style: TextStyle):
         set_style(self._element, dc_style)

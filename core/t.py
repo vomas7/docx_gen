@@ -44,18 +44,21 @@ from docx.oxml.xmlchemy import BaseOxmlElement
 # todo base элемен и его подбазисы, + убрат чуваков py-docx +
 # todo сделать полную перезапись файла word, неважно файл пустой или взятый шаблон +
 # todo перерабоать writer'ов. +
-# todo отказаться от ридера
-# todo из-за очистки докпарта перед коммитом - создаётся новый образец документа с его эе элементами по типу бади и секции, из-за чего происходит дублирование элементов и более того они не учитываются в программе
+# todo отказаться от ридера +     (хотя можно сделать по аналогии с writer - сделать удобный доступ к объектам)
+# todo очиста документа +
 # todo подправить косячки
+# todo создать класс кастомных ошибок
+# todo улучшить типы (сделать динамичесскую подставку) + во всём объекте + для других чуваков тоже
+
 
 doss = Document()
 
 save_file = os.path.join("abra.docx")
 doc = DOC('abra.docx')
 body = doc.body
+sec1 = body.linked_objects[0]
 
-# print(body._element.xml)
-# print(doc.doc_sections)
-# print(body.linked_objects, "sectionssss")
 
-# doc.export.to_docx(save_file)
+
+
+
