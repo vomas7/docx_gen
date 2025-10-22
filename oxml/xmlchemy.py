@@ -1,0 +1,58 @@
+from lxml import etree
+
+from abc import ABC, abstractmethod
+from typing import Dict, List
+from docx.oxml import OxmlElement
+from docx.oxml.xmlchemy import BaseOxmlElement
+from typing import cast
+
+
+class _BaseElement(ABC):
+    """Базовый класс для всех элементов разметки"""
+
+    def __init__(self, tag: str, attr: Dict[str, str]):
+        self.tag = tag
+        self.attr = attr
+
+    def to_oxml(self) -> BaseOxmlElement:
+        """Трансформирует объект в OxmlElement"""
+
+        return self._to_oxml_element()
+
+    def to_xml_string(self) -> str:
+        """Трансформирует объект в XML строку"""
+
+        return self.to_oxml().xml
+
+    @abstractmethod
+    def _to_oxml_element(self) -> BaseOxmlElement:
+        pass
+
+
+class BaseContainElement(_BaseElement):
+    def __init__(self,
+                 tag: str,
+                 attr: Dict[str, str],
+                 children: List[_BaseElement]):
+        super().__init__(tag, attr)
+        self.children = children or []
+
+    def _to_oxml_element(self) -> BaseOxmlElement:
+        """Трансформирует объект в OxmlElement рекурсивно с потомками"""
+
+        oxml = cast("BaseOxmlElement", OxmlElement(self.tag, attrs=self.attr))
+        for child in self.children:
+            oxml.append(child._to_oxml_element())
+        return oxml
+
+
+class BaseNonContainElement(_BaseElement):
+    def __init__(self,
+                 tag: str,
+                 attr: Dict[str, str]):
+        super().__init__(tag, attr)
+
+    def _to_oxml_element(self) -> BaseOxmlElement:
+        """Трансформирует объект в OxmlElement"""
+
+        return cast("BaseOxmlElement", OxmlElement(self.tag, attrs=self.attr))
