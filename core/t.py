@@ -36,6 +36,7 @@ from docx.oxml import CT_Text, CT_P
 
 from core.doc_objects.paragraph import Paragraph
 
-p = Paragraph()
+p = Paragraph(children=[ Paragraph(), Paragraph()])
 
-p.to_oxml()
+r = p.to_xml_string()
+print(r)

@@ -3,7 +3,8 @@ from typing import Dict, List
 from docx.oxml import OxmlElement
 from docx.oxml.xmlchemy import BaseOxmlElement
 from typing import cast
-
+from core.validators.v_objects import ValidatedArray
+from core.validators.xml_components import check_on_p, check_not_text
 
 class BaseMurkupElement(ABC):
     """Базовый класс для всех элементов разметки"""
@@ -33,7 +34,7 @@ class BaseContainElement(BaseMurkupElement):
                  attr: Dict,
                  children: List[BaseMurkupElement] = None):
         super().__init__(tag, attr)
-        self.children = children or []
+        self.children = ValidatedArray(children, validators={check_on_p,check_not_text})
 
     def _to_oxml_element(self) -> BaseOxmlElement:
         """Трансформирует объект в OxmlElement рекурсивно с потомками"""
