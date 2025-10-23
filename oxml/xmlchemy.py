@@ -1,5 +1,3 @@
-from lxml import etree
-
 from abc import ABC, abstractmethod
 from typing import Dict, List
 from docx.oxml import OxmlElement
@@ -7,10 +5,10 @@ from docx.oxml.xmlchemy import BaseOxmlElement
 from typing import cast
 
 
-class _BaseElement(ABC):
+class BaseMurkupElement(ABC):
     """Базовый класс для всех элементов разметки"""
 
-    def __init__(self, tag: str, attr: Dict[str, str]):
+    def __init__(self, tag: str, attr: Dict):
         self.tag = tag
         self.attr = attr
 
@@ -29,30 +27,30 @@ class _BaseElement(ABC):
         pass
 
 
-class BaseContainElement(_BaseElement):
+class BaseContainElement(BaseMurkupElement):
     def __init__(self,
                  tag: str,
-                 attr: Dict[str, str],
-                 children: List[_BaseElement]):
+                 attr: Dict,
+                 children: List[BaseMurkupElement] = None):
         super().__init__(tag, attr)
         self.children = children or []
 
     def _to_oxml_element(self) -> BaseOxmlElement:
         """Трансформирует объект в OxmlElement рекурсивно с потомками"""
 
-        oxml = cast("BaseOxmlElement", OxmlElement(self.tag, attrs=self.attr))
+        oxml = cast(BaseOxmlElement, OxmlElement(self.tag, attrs=self.attr))
         for child in self.children:
             oxml.append(child._to_oxml_element())
         return oxml
 
 
-class BaseNonContainElement(_BaseElement):
+class BaseNonContainElement(BaseMurkupElement):
     def __init__(self,
                  tag: str,
-                 attr: Dict[str, str]):
+                 attr: Dict):
         super().__init__(tag, attr)
 
     def _to_oxml_element(self) -> BaseOxmlElement:
         """Трансформирует объект в OxmlElement"""
 
-        return cast("BaseOxmlElement", OxmlElement(self.tag, attrs=self.attr))
+        return cast(BaseOxmlElement, OxmlElement(self.tag, attrs=self.attr))
