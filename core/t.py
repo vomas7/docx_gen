@@ -32,13 +32,21 @@ from docx.oxml import CT_Text, CT_P
 
 #todo можно добавить MixinValidateAttr MixinValidateTag # а если использовать ленивую загрузку для проверки атрибутов и тегов
 
+#todo затранслейтить коменты
 
+
+#core.validators.v_objects.ValidationError: Элемент(ы) True не прошл(и) валидацию
 
 from core.doc_objects.paragraph import Paragraph
 from core.doc_objects.text import Text
 from core.doc_objects.run import Run
+from core.doc_objects.section import Section
 
-p = Paragraph(children=[Text(), Paragraph(children=[Text()])])
+#todo какая-то ошибка
+p = Paragraph(children=[
+    Text(),
+    Run(),
+])
 
 r = p.to_xml_string()
 print(r)
