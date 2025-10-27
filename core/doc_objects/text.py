@@ -1,7 +1,5 @@
-from oxml.xmlchemy import BaseNonContainElement, BaseMurkupElement
-from typing import Dict, List, cast
-from docx.oxml.xmlchemy import BaseOxmlElement
-from docx.oxml import OxmlElement
+from oxml.xmlchemy import BaseNonContainElement
+from typing import Dict
 
 
 class Text(BaseNonContainElement):
@@ -15,4 +13,3 @@ class Text(BaseNonContainElement):
         oxml = super()._to_oxml_element()
         oxml.text = self.text
         return oxml
-

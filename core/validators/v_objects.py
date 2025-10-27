@@ -1,6 +1,5 @@
 from typing import List, Any, Callable, Set
 from core.exceptions.validation import (
-    ValidationError,
     ValidationRequireError,
     ValidationAccessError
 )
@@ -22,6 +21,8 @@ class ValidatedArray(list):
             **kwargs: Additional arguments for each validator
 
         """
+        #todo можно добавить ограничение по типам
+
         self._validators = validators or set()
         self._required_values = set(
             required_values) if required_values else set()
@@ -33,83 +34,83 @@ class ValidatedArray(list):
         else:
             self._validator = self._default_validator
         if iterable:
-            invalid_items = all(
-                [item for item in iterable if not self._validator(item)])
-            print(invalid_items)
+            invalid_items = [
+                item for item in iterable if not self._validator(item)
+            ]
             if invalid_items:
-                raise ValidationAccessError(invalid_elem=invalid_items)
+                raise ValidationAccessError(invalid_items, type(self))
 
         super().__init__(iterable or [])
 
         self._check_required_values()
 
     def _default_validator(self, item: Any) -> bool:
-        """Валидатор по умолчанию - разрешает все элементы"""
+        """Default validator - allows all elements"""
         return True
 
-    def _check_required_values(self) -> None:
-        """Проверяет наличие всех обязательных значений"""
+    def _check_required_values(self, func_name=None) -> None:
+        """Checks for all required values"""
         if self._required_values:
             missing = self._required_values - set(
                 (type(item) for item in self))
             if missing:
                 raise ValidationRequireError(
-                    invalid_elem=self,
-                    missing=missing
+                    value=self._required_values,
+                    operation=func_name,
+                    container_type=type(self)
                 )
 
     def validate(self, item: Any) -> bool:
-        """Проверяет, может ли элемент быть добавлен"""
+        """Checks whether the item can be added"""
         return self._validator(item)
 
     def append(self, item: Any) -> None:
-        """Добавляет элемент с валидацией"""
+        """Adds an element with validation"""
         if not self.validate(item):
-            raise ValidationAccessError(invalid_elem=item)
+            raise ValidationAccessError(item, type(self))
         super().append(item)
 
     def extend(self, iterable: List[Any]) -> None:
-        """Добавляет несколько элементов с валидацией"""
+        """Adds multiple elements with validation"""
         invalid_items = [item for item in iterable if not self.validate(item)]
         if invalid_items:
-            raise ValidationAccessError(invalid_elem=invalid_items)
+            raise ValidationAccessError(invalid_items, type(self))
         super().extend(iterable)
 
     def insert(self, index: int, item: Any) -> None:
-        """Вставляет элемент с валидацией"""
+        """Inserts an element with validation"""
         if not self.validate(item):
-            raise ValidationAccessError(invalid_elem=item)
+            raise ValidationAccessError(item, type(self))
         super().insert(index, item)
 
     def remove(self, item: Any) -> None:
-        """Удаляет элемент с проверкой обязательных значений"""
+        """Deletes an element with the required values checked"""
         super().remove(item)
-        self._check_required_values()
+        self._check_required_values(func_name=self.remove.__name__)
 
     def pop(self, index: int = -1) -> Any:
-        """Удаляет и возвращает элемент с проверкой обязательных значений"""
+        """Deletes and returns an element with the required values checked"""
         item = super().pop(index)
-        self._check_required_values()
+        self._check_required_values(func_name=self.pop.__name__)
         return item
 
     def clear(self) -> None:
-        """Очищает список с проверкой обязательных значений"""
+        """Clears the list with the required values checked"""
         super().clear()
-        self._check_required_values()
+        self._check_required_values(func_name=self.clear().__name__)
 
     def __setitem__(self, index: int, item: Any) -> None:
-        """Устанавливает элемент по индексу с валидацией"""
-
+        """Sets the element by index with validation"""
         if not self.validate(item):
-            raise ValidationAccessError(invalid_elem=item)
+            raise ValidationAccessError(item, type(self))
 
         super().__setitem__(index, item)
-        self._check_required_values()
+        self._check_required_values(func_name=self.__setitem__.__name__)
 
     def __delitem__(self, index: int) -> None:
-        """Удаляет элемент по индексу с проверкой обязательных значений"""
+        """Deletes an element by index with mandatory values checked"""
         super().__delitem__(index)
-        self._check_required_values()
+        self._check_required_values(func_name=self.__delitem__.__name__)
 
     def __repr__(self) -> str:
         validators_info = f", validators={len(self._validators)}" if self._validators else ""
@@ -118,10 +119,10 @@ class ValidatedArray(list):
 
     @property
     def required_values(self) -> Set[Any]:
-        """Возвращает множество обязательных значений"""
+        """Returns a set of required values"""
         return self._required_values.copy()
 
     @property
     def validators(self) -> Set[Callable[..., bool]]:
-        """Возвращает множество валидаторов"""
+        """Returns a set of validators"""
         return self._validators.copy()

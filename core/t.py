@@ -21,12 +21,10 @@ from docx.oxml import CT_Text, CT_P
 # а поскольку мы работаем с чистыми объектами python, возможность изменения XML - будет узким горлышком.
 # отриисовка будет производиться в конце программы. создавая xml код
 
-# todo проинициализировать кллассы-элементы
 
 # todo добавить enum для существующих тегов
-
-#todo Добавить валидацию по допустимым наследникам и атрибутам
-# todo Добавить объекты
+#todo добавить атрибуты
+#todo Добавить валидацию по атрибутам
 # todo Добавить преобразование для секции
 # todo определить documentPart через создающийся CT_DOCUMENT
 
@@ -35,18 +33,27 @@ from docx.oxml import CT_Text, CT_P
 #todo затранслейтить коменты
 
 
-#core.validators.v_objects.ValidationError: Элемент(ы) True не прошл(и) валидацию
-
 from core.doc_objects.paragraph import Paragraph
 from core.doc_objects.text import Text
 from core.doc_objects.run import Run
 from core.doc_objects.section import Section
 
-#todo какая-то ошибка
-p = Paragraph(children=[
-    Text(),
-    Run(),
-])
+# p = Paragraph(children=[
+#     Text(),
+#     Run(),
+# ])
+# p.children.append(Section())
+#
+# r = p.to_xml_string()
+# print(r)
 
-r = p.to_xml_string()
-print(r)
+
+
+doc = Document()
+
+d = doc.add_paragraph()
+_p = d._element
+ppr = _p.get_or_add_pPr()
+ind = ppr.get_or_add_ind()
+ind.left = 100
+print(d._element.xml)
