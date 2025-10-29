@@ -1,11 +1,12 @@
-from oxml.xmlchemy import BaseNonContainElement
+from oxml.xmlchemy import BaseNonContainElement, BaseAttributeElement
 from typing import Dict
+from typing import Type
 
 
 class Text(BaseNonContainElement):
     def __init__(self,
                  text: str = "",
-                 **attr: Dict[str, str]):
+                 attr: Type[BaseAttributeElement] = None):
         self.text = text
         super().__init__("w:t", attr)
 

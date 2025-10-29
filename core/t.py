@@ -22,15 +22,19 @@ from docx.oxml import CT_Text, CT_P
 # отриисовка будет производиться в конце программы. создавая xml код
 
 
+#todo подретушировать коменты и анотации
 # todo добавить enum для существующих тегов
 #todo добавить атрибуты
 #todo Добавить валидацию по атрибутам
 # todo Добавить преобразование для секции
 # todo определить documentPart через создающийся CT_DOCUMENT
 
-#todo можно добавить MixinValidateAttr MixinValidateTag # а если использовать ленивую загрузку для проверки атрибутов и тегов
-
 #todo затранслейтить коменты
+#todo ИДЕЯ, создать метакласс для автоматической генрации необходимых пациков (как атрибутов так и тэгов)
+
+#todo Backlog: добавть body и document single-элементы
+#todo Backlog: Добавить все эти элементы
+#todo Backlog: Добавить функции под эти элементы на более высоком уровне
 
 
 from core.doc_objects.paragraph import Paragraph
@@ -51,9 +55,19 @@ from core.doc_objects.section import Section
 
 doc = Document()
 
-d = doc.add_paragraph()
-_p = d._element
-ppr = _p.get_or_add_pPr()
-ind = ppr.get_or_add_ind()
-ind.left = 100
-print(d._element.xml)
+
+
+
+# d = doc.add_paragraph()
+# _p = d._element
+# ppr = _p.get_or_add_pPr()
+# ind = ppr.get_or_add_ind()
+# ind.left = 6500
+# print(ind.left)
+# print(d._element.xml)
+
+from doc_objects.attributes import Left
+
+t = Text(attr=Left(), text="Hello")
+#todo не проходит валидация у атрибутов
+print(t.to_xml_string())
