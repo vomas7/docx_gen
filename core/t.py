@@ -66,8 +66,8 @@ doc = Document()
 # print(ind.left)
 # print(d._element.xml)
 
-from doc_objects.attributes import Left
+from doc_objects.attributes import Right
 
-t = Text(attr=Left(), text="Hello")
-#todo не проходит валидация у атрибутов
+t = Text(attr=Right(value=57000), text="Hello")
+#todo продолжить играться с атрибутами
 print(t.to_xml_string())

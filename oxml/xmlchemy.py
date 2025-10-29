@@ -32,8 +32,8 @@ class BaseAttributeElement:
     def get_oxml_value(self) -> str:
         """Возвращает значение для OXML с учетом типа"""
         _u_types = (BaseSimpleType | BaseXmlEnum)
-        if self.simple_type and issubclass(type(self.simple_type), _u_types):
-                return self.simple_type.to_xml(self._value_attr)
+        if self.simple_type and issubclass(self.simple_type, _u_types):
+            return self.simple_type.to_xml(self._value_attr)
         return str(self._value_attr)
 
     @property
@@ -53,7 +53,7 @@ class BaseMurkupElement(ABC):
         Type[BaseAttributeElement], }
     REQUIRED_ATTRIBUTES: Set[...] = set()
 
-    # todo определить атрибуты
+    # todo определить атрибуты self.children = ValidatedArray(
 
     def __init__(self, tag: str, attr: BaseAttributeElement):
         self.tag = tag
