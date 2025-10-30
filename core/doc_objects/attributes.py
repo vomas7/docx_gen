@@ -38,8 +38,6 @@ class Right(BaseAttributeElement, metaclass=MetaAttributesElement):
     simple_type = ST_TwipsMeasure
 
 
-
-
 class Left(BaseAttributeElement, metaclass=MetaAttributesElement):
     default_value = 100000
     attr_name = "w:left"  # todo заменить строки на енумы

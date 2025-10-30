@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import warnings
 
+#todo пригодится для эспортера, мб будет изменяться
 
 def validate_filepath(path: Path) -> Path:
     """
