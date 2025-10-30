@@ -1,4 +1,4 @@
-from oxml.xmlchemy import BaseAttributeElement
+from core.doc_objects.base import BaseAttributeElement
 from docx.oxml.simpletypes import ST_TwipsMeasure
 
 

@@ -1,4 +1,4 @@
-from oxml.xmlchemy import BaseNonContainElement, BaseAttributeElement
+from core.doc_objects.base import BaseNonContainElement, BaseAttributeElement
 from typing import List
 
 

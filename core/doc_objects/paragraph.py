@@ -1,5 +1,5 @@
 from __future__ import annotations
-from oxml.xmlchemy import BaseContainElement, BaseMurkupElement, \
+from core.doc_objects.base import BaseContainElement, BaseMurkupElement, \
     BaseAttributeElement
 from typing import List, Set, Type
 from core.doc_objects.text import Text

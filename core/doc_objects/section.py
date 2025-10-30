@@ -1,6 +1,6 @@
-from oxml.xmlchemy import BaseContainElement, BaseMurkupElement
+from core.doc_objects.base import BaseContainElement, BaseMurkupElement
 from typing import List
-from oxml.xmlchemy import BaseAttributeElement
+from core.doc_objects.base import BaseAttributeElement
 
 
 class Section(BaseContainElement):
