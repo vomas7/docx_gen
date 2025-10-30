@@ -15,6 +15,7 @@ from docx.oxml import OxmlElement
 
 
 class BaseAttributeElement:
+
     def __init__(self,
                  attr_name: str = None,
                  value: Any = None,
@@ -54,17 +55,18 @@ class BaseMurkupElement(ABC):
     })
     REQUIRED_ATTRIBUTES: FrozenSet[Type[BaseAttributeElement]] = frozenset()
 
+    __attribute_validators = {validate_access_elem, }
+
     def __init__(self,
                  tag: str,
                  attrs: List[BaseAttributeElement] = None):
         self.tag = tag
-        self.validators = {
-            validate_access_elem, }  # todo мб вынести в атрибут класса
         self.attrs = ValidatedArray(
             attrs,
-            validators=self.validators,
+            validators=self.__attribute_validators,
+            required_values=self.REQUIRED_ATTRIBUTES,
             access_val=self.ACCESS_ATTRIBUTES,
-            required_values=self.REQUIRED_ATTRIBUTES
+            some_cal = "some"
         )
 
     def _assignment_attr(self, obj: BaseOxmlElement) -> Any:
@@ -97,17 +99,18 @@ class BaseContainElement(BaseMurkupElement):
     })
     REQUIRED_CHILDREN: FrozenSet[Type[BaseMurkupElement]] = frozenset()
 
+    __tag_validators = {validate_access_elem, }
+
     def __init__(self,
                  tag: str,
                  attrs: List[BaseAttributeElement] = None,
                  children: List[BaseMurkupElement] = None):
         super().__init__(tag, attrs)
-        self.validators = {validate_access_elem, }
         self.children = ValidatedArray(
             children,
-            validators=self.validators,
-            access_val=self.ACCESS_CHILDREN,
-            required_values=self.REQUIRED_CHILDREN
+            validators=self.__tag_validators,
+            required_values=self.REQUIRED_CHILDREN,
+            access_val=self.ACCESS_CHILDREN
         )
 
     def _to_oxml_element(self) -> BaseOxmlElement:
