@@ -22,15 +22,15 @@ from docx.oxml import CT_Text, CT_P
 # отриисовка будет производиться в конце программы. создавая xml код
 
 
+#todo ИДЕЯ, создать метакласс для автоматической генрации необходимых пациков (как атрибутов так и тэгов)
+#todo добавить остальные элементы ворда
 #todo подретушировать коменты и анотации
 # todo добавить enum для существующих тегов
-#todo добавить атрибуты
-#todo Добавить валидацию по атрибутам
+
 # todo Добавить преобразование для секции
 # todo определить documentPart через создающийся CT_DOCUMENT
 
 #todo затранслейтить коменты
-#todo ИДЕЯ, создать метакласс для автоматической генрации необходимых пациков (как атрибутов так и тэгов)
 
 #todo Backlog: добавть body и document single-элементы
 #todo Backlog: Добавить все эти элементы
@@ -66,8 +66,15 @@ doc = Document()
 # print(ind.left)
 # print(d._element.xml)
 
-from doc_objects.attributes import Right
+from doc_objects.attributes import Right, Left
 
-t = Text(attr=Right(value=57000), text="Hello")
-#todo продолжить играться с атрибутами
+t = Text(attrs=[Right(value=57000)], text="Hello")
+lef = Left(value=90000000)
+t.attrs.append(lef)
+t.attrs.pop(0)
+t.attrs.pop(0)
+print(t.to_xml_string())
+
+l = [Right(value=57000), lef]
+t.attrs.extend(l)
 print(t.to_xml_string())

@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 
+from core.exceptions.validation import ValidationError
 from core.validators.v_objects import ValidatedArray
 from core.validators.xml_components import validate_access_elem
 
 from typing import List
 from typing import cast
-from typing import Set, Type, Any
+from typing import Type, Any, FrozenSet
 
 from docx.enum.base import BaseXmlEnum
 from docx.oxml.xmlchemy import BaseOxmlElement
@@ -16,9 +17,9 @@ from docx.oxml import OxmlElement
 
 class BaseAttributeElement:
     def __init__(self,
-                 attr_name: str,
-                 value: Any,
-                 simple_type: Type[BaseSimpleType] | Type[BaseXmlEnum]):
+                 attr_name: str = None,
+                 value: Any = None,
+                 simple_type: Type[BaseSimpleType] | Type[BaseXmlEnum] = None):
         self.attr_name = attr_name
         self._value_attr = value
         self.simple_type = simple_type
@@ -49,25 +50,31 @@ class BaseAttributeElement:
 class BaseMurkupElement(ABC):
     """Базовый класс для всех элементов разметки"""
     # by default there are no restrictions
-    ACCESSIBLE_ATTRIBUTES: Set[...] = {
-        Type[BaseAttributeElement], }
-    REQUIRED_ATTRIBUTES: Set[...] = set()
+    ACCESS_ATTRIBUTES: FrozenSet[Type[BaseAttributeElement]] = frozenset({
+        BaseAttributeElement
+    })
+    REQUIRED_ATTRIBUTES: FrozenSet[Type[BaseAttributeElement]] = frozenset()
 
-    # todo определить атрибуты self.children = ValidatedArray(
-
-    def __init__(self, tag: str, attr: BaseAttributeElement):
+    def __init__(self,
+                 tag: str,
+                 attrs: List[BaseAttributeElement] = None):
         self.tag = tag
-        self.attr = attr
+        self.validators = {
+            validate_access_elem, }  # todo мб вынести в атрибут класса
+        self.attrs = ValidatedArray(
+            attrs,
+            validators=self.validators,
+            access_val=self.ACCESS_ATTRIBUTES,
+            required_values=self.REQUIRED_ATTRIBUTES
+        )
 
     def _assignment_attr(self, obj: BaseOxmlElement) -> Any:
         """Назначает атрибут OxmlElement"""
-        if self.attr is None:
-            # todo придумать динамическую реализацию
-            return
-        oxml_val = self.attr.get_oxml_value()
-        if oxml_val is None:
-            raise AttributeError(f"Attribute {self.tag} has no value")
-        obj.set(self.attr._clark_name, oxml_val)
+        for attr in self.attrs:
+            oxml_val = attr.get_oxml_value()
+            if oxml_val is None:
+                raise AttributeError(f"Attribute {self.tag} has no value")
+            obj.set(attr._clark_name, oxml_val)
 
     def to_oxml(self) -> BaseOxmlElement:
         """Трансформирует объект в OxmlElement"""
@@ -86,20 +93,21 @@ class BaseMurkupElement(ABC):
 
 class BaseContainElement(BaseMurkupElement):
     # by default there are no restrictions
-    ACCESSIBLE_CHILDREN: Set[Type[BaseMurkupElement]] = {BaseMurkupElement, }
-    REQUIRED_CHILDREN: Set[Type[BaseMurkupElement]] = set()
+    ACCESS_CHILDREN: FrozenSet[Type[BaseMurkupElement]] = frozenset({
+        BaseMurkupElement
+    })
+    REQUIRED_CHILDREN: FrozenSet[Type[BaseMurkupElement]] = frozenset()
 
     def __init__(self,
                  tag: str,
-                 attr: BaseAttributeElement,
+                 attrs: List[BaseAttributeElement] = None,
                  children: List[BaseMurkupElement] = None):
-        super().__init__(tag, attr)
-        self.children = children or []
+        super().__init__(tag, attrs)
         self.validators = {validate_access_elem, }
         self.children = ValidatedArray(
-            self.children,
+            children,
             validators=self.validators,
-            access_val=self.ACCESSIBLE_CHILDREN,
+            access_val=self.ACCESS_CHILDREN,
             required_values=self.REQUIRED_CHILDREN
         )
 
@@ -117,8 +125,8 @@ class BaseContainElement(BaseMurkupElement):
 class BaseNonContainElement(BaseMurkupElement):
     def __init__(self,
                  tag: str,
-                 attr: BaseAttributeElement):
-        super().__init__(tag, attr)
+                 attrs: List[BaseAttributeElement]):
+        super().__init__(tag, attrs)
 
     def _to_oxml_element(self) -> BaseOxmlElement:
         """Трансформирует объект в OxmlElement"""

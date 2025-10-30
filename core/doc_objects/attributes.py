@@ -37,9 +37,10 @@ class Right(BaseAttributeElement, metaclass=MetaAttributesElement):
     attr_name = "w:right"  # todo заменить строки на енумы
     simple_type = ST_TwipsMeasure
 
-# class Left(BaseAttributeElement):
-#     attr_name = "w:left"
-#     value = None
-#
-#     def __init__(self, attr_name, value):
-#         super().__init__(attr_name, value, ST_TwipsMeasure)
+
+
+
+class Left(BaseAttributeElement, metaclass=MetaAttributesElement):
+    default_value = 100000
+    attr_name = "w:left"  # todo заменить строки на енумы
+    simple_type = ST_TwipsMeasure

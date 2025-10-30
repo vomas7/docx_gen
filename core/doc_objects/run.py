@@ -1,9 +1,12 @@
 from oxml.xmlchemy import BaseContainElement, BaseMurkupElement
-from typing import Dict, List
+from typing import List
+from oxml.xmlchemy import BaseAttributeElement
 
 
 class Run(BaseContainElement):
+    # todo Заполнить подходящими значениями Атрибуты и тэги
+
     def __init__(self,
                  children: List[BaseMurkupElement] = None,
-                 **attr: Dict[str, str]):
-        super().__init__("w:r", attr, children)
+                 attrs: List[BaseAttributeElement] = None):
+        super().__init__("w:r", attrs, children)
