@@ -3,6 +3,12 @@ from docx.oxml.simpletypes import ST_TwipsMeasure
 
 
 class MetaAttributesElement(type):
+    """
+        Initializes __init__ for each Attribute class.
+        Restricts  | __required_attributes | attributes for class
+        and parent | __required_bases |
+    """
+
     __required_bases = (BaseAttributeElement,)
     __required_attributes = ("default_value", "attr_name", "simple_type")
 

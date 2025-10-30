@@ -31,7 +31,7 @@ class BaseAttributeElement:
         return self.attr_name
 
     def get_oxml_value(self) -> str:
-        """Возвращает значение для OXML с учетом типа"""
+        """Returns a value for OXML given the type"""
         _u_types = (BaseSimpleType | BaseXmlEnum)
         if self.simple_type and issubclass(self.simple_type, _u_types):
             return self.simple_type.to_xml(self._value_attr)
@@ -48,7 +48,8 @@ class BaseAttributeElement:
 
 
 class BaseMurkupElement(ABC):
-    """Базовый класс для всех элементов разметки"""
+    """Base class for all markup elements"""
+
     # by default there are no restrictions
     ACCESS_ATTRIBUTES: FrozenSet[Type[BaseAttributeElement]] = frozenset({
         BaseAttributeElement
@@ -65,12 +66,11 @@ class BaseMurkupElement(ABC):
             attrs,
             validators=self.__attribute_validators,
             required_values=self.REQUIRED_ATTRIBUTES,
-            access_val=self.ACCESS_ATTRIBUTES,
-            some_cal = "some"
+            access_val=self.ACCESS_ATTRIBUTES
         )
 
     def _assignment_attr(self, obj: BaseOxmlElement) -> Any:
-        """Назначает атрибут OxmlElement"""
+        """Assigns an OxmlElement attribute"""
         for attr in self.attrs:
             oxml_val = attr.get_oxml_value()
             if oxml_val is None:
@@ -78,12 +78,12 @@ class BaseMurkupElement(ABC):
             obj.set(attr._clark_name, oxml_val)
 
     def to_oxml(self) -> BaseOxmlElement:
-        """Трансформирует объект в OxmlElement"""
+        """Transforms an object into an OxmlElement"""
 
         return self._to_oxml_element()
 
     def to_xml_string(self) -> str:
-        """Трансформирует объект в XML строку"""
+        """Transforms an object into an XML string"""
 
         return self.to_oxml().xml
 
@@ -114,7 +114,10 @@ class BaseContainElement(BaseMurkupElement):
         )
 
     def _to_oxml_element(self) -> BaseOxmlElement:
-        """Трансформирует объект в OxmlElement рекурсивно с потомками"""
+        """
+            Transforms an object into an
+            OxmlElement recursively with its descendants
+        """
 
         oxml = cast(BaseOxmlElement, OxmlElement(self.tag))
         self._assignment_attr(oxml)
@@ -131,7 +134,8 @@ class BaseNonContainElement(BaseMurkupElement):
         super().__init__(tag, attrs)
 
     def _to_oxml_element(self) -> BaseOxmlElement:
-        """Трансформирует объект в OxmlElement"""
+        """Transforms an object into an OxmlElement"""
+
         oxml = cast(BaseOxmlElement, OxmlElement(self.tag))
         self._assignment_attr(oxml)
         return oxml
