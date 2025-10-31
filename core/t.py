@@ -15,7 +15,6 @@ from docx.oxml import CT_Text, CT_P
 
 
 
-
 # todo создать элементы - аналогичние CT_*, отличие в том что нет наследия от BaseOxmlMeta.
 # Логика pydocx заключается в том чтобы  добавлять элементы непосредственно в код XML,
 # а поскольку мы работаем с чистыми объектами python, возможность изменения XML - будет узким горлышком.
@@ -24,7 +23,6 @@ from docx.oxml import CT_Text, CT_P
 
 #todo ИДЕЯ, создать метакласс для автоматической генрации необходимых пациков (как атрибутов так и тэгов)
 #todo добавить остальные элементы ворда
-#todo подретушировать коменты и анотации
 # todo добавить enum для существующих тегов
 
 # todo Добавить преобразование для секции
@@ -67,14 +65,20 @@ doc = Document()
 # print(d._element.xml)
 
 from doc_objects.attributes import Right, Left
+from doc_objects.tags import Paragraph, Text
+attrs = [
+    Right(value=57000),
+    Left()
+]
 
-t = Text(attrs=[Right(value=57000)], text="Hello")
-lef = Left(value=90000000)
-t.attrs.append(lef)
-t.attrs.pop(0)
-t.attrs.pop(0)
-print(t.to_xml_string())
-
-l = [Right(value=57000), lef]
-t.attrs.extend(l)
+t = Text(attrs=attrs)
+p = Paragraph(children=[t])
+# lef = Left(value=90000000)
+# t.attrs.append(lef)
+# t.attrs.pop(0)
+# t.attrs.pop(0)
+# print(t.to_xml_string())
+#
+# l = [Right(value=57000), lef]
+# t.attrs.extend(l)
 print(t.to_xml_string())

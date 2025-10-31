@@ -61,7 +61,7 @@ class BaseMurkupElement(ABC):
     def __init__(self,
                  tag: str,
                  attrs: List[BaseAttributeElement] = None):
-        self.tag = tag
+        self._tag = tag
         self.attrs = ValidatedArray(
             attrs,
             validators=self.__attribute_validators,
@@ -90,6 +90,10 @@ class BaseMurkupElement(ABC):
     @abstractmethod
     def _to_oxml_element(self) -> BaseOxmlElement:
         pass
+
+    @property
+    def tag(self):
+        return self._tag
 
 
 class BaseContainElement(BaseMurkupElement):
