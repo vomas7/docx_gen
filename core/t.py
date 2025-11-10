@@ -35,6 +35,12 @@ from docx.oxml import CT_Text, CT_P
 #todo Backlog: Добавить функции под эти элементы на более высоком уровне
 
 
+
+#todo значит нужен ещё один слой обстакции. т.к чтобы добавить стиль для элемента, придётся создавать несколько объкутов внутри него например p нужен pPr и Marg и т.п
+#todo также получится добавить простой способ добавления элементов!
+
+
+
 from core.doc_objects.paragraph import Paragraph
 from core.doc_objects.text import Text
 from core.doc_objects.run import Run
@@ -65,7 +71,7 @@ doc = Document()
 # print(d._element.xml)
 
 from doc_objects.attributes import Right, Left
-from doc_objects.tags import Paragraph, Text
+# from doc_objects.tags import Paragraph, Text
 attrs = [
     Right(value=57000),
     Left()
