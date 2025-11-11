@@ -18,12 +18,11 @@ class ValidatedArray(list):
             **kwargs: Additional arguments for each validator
 
         """
-        # todo можно добавить ограничение по типам
 
         self._validators = validators or set()
         self._required_values = (frozenset(required_values) if
                                  required_values else frozenset())
-
+        _iterable = iterable or []
         if self._validators:
             self._validator = lambda x: all(
                 func(x, **kwargs) for func in self._validators
@@ -31,9 +30,9 @@ class ValidatedArray(list):
         else:
             self._validator = self._default_validator
 
-        all(self._validator(item) for item in iterable)
+        all(self._validator(item) for item in _iterable)
 
-        super().__init__(iterable or [])
+        super().__init__(_iterable)
 
         self._check_required_values()
 

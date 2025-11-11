@@ -1,56 +1,43 @@
 from core.doc_objects.base import BaseAttributeElement
 from docx.oxml.simpletypes import ST_TwipsMeasure
-from core.utils.annotaions import annotation_catcher
+from typing import Type
+from docx.enum.base import BaseXmlEnum
+from docx.oxml.simpletypes import BaseSimpleType
 
 
-class MetaAttributesElement(type):
+def attr_factory(attr_name,
+                 simple_type=ST_TwipsMeasure,
+                 default=None):
     """
-        Initializes __init__ for each Attribute class.
-        Restricts  | __required_attributes | attributes for class
-        and parent | __required_bases |
+    Factory of attributes, returns a class with <attr_name> class name without prefix <w:>
     """
+    class_name = attr_name.replace('w:', '').title()
 
-    __required_bases = (BaseAttributeElement,)
-    __required_attributes = ("default_value", "attr_name", "simple_type")
+    class AttributeClass(BaseAttributeElement):
+        _default_value = default
+        _simple_type = simple_type
 
-    def __init__(cls, cls_name, bases, namespace):
-        super().__init__(cls_name, bases, namespace)
-
-        _check_bases = all(issubclass(cls, b) for b in cls.__required_bases)
-        _check_attr = all(a in namespace for a in cls.__required_attributes)
-        if not _check_bases:
-            raise TypeError(
-                f"Class must be a subclass of {cls.__required_bases}"
-            )
-        if not _check_attr:
-            raise TypeError(
-                f"Class must contain a required attributes "
-                f"{cls.__required_attributes}"
+        def __init__(self,
+                     value=_default_value,
+                     simple_type: Type[BaseSimpleType] | Type[
+                         BaseXmlEnum] = _simple_type
+                     ):
+            super().__init__(
+                value=value,
+                simple_type=simple_type,
+                attr_name=attr_name
             )
 
-        @annotation_catcher(
-            'self',
-            attr_name=namespace["attr_name"],
-            value=namespace["default_value"],
-            simple_type=namespace["simple_type"]
-        )
-        def initialize(arg):
-            super(arg.self.__class__, arg.self).__init__(
-                value=arg.value,
-                simple_type=arg.simple_type,
-                attr_name=arg.attr_name
-            )
-
-        cls.__init__ = initialize
+    AttributeClass.__name__ = class_name
+    AttributeClass.__qualname__ = class_name
+    return AttributeClass
 
 
-class Right(BaseAttributeElement, metaclass=MetaAttributesElement):
-    default_value = None
-    attr_name = "w:right"  # todo заменить строки на енумы
-    simple_type = ST_TwipsMeasure
-
-
-class Left(BaseAttributeElement, metaclass=MetaAttributesElement):
-    default_value = 100000
-    attr_name = "w:left"  # todo заменить строки на енумы
-    simple_type = ST_TwipsMeasure
+Right = attr_factory(
+    "w:right",
+    simple_type=ST_TwipsMeasure,
+    default=None
+)
+Left = attr_factory(default=100000, attr_name="w:left")
+Top = attr_factory(default=500, attr_name="w:top")
+Bottom = attr_factory(default=500, attr_name="w:bottom")
