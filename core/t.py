@@ -99,8 +99,13 @@ from core.ui_objects.paragraph import Paragraph
 
 
 p = Paragraph()
-from docx import Document
-d = Document()
+
+p2= Paragraph()
+p.linked_objects.append(p2)
+
+s_p = p.to_SI_element()
+print(s_p.to_xml_string())
+
 # link = [Paragraph(), Paragraph()]
 # p1 = Paragraph(linked_objects=link)
 
