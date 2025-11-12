@@ -33,11 +33,11 @@ def attr_factory(attr_name,
     return AttributeClass
 
 
-Right = attr_factory(
+AT_Right = attr_factory(
     "w:right",
     simple_type=ST_TwipsMeasure,
     default=None
 )
-Left = attr_factory(default=100000, attr_name="w:left")
-Top = attr_factory(default=500, attr_name="w:top")
-Bottom = attr_factory(default=500, attr_name="w:bottom")
+AT_Left = attr_factory(default=100000, attr_name="w:left")
+AT_Top = attr_factory(default=500, attr_name="w:top")
+AT_Bottom = attr_factory(default=500, attr_name="w:bottom")

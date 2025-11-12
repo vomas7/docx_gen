@@ -2,7 +2,7 @@ from core.doc_objects.base import BaseNonContainElement, BaseAttributeElement
 from typing import List
 
 
-class Text(BaseNonContainElement):
+class SI_Text(BaseNonContainElement):
     # todo Заполнить подходящими значениями Атрибуты и тэги
 
     def __init__(self,

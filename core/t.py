@@ -5,13 +5,7 @@ current_path = os.getcwd()
 root_path = os.path.abspath(os.path.join(current_path, ".."))
 sys.path.append(root_path)
 
-from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
-from xml.etree.ElementTree import Element as XmlElement
-from docx import Document
-from docx.oxml import OxmlElement
-from typing import cast
-from docx.oxml import CT_Text, CT_P
+
 
 # todo создать элементы - аналогичние CT_*, отличие в том что нет наследия от BaseOxmlMeta.
 # Логика pydocx заключается в том чтобы  добавлять элементы непосредственно в код XML,
@@ -31,7 +25,7 @@ from docx.oxml import CT_Text, CT_P
 
 
 # todo значит нужен ещё один слой обстакции. т.к чтобы добавить стиль для элемента, придётся создавать несколько объкутов внутри него например p нужен pPr и Marg и т.п
-# todo также получится добавить простой способ добавления элементов!
+# todo также получится добавить простой способ добавления элементов! в общем он нужен и для упрощённой последовательности элементов
 
 # todo------------
 # todo 1 привожу метаклассы атрибутов в порядок +
@@ -40,12 +34,26 @@ from docx.oxml import CT_Text, CT_P
 # todo 4 добавть body и document single-элементы
 # todo 5 адаптировать теги как и атрибуты с возможностью переопределения
 # todo -----------
+# todo аналог pydocx
+
+#todo МЫСЛЯ мы Добавляем на абстрактный уровень доп ирерахию для рабыты с элементами в том предсталении, в котором нам это нужно. Потому что на уровне с xml, правила будут противоречить друг другу, поэтомы так мы обходим структуру xml'я
 
 
-from core.doc_objects.paragraph import Paragraph
-from core.doc_objects.text import Text
-from core.doc_objects.run import Run
-from core.doc_objects.section import Section
+from core.doc_objects.paragraph import SI_Paragraph
+from core.doc_objects.text import SI_Text
+from core.doc_objects.run import SI_Run
+from core.doc_objects.section import SI_Section
+from docx.text.paragraph import Paragraph
+from docx import Document
+from doc_objects.attributes import AT_Right, AT_Left, AT_Top
+
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Optional
+from xml.etree.ElementTree import Element as XmlElement
+from docx.oxml import OxmlElement
+from typing import cast
+from docx.oxml import CT_Text, CT_P
+
 
 # p = Paragraph(children=[
 #     Text(),
@@ -67,23 +75,22 @@ doc = Document()
 # print(ind.left)
 # print(d._element.xml)
 
-from doc_objects.attributes import Right, Left, Top
 
 attrs = [
-    Right(value=57000),
-    Left(),
-    Top(value=100000)
+    AT_Right(value=57000),
+    AT_Left(),
+    AT_Top(value=100000)
 ]
 
-t = Text(attrs=attrs)
-r = Run(children=[t])
-p = Paragraph(children=[r])
-lef = Left(value=90000000)
+t = SI_Text(attrs=attrs)
+r = SI_Run(children=[t])
+p = SI_Paragraph(children=[r])
+lef = AT_Left(value=90000000)
 t.attrs.append(lef)
 t.attrs.pop(0)
 t.attrs.pop(0)
 print(t.to_xml_string())
 
-l = [Right(value=57000), lef]
+l = [AT_Right(value=57000), lef]
 t.attrs.extend(l)
 print(p.to_xml_string())

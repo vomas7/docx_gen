@@ -3,7 +3,7 @@ from typing import List
 from core.doc_objects.base import BaseAttributeElement
 
 
-class Section(BaseContainElement):
+class SI_Section(BaseContainElement):
     """
     Display <Section> without any
     wrapping at the object level

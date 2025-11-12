@@ -3,7 +3,7 @@ from typing import List
 from core.doc_objects.base import BaseAttributeElement
 
 
-class Run(BaseContainElement):
+class SI_Run(BaseContainElement):
     # todo Заполнить подходящими значениями Атрибуты и тэги
 
     def __init__(self,

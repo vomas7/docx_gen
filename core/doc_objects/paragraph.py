@@ -2,16 +2,12 @@ from __future__ import annotations
 from core.doc_objects.base import BaseContainElement, BaseMurkupElement, \
     BaseAttributeElement
 from typing import List, Set, Type
-from core.doc_objects.text import Text
-from core.doc_objects.run import Run
+from core.doc_objects.text import SI_Text
+from core.doc_objects.run import SI_Run
 
 
-class Paragraph(BaseContainElement):
+class SI_Paragraph(BaseContainElement):
     # todo Заполнить подходящими значениями Атрибуты и тэги
-    ACCESS_CHILDREN: Set[Type[BaseMurkupElement]] = {Text, Run, }
-    REQUIRED_CHILDREN: Set[Type[BaseMurkupElement]] = {Run, }
-    ACCESS_ATTRIBUTES: Set[...] = set()
-    REQUIRED_ATTRIBUTES: Set[...] = set()
 
     def __init__(self,
                  children: List[BaseMurkupElement] = None,
