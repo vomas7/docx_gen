@@ -1,13 +1,11 @@
 # todo remove duplicate logic with base elements in low-level and high-level elements!
 
-from typing import Union, FrozenSet, Type, List
-from abc import ABC, abstractmethod
-from docx.oxml.xmlchemy import BaseOxmlElement
+from typing import FrozenSet, Type, List
 
 from core.doc_objects.base import BaseMurkupElement
-from core.validators.v_objects import MiddlewareArray
+from core.utils.v_objects import MiddlewareArray
 from core.validators.xml_components import validate_access_elem
-
+from core.utils.annotaions import annotation_catcher
 
 class BaseDocx:
 
@@ -21,18 +19,25 @@ class BaseContainerDocx(BaseDocx):
     ACCESS_CHILDREN: FrozenSet[Type[BaseDocx]] = frozenset({
         BaseDocx
     })
-    __tag_validators = {validate_access_elem, }
 
     def __init__(self,
                  si_element,
                  linked_objects: List[BaseDocx] = None):
+
         super().__init__(si_element)
+
+        _object_actions = {validate_access_elem, self.__assign_parent}
         self._linked_objects = MiddlewareArray(
             iterable=linked_objects,
-            validator=self.__tag_validators,
+            actions=_object_actions,
             access_val=self.ACCESS_CHILDREN
         )
-
+    @annotation_catcher("self", "value")
+    @staticmethod
+    def __assign_parent(args):
+        if not isinstance(args.value, BaseDocx):
+            raise TypeError(f"{args.value} is not a BaseDocx instance")
+        args.value.parent = args.self
 
 class BaseNonContainerDocx(BaseDocx):
     pass

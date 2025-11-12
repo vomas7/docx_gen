@@ -9,7 +9,6 @@ from core.doc_objects.run import SI_Run
 class SI_Paragraph(BaseContainElement):
     # todo Заполнить подходящими значениями Атрибуты и тэги
     # todo сделать заполнение обязательных атрибутов и тегов атоматическим
-
     def __init__(self,
                  children: List[BaseMurkupElement] = None,
                  attrs: List[BaseAttributeElement] = None):

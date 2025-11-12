@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from core.validators.v_objects import ValidatedArray
+from core.utils.v_objects import MiddlewareArray
 from core.validators.xml_components import validate_access_elem
 
 from typing import List
@@ -56,15 +56,16 @@ class BaseMurkupElement(ABC):
     })
     REQUIRED_ATTRIBUTES: FrozenSet[Type[BaseAttributeElement]] = frozenset()
 
-    __attribute_validators = {validate_access_elem, }
 
     def __init__(self,
                  tag: str,
                  attrs: List[BaseAttributeElement] = None):
         self._tag = tag
-        self.attrs = ValidatedArray(
+        _attribute_actions = {validate_access_elem, }
+
+        self.attrs = MiddlewareArray(
             attrs,
-            validators=self.__attribute_validators,
+            actions=_attribute_actions,
             required_values=self.REQUIRED_ATTRIBUTES,
             access_val=self.ACCESS_ATTRIBUTES
         )
@@ -103,16 +104,17 @@ class BaseContainElement(BaseMurkupElement):
     })
     REQUIRED_CHILDREN: FrozenSet[Type[BaseMurkupElement]] = frozenset()
 
-    __tag_validators = {validate_access_elem, }
 
     def __init__(self,
                  tag: str,
                  attrs: List[BaseAttributeElement] = None,
                  children: List[BaseMurkupElement] = None):
         super().__init__(tag, attrs)
-        self.children = ValidatedArray(
+
+        _tag_actions = {validate_access_elem, }
+        self.children = MiddlewareArray(
             children,
-            validators=self.__tag_validators,
+            actions=_tag_actions,
             required_values=self.REQUIRED_CHILDREN,
             access_val=self.ACCESS_CHILDREN
         )

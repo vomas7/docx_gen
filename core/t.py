@@ -65,7 +65,6 @@ from docx.oxml import CT_Text, CT_P
 # print(r)
 
 
-doc = Document()
 
 # d = doc.add_paragraph()
 # _p = d._element
@@ -76,21 +75,35 @@ doc = Document()
 # print(d._element.xml)
 
 
-attrs = [
-    AT_Right(value=57000),
-    AT_Left(),
-    AT_Top(value=100000)
-]
+# attrs = [
+#     AT_Right(value=57000),
+#     AT_Left(),
+#     AT_Top(value=100000)
+# ]
+#
+# t = SI_Text(attrs=attrs)
+# r = SI_Run(children=[t])
+# p = SI_Paragraph(children=[r])
+# lef = AT_Left(value=90000000)
+# t.attrs.append(lef)
+# t.attrs.pop(0)
+# t.attrs.pop(0)
+# print(t.to_xml_string())
+#
+# l = [AT_Right(value=57000), lef]
+# t.attrs.extend(l)
+# print(p.to_xml_string())
 
-t = SI_Text(attrs=attrs)
-r = SI_Run(children=[t])
-p = SI_Paragraph(children=[r])
-lef = AT_Left(value=90000000)
-t.attrs.append(lef)
-t.attrs.pop(0)
-t.attrs.pop(0)
-print(t.to_xml_string())
 
-l = [AT_Right(value=57000), lef]
-t.attrs.extend(l)
-print(p.to_xml_string())
+from core.ui_objects.paragraph import Paragraph
+
+
+p = Paragraph()
+from docx import Document
+d = Document()
+# link = [Paragraph(), Paragraph()]
+# p1 = Paragraph(linked_objects=link)
+
+#
+# for obj in p1._linked_objects:
+#     print(obj.parent)

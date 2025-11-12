@@ -2,10 +2,10 @@ from typing import List, Any, Callable, Set, FrozenSet
 from core.exceptions.validation import ValidationError
 
 
-class ValidatedArray(list):
+class MiddlewareArray(list):
     def __init__(self,
                  iterable: List[Any] = None,
-                 validators: Set[Callable[..., bool]] = None,
+                 actions: Set[Callable[..., bool]] = None,
                  required_values: FrozenSet[Any] = None,
                  **kwargs):
         """
@@ -13,31 +13,31 @@ class ValidatedArray(list):
 
         Args:
             iterable: Initial array data
-            validators: Set of validator functions
+            actions: Set of action functions
             required_values: Set of values that must be present in the array
-            **kwargs: Additional arguments for each validator
+            **kwargs: Additional arguments for each action
 
         """
-
-        self._validators = validators or set()
+        self._actions = actions or set()
         self._required_values = (frozenset(required_values) if
                                  required_values else frozenset())
         _iterable = iterable or []
-        if self._validators:
-            self._validator = lambda x: all(
-                func(x, **kwargs) for func in self._validators
-            )
+        if self._actions:
+            self._action = lambda x: [
+                func(x, **kwargs) for func in self._actions
+            ]
         else:
-            self._validator = self._default_validator
+            self._action = self._default_action
 
-        all(self._validator(item) for item in _iterable)
+
+        [self._action(item) for item in _iterable]
 
         super().__init__(_iterable)
 
         self._check_required_values()
 
-    def _default_validator(self, item: Any):
-        """Default validator - allows all elements"""
+    def _default_action(self, item: Any):
+        """Default action - allows all elements"""
 
     def _check_required_values(self, func_name=None) -> None:
         """Checks for all required values"""
@@ -51,23 +51,23 @@ class ValidatedArray(list):
                           if func_name else "")
                 raise ValidationError(_base)
 
-    def validate(self, item: Any):
+    def action(self, item: Any):
         """Checks whether the item can be added"""
-        self._validator(item)
+        self._action(item)
 
     def append(self, item: Any) -> None:
         """Adds an element with validation"""
-        self.validate(item)
+        self.action(item)
         super().append(item)
 
     def extend(self, iterable: List[Any]) -> None:
         """Adds multiple elements with validation"""
-        all(self._validator(item) for item in iterable)
+        all(self._action(item) for item in iterable)
         super().extend(iterable)
 
     def insert(self, index: int, item: Any) -> None:
         """Inserts an element with validation"""
-        self.validate(item)
+        self.action(item)
         super().insert(index, item)
 
     def remove(self, item: Any) -> None:
@@ -88,7 +88,7 @@ class ValidatedArray(list):
 
     def __setitem__(self, index: int, item: Any) -> None:
         """Sets the element by index with validation"""
-        self.validate(item)
+        self.action(item)
         super().__setitem__(index, item)
         self._check_required_values(func_name=self.__setitem__.__name__)
 
@@ -98,9 +98,7 @@ class ValidatedArray(list):
         self._check_required_values(func_name=self.__delitem__.__name__)
 
     def __repr__(self) -> str:
-        validators_info = f", validators={len(self._validators)}" if self._validators else ""
-        required_info = f", required={self._required_values}" if self._required_values else ""
-        return f"ValidatedArray({super().__repr__()}{validators_info}{required_info})"
+        return f"MiddlewareArray({super().__repr__()})"
 
     @property
     def required_values(self) -> FrozenSet[Any]:
@@ -108,6 +106,6 @@ class ValidatedArray(list):
         return self._required_values.copy()
 
     @property
-    def validators(self) -> Set[Callable[..., bool]]:
-        """Returns a set of validators"""
-        return self._validators.copy()
+    def actions(self) -> Set[Callable[..., bool]]:
+        """Returns a set of actions"""
+        return self._actions.copy()
