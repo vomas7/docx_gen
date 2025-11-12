@@ -42,7 +42,7 @@ sys.path.append(root_path)
 from core.doc_objects.paragraph import SI_Paragraph
 from core.doc_objects.text import SI_Text
 from core.doc_objects.run import SI_Run
-from core.doc_objects.section import SI_Section
+from core.doc_objects.section import SI_SectPr
 from docx.text.paragraph import Paragraph
 from docx import Document
 from doc_objects.attributes import AT_Right, AT_Left, AT_Top
@@ -53,6 +53,7 @@ from xml.etree.ElementTree import Element as XmlElement
 from docx.oxml import OxmlElement
 from typing import cast
 from docx.oxml import CT_Text, CT_P
+from docx import Document
 
 
 # p = Paragraph(children=[
@@ -96,6 +97,7 @@ from docx.oxml import CT_Text, CT_P
 
 
 from core.ui_objects.paragraph import Paragraph
+from core.ui_objects.section import Section
 
 
 p = Paragraph()
@@ -103,8 +105,26 @@ p = Paragraph()
 p2= Paragraph()
 p.linked_objects.append(p2)
 
-s_p = p.to_SI_element()
-print(s_p.to_xml_string())
+# s_p = p.to_SI_element()
+
+s = Section([p])
+# print(s.linked_objects)
+any_p = Paragraph()
+
+any_p.linked_objects.append(s)
+
+
+# print(re_s)
+re_s = s.to_SI_element()
+#todo происходит дублирование при таком использовании
+# MiddlewareArray([<core.doc_objects.paragraph.SI_Paragraph object at 0x0000025DD29D5160>, <core.doc_objects.paragraph.SI_Paragraph object at 0x0000025DD29D5160>, <core.doc_objects.section.SI_SectPr object at 0x0000025DD4A41D00>])
+# (.venv) PS C:\Users\AkentevDV\Desktop\localProjects\docx_gen\core> python .\t.py
+# MiddlewareArray([<core.doc_objects.paragraph.SI_Paragraph object at 0x000001EF627E5130>, <core.doc_objects.section.SI_SectPr object at 0x000001EF64841EB0>])
+print(any_p.to_SI_element().children)
+# print(s_p.to_xml_string())
+
+
+
 
 # link = [Paragraph(), Paragraph()]
 # p1 = Paragraph(linked_objects=link)
