@@ -1,6 +1,6 @@
 from typing import List, Any, Callable, Set, FrozenSet
 from core.exceptions.validation import ValidationError
-
+import collections.abc
 
 class MiddlewareArray(list):
     def __init__(self,
@@ -62,8 +62,19 @@ class MiddlewareArray(list):
 
     def extend(self, iterable: List[Any]) -> None:
         """Adds multiple elements with validation"""
-        all(self._action(item) for item in iterable)
+        [self._action(item) for item in iterable]
         super().extend(iterable)
+
+    def append_or_extend(self, element: List[Any] | Any) -> None:
+        """
+        Adds both a single element and multiple elements with validation.
+        peculiarities: considers that both string and bytes is sequence
+        """
+        if isinstance(element, collections.abc.Sequence):
+            self.extend(element)
+        else:
+            self.append(element)
+
 
     def insert(self, index: int, item: Any) -> None:
         """Inserts an element with validation"""

@@ -47,7 +47,7 @@ class BaseContainerDocx(BaseDocx):
 
     def _to_SI_element(self):
         for child in self.linked_objects:
-            self._si_element.children.append(child.to_SI_element())
+            self._si_element.children.append_or_extend(child.to_SI_element())
         return self._si_element
 
     @annotation_catcher("self", "value")
