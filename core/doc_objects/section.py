@@ -3,12 +3,12 @@ from typing import List
 from core.doc_objects.base import BaseAttributeElement
 from core.doc_objects.paragraph import SI_Paragraph
 
-# class SI_pPr(BaseContainElement):
-#     def __init__(self,
-#                  children: List[BaseMurkupElement] = None,
-#                  attrs: List[BaseAttributeElement] = None):
-#         super().__init__("w:pPr", attrs, children)
-#
+class SI_pPr(BaseContainElement):
+    def __init__(self,
+                 children: List[BaseMurkupElement] = None,
+                 attrs: List[BaseAttributeElement] = None):
+        super().__init__("w:pPr", attrs, children)
+
 
 class SI_SectPr(BaseContainElement):
     """
@@ -23,3 +23,9 @@ class SI_SectPr(BaseContainElement):
                  attrs: List[BaseAttributeElement] = None):
         super().__init__("w:SectPr", attrs, children)
 
+
+    def wrap_to_paragraph(self) -> SI_Paragraph:
+        """Returns a new Paragraph containing the existing SectPr"""
+        _pPr = SI_SectPr(children=[self])
+        _paragraph = SI_Paragraph(children=[_pPr])
+        return _paragraph
