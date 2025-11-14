@@ -56,7 +56,6 @@ class BaseMurkupElement(ABC):
     })
     REQUIRED_ATTRIBUTES: FrozenSet[Type[BaseAttributeElement]] = frozenset()
 
-
     def __init__(self,
                  tag: str,
                  attrs: List[BaseAttributeElement] = None):
@@ -80,8 +79,9 @@ class BaseMurkupElement(ABC):
 
     def to_oxml(self) -> BaseOxmlElement:
         """Transforms an object into an OxmlElement"""
+        _oxml = cast(BaseOxmlElement, OxmlElement(self.tag))
 
-        return self._to_oxml_element()
+        return self._to_oxml_element(_oxml)
 
     def to_xml_string(self) -> str:
         """Transforms an object into an XML string"""
@@ -89,7 +89,7 @@ class BaseMurkupElement(ABC):
         return self.to_oxml().xml
 
     @abstractmethod
-    def _to_oxml_element(self) -> BaseOxmlElement:
+    def _to_oxml_element(self, oxml_elem: BaseOxmlElement) -> BaseOxmlElement:
         pass
 
     @property
@@ -103,7 +103,6 @@ class BaseContainElement(BaseMurkupElement):
         BaseMurkupElement
     })
     REQUIRED_CHILDREN: FrozenSet[Type[BaseMurkupElement]] = frozenset()
-
 
     def __init__(self,
                  tag: str,
@@ -119,18 +118,17 @@ class BaseContainElement(BaseMurkupElement):
             access_val=self.ACCESS_CHILDREN
         )
 
-    def _to_oxml_element(self) -> BaseOxmlElement:
+    def _to_oxml_element(self, oxml_elem: BaseOxmlElement) -> BaseOxmlElement:
         """
             Transforms an object into an
             OxmlElement recursively with its descendants
         """
 
-        oxml = cast(BaseOxmlElement, OxmlElement(self.tag))
-        self._assignment_attr(oxml)
+        self._assignment_attr(oxml_elem)
 
         for child in self.children:
-            oxml.append(child._to_oxml_element())
-        return oxml
+            oxml_elem.append(child.to_oxml())
+        return oxml_elem
 
 
 class BaseNonContainElement(BaseMurkupElement):
@@ -139,9 +137,8 @@ class BaseNonContainElement(BaseMurkupElement):
                  attrs: List[BaseAttributeElement]):
         super().__init__(tag, attrs)
 
-    def _to_oxml_element(self) -> BaseOxmlElement:
+    def _to_oxml_element(self, oxml_elem) -> BaseOxmlElement:
         """Transforms an object into an OxmlElement"""
 
-        oxml = cast(BaseOxmlElement, OxmlElement(self.tag))
-        self._assignment_attr(oxml)
-        return oxml
+        self._assignment_attr(oxml_elem)
+        return oxml_elem

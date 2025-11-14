@@ -3,11 +3,7 @@
 from typing import FrozenSet, Type, List
 import copy
 
-from core.doc_objects.base import (
-    BaseMurkupElement,
-    BaseContainElement,
-    BaseNonContainElement
-)
+from core.doc_objects.base import BaseMurkupElement, BaseContainElement
 from core.utils.v_objects import MiddlewareArray
 from core.validators.xml_components import validate_access_elem
 from core.utils.annotaions import annotation_catcher
@@ -25,10 +21,12 @@ class BaseDocx(ABC):
         return copy.deepcopy(self._si_element)
 
     def to_SI_element(self) -> BaseMurkupElement:
-        return self._to_SI_element()
+        return self._to_SI_element(self.si_element)
 
     @abstractmethod
-    def _to_SI_element(self) -> BaseMurkupElement:
+    def _to_SI_element(
+            self,
+            si_element: "BaseMurkupElement") -> BaseMurkupElement:
         pass
 
 
@@ -50,11 +48,10 @@ class BaseContainerDocx(BaseDocx):
             access_val=self.ACCESS_CHILDREN
         )
 
-    def _to_SI_element(self) -> BaseMurkupElement:
-        _si_element = self.si_element
+    def _to_SI_element(self, si_element) -> BaseMurkupElement:
         for child in self.linked_objects:
-            _si_element.children.append_or_extend(child.to_SI_element())
-        return _si_element
+            si_element.children.append_or_extend(child.to_SI_element())
+        return si_element
 
     @annotation_catcher("self", "value")
     @staticmethod
@@ -66,5 +63,5 @@ class BaseContainerDocx(BaseDocx):
 
 class BaseNonContainerDocx(BaseDocx):
 
-    def _to_SI_element(self) -> BaseMurkupElement:
-        return self.si_element
+    def _to_SI_element(self, si_element) -> BaseMurkupElement:
+        return si_element
