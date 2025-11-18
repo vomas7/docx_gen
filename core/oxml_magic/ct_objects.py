@@ -33,10 +33,6 @@ assign_si = {
 def FromOxml(elem: "BaseOxmlElement") -> Optional["BaseMurkupElement"]:
     if isinstance(elem, BaseOxmlElement):
         return assign_si[elem.__class__]()
-    print(
-    etree.tostring(elem, encoding="unicode", pretty_print=True)
-
-    )
     raise TypeError(f"Unsupported element type: {type(elem)}")
 
 

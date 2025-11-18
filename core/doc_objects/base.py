@@ -8,10 +8,11 @@ from typing import cast
 from typing import Type, Any, FrozenSet
 
 from docx.enum.base import BaseXmlEnum
-from docx.oxml.xmlchemy import BaseOxmlElement
 from docx.oxml.simpletypes import BaseSimpleType
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
+from docx.oxml.xmlchemy import serialize_for_reading
+from lxml import etree
 
 
 class BaseAttributeElement:
@@ -69,7 +70,7 @@ class BaseMurkupElement(ABC):
             access_val=self.ACCESS_ATTRIBUTES
         )
 
-    def _assignment_attr(self, obj: BaseOxmlElement) -> Any:
+    def _assignment_attr(self, obj: etree.ElementBase) -> Any:
         """Assigns an OxmlElement attribute"""
         for attr in self.attrs:
             oxml_val = attr.get_oxml_value()
@@ -77,19 +78,21 @@ class BaseMurkupElement(ABC):
                 raise AttributeError(f"Attribute {attr} has no value")
             obj.set(attr._clark_name, oxml_val)
 
-    def to_oxml(self) -> BaseOxmlElement:
-        """Transforms an object into an OxmlElement"""
-        _oxml = cast(BaseOxmlElement, OxmlElement(self.tag))
+    def to_oxml(self) -> etree.ElementBase:
+        """Transforms an object into an etree.element"""
+        _oxml = cast(etree.ElementBase, OxmlElement(self.tag))
 
         return self._to_oxml_element(_oxml)
 
     def to_xml_string(self) -> str:
         """Transforms an object into an XML string"""
-
-        return self.to_oxml().xml
+        return serialize_for_reading(self.to_oxml())
 
     @abstractmethod
-    def _to_oxml_element(self, oxml_elem: BaseOxmlElement) -> BaseOxmlElement:
+    def _to_oxml_element(
+            self,
+            oxml_elem: etree.ElementBase
+    ) -> etree.ElementBase:
         pass
 
     @property
@@ -118,7 +121,8 @@ class BaseContainElement(BaseMurkupElement):
             access_val=self.ACCESS_CHILDREN
         )
 
-    def _to_oxml_element(self, oxml_elem: BaseOxmlElement) -> BaseOxmlElement:
+    def _to_oxml_element(self,
+                         oxml_elem: etree.ElementBase) -> etree.ElementBase:
         """
             Transforms an object into an
             OxmlElement recursively with its descendants
@@ -137,7 +141,7 @@ class BaseNonContainElement(BaseMurkupElement):
                  attrs: List[BaseAttributeElement]):
         super().__init__(tag, attrs)
 
-    def _to_oxml_element(self, oxml_elem) -> BaseOxmlElement:
+    def _to_oxml_element(self, oxml_elem) -> etree.ElementBase:
         """Transforms an object into an OxmlElement"""
 
         self._assignment_attr(oxml_elem)

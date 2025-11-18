@@ -23,15 +23,16 @@ sys.path.append(root_path)
 # todo 1 привожу метаклассы атрибутов в порядок +
 # todo 2 делаю прикол с секциями - по-факту транслит из нормальной последовательности элементов в нужную и наоборот +
 # todo 3 создать второй слой абстракции +
-# todo * реализовать логику ридера +
-# todo 4 добавть body и document single-элементы +
-# todo 5 добавить класс для тегов, которые не привязаны к CT_елементам. (саксесоры) короче ёбка
-# todo определить documentPart через создающийся CT_DOCUMENT. Настроить flow открытия документа
-# todo 5 Доремонтировать секции
-# todo 7 перенести простые элементы
-# todo 6 создать метакласс для автоматической генрации необходимых пациков (как атрибутов так и тэгов)
-# todo 8 Настроить экспортёр
-# todo 9 перенести все элементы
+# todo 4 реализовать логику ридера +
+# todo 5 добавть body и document single-элементы +
+# todo 6 создать метакласс для автоматической генрации необходимых пациков (атрибуты) +
+# todo 7 создать метакласс для автоматической генрации необходимых пациков (тэги)
+# todo 8 проинициализировать их в lxml
+# todo 9 определить documentPart через создающийся CT_DOCUMENT. Настроить flow открытия документа
+# todo 10 Доремонтировать секции
+# todo 11 перенести простые элементы
+# todo 12 Настроить экспортёр
+# todo 13 перенести все элементы
 # todo ... добавить enum'ы для всех тегов
 # todo -----------
 
@@ -55,7 +56,48 @@ sys.path.append(root_path)
 
 from core.ui_objects.api import Document
 from docx.oxml import CT_P
+# from core.ui_objects.paragraph import Paragraph
+# from core.ui_objects.section import Section
+#
+# p = Paragraph()
+# p2 = Paragraph(linked_objects=[p])
+#
+# sec = Section(linked_objects=[p2])
+# p3 = Paragraph(linked_objects=[sec])
+# print(p3.to_SI_element().to_xml_string())
+# print(p3.to_SI_element().to_xml_string())
+# print(p3.to_SI_element().to_xml_string())
 
-doc = Document()
 
-doc.body.to_SI_element().to_xml_string()
+# doc = Document()
+
+# doc.body.to_SI_element().to_xml_string()
+
+
+
+
+from typing import TYPE_CHECKING
+from core.doc_objects.paragraph import SI_Paragraph
+from core.doc_objects.section import SI_SectPr
+from core.doc_objects.text import SI_Text
+
+import sys
+
+import time
+import importlib
+
+
+start = time.time()
+#todo реализовать файл со всеми тегами (импорт онных) + реализовтаь сериализацию строковых классов
+
+
+print(globals().get("SI_Paragraph"))
+
+
+
+
+
+
+print(time.time() - start)
+
+
