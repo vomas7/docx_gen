@@ -25,76 +25,37 @@ sys.path.append(root_path)
 # todo 3 создать второй слой абстракции +
 # todo * реализовать логику ридера +
 # todo 4 добавть body и document single-элементы +
+# todo 5 добавить класс для тегов, которые не привязаны к CT_елементам. (саксесоры) короче ёбка
 # todo определить documentPart через создающийся CT_DOCUMENT. Настроить flow открытия документа
 # todo 5 Доремонтировать секции
-# todo 6 создать метакласс для автоматической генрации необходимых пациков (как атрибутов так и тэгов)
 # todo 7 перенести простые элементы
+# todo 6 создать метакласс для автоматической генрации необходимых пациков (как атрибутов так и тэгов)
 # todo 8 Настроить экспортёр
 # todo 9 перенести все элементы
 # todo ... добавить enum'ы для всех тегов
 # todo -----------
 
 
-# from core.doc_objects.paragraph import SI_Paragraph
-# from core.doc_objects.text import SI_Text
-# from core.doc_objects.run import SI_Run
-# from core.doc_objects.section import SI_SectPr
-# from docx.text.paragraph import Paragraph
 # from docx import Document
-# from doc_objects.attributes import AT_Right, AT_Left, AT_Top
-#
-# from abc import ABC, abstractmethod
-# from typing import Any, Dict, List, Optional
-# from xml.etree.ElementTree import Element as XmlElement
-from docx.oxml import OxmlElement
-# from typing import cast
-from docx.oxml import CT_Text, CT_P
-# from docx import Document
-#
-#
-#
-#
-#
-from core.ui_objects.paragraph import Paragraph
-from core.ui_objects.section import Section
-from core.oxml_magic.ct_objects import convert_to_Si
+# from docx.enum.section import WD_HEADER_FOOTER_INDEX
+# from docx.oxml import CT_HdrFtr, CT_HdrFtrRef
 
-# p = Paragraph()
-#
-# p2 = Paragraph()
-# p.linked_objects.append(p2)
-# # p/p2
-#
-# s = Section([p])
-# # s/p/p2
-#
-# any_p = Paragraph()
-#
-# any_p.linked_objects.append(s)
-# # p/s/p/p2
-# s_si = s.to_SI_element()
 
-# print(any_p.to_SI_element().to_xml_string())
-
-# p :CT_P= OxmlElement("w:p")
-# p2 = OxmlElement("w:p")
-# p.append(p2)
-from typing import cast
-from docx.oxml.xmlchemy import BaseOxmlElement
-from docx.oxml import CT_Body, CT_Document, CT_P
-from core.ui_objects.document import Document
-
-p = cast("CT_P", OxmlElement("w:p"))
-b = cast("CT_Body",OxmlElement("w:body"))
-d = cast("CT_Document",OxmlElement("w:document"))
-b.append(p)
-d.append(b)
-# re = convert_to_Si(d)
-doc = Document(document_elem=d, document_part="some")
-
-print(doc)
-print(doc._si_document.to_xml_string())
-# print(p)
-# print(p2)
+# doc = Document()
 #
-# print([i for i in p2])
+# s = doc.sections[0]
+# s._sectPr.add_footerReference(WD_HEADER_FOOTER_INDEX.EVEN_PAGE, "11111111")
+# ref = s._sectPr.get_footerReference(WD_HEADER_FOOTER_INDEX.EVEN_PAGE)
+#
+# print(
+#     ref
+# )
+
+#===========
+
+from core.ui_objects.api import Document
+from docx.oxml import CT_P
+
+doc = Document()
+
+doc.body.to_SI_element().to_xml_string()

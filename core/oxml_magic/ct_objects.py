@@ -1,6 +1,6 @@
-from docx.oxml import CT_P, CT_Body, CT_R, CT_SectPr, CT_Text, CT_Document
+from docx.oxml import CT_P, CT_Body, CT_R, CT_SectPr, CT_Text, CT_Document, CT_PageSz, CT_PageMar, CT_HdrFtr, CT_HdrFtrRef
 from core.doc_objects.text import SI_Text
-from core.doc_objects.section import SI_SectPr
+from core.doc_objects.section import SI_SectPr, SI_PageSz, SI_PageMar
 from core.doc_objects.paragraph import SI_Paragraph
 from core.doc_objects.run import SI_Run
 from core.doc_objects.document import SI_Body
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from core.doc_objects.base import BaseMurkupElement
 
 from typing import Optional
+from lxml import etree
 
 # todo is temporary solution, in future need to migrate to own objects
 # todo it required for clean logic and independent project
@@ -23,15 +24,20 @@ assign_si = {
     CT_Body: SI_Body,
     CT_Text: SI_Text,
     CT_P: SI_Paragraph,
-    CT_Document: SI_Document
+    CT_Document: SI_Document,
+    CT_PageMar: SI_PageMar,
+    CT_PageSz: SI_PageSz
 }
 
 
 def FromOxml(elem: "BaseOxmlElement") -> Optional["BaseMurkupElement"]:
     if isinstance(elem, BaseOxmlElement):
-        si_element = assign_si.get(elem.__class__, None)
-        return si_element() if si_element else si_element
-    return None
+        return assign_si[elem.__class__]()
+    print(
+    etree.tostring(elem, encoding="unicode", pretty_print=True)
+
+    )
+    raise TypeError(f"Unsupported element type: {type(elem)}")
 
 
 def convert_to_Si(oxml_elem: "BaseOxmlElement") -> "BaseMurkupElement":

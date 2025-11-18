@@ -13,3 +13,10 @@ class SI_Paragraph(BaseContainElement):
                  children: List[BaseMurkupElement] = None,
                  attrs: List[BaseAttributeElement] = None):
         super().__init__("w:p", attrs, children)
+
+
+class SI_pPr(BaseContainElement):
+    def __init__(self,
+                 children: List[BaseMurkupElement] = None,
+                 attrs: List[BaseAttributeElement] = None):
+        super().__init__("w:pPr", attrs, children)
