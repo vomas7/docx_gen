@@ -1,5 +1,5 @@
 from core.doc_objects.paragraph import SI_Paragraph
-
+from abc import ABCMeta
 from core.doc_objects.base import (
     BaseContainElement,
     BaseNonContainElement,
@@ -14,13 +14,28 @@ from typing import Sequence, FrozenSet, Type
 _namespace = globals()
 
 
+class BaseTagsMeta(ABCMeta):
+    def __new__(cls, clsname, bases, attrs):
+        attrs_mapping = {
+            "ACCESS_ATTRIBUTES": attrs.get("ACCESS_ATTRIBUTES", []),
+            "ACCESS_CHILDREN": attrs.get("ACCESS_CHILDREN", []),
+            "REQUIRED_CHILDREN": attrs.get("REQUIRED_CHILDREN", []),
+            "REQUIRED_ATTRIBUTES": attrs.get("REQUIRED_ATTRIBUTES", []),
+        }
+
+        for key, seq in attrs_mapping.items():
+            if seq:
+                attrs[key] = serialize_related_obj(seq)
+
+        return super().__new__(cls, clsname, bases, attrs)
+
+
 def serialize_related_obj(
         seq: Sequence[str]
 ) -> FrozenSet[Type[BaseMurkupElement]]:
     return frozenset(
         {serialize_ns_to_obj(ns=_namespace, attr=i) for i in seq}
     )
-
 
 def tag_factory(
         tag_name,
@@ -38,17 +53,7 @@ def tag_factory(
         '__qualname__': _class_name,
         '__module__': __name__,
     }
-
-    attrs_mapping = {
-        "ACCESS_ATTRIBUTES": kwargs.get("ACCESS_ATTRIBUTES", []),
-        "ACCESS_CHILDREN": kwargs.get("ACCESS_CHILDREN", []),
-        "REQUIRED_CHILDREN": kwargs.get("REQUIRED_CHILDREN", []),
-        "REQUIRED_ATTRIBUTES": kwargs.get("REQUIRED_ATTRIBUTES", []),
-    }
-
-    for key, seq in attrs_mapping.items():
-        if seq:
-            class_attrs[key] = serialize_related_obj(seq)
+    class_attrs.update(kwargs)
 
     if is_container:
         def __init__(self, attrs=None, children=None):
@@ -60,7 +65,7 @@ def tag_factory(
 
     class_attrs['__init__'] = __init__
 
-    TagClass = type(_class_name, (_ParentCls,), class_attrs)
+    TagClass = BaseTagsMeta(_class_name, (_ParentCls,), class_attrs)
 
     return TagClass
 

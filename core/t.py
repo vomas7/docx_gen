@@ -37,7 +37,8 @@ sys.path.append(root_path)
 # # todo -----------
 # # todo для стайлера релизовать во первых его как отдельный объект, у каждого верхоуровнего элемента как атрибут и можно обращаться parahraph.style.align = center
 # # todo некоторые параметры styler'а могут иметь отдельные классы или енумы, в целом продумать этот моментик. чтобы пользователю было понятно каке атрибуты и параметры он может туда херачить. например у align есть 4 параметра
-
+# # todo в дальнейшем можно подумать над тем, чтобы убрать объекты из frozenset (related-объектов) и перевести их сразу в строку, можно рассмотреть множсвтенное указание элементов.
+# # todo
 #
 #
 # # from docx import Document
@@ -109,21 +110,21 @@ sys.path.append(root_path)
 #
 
 
-# from core.doc_objects.tags import pgMarg
-# from core.doc_objects.paragraph import SI_Paragraph
-#
-# pg = pgMarg()
-# print(
-#     pg.REQUIRED_ATTRIBUTES,
-#     pg.ACCESS_ATTRIBUTES,
-#     pg.ACCESS_CHILDREN,
-#     pg.REQUIRED_CHILDREN
-#
-# )
-#
-# print(pg)
-# print(SI_Paragraph)
-# print(pg.tag)
-fff = 1
+from core.doc_objects.tags import pgMarg
+from core.doc_objects.paragraph import SI_Paragraph
 
-print(getattr(__name__, "fff"))
+pg = pgMarg()
+print(
+    pg.REQUIRED_ATTRIBUTES,
+    pg.ACCESS_ATTRIBUTES,
+    pg.ACCESS_CHILDREN,
+    pg.REQUIRED_CHILDREN
+
+)
+
+print(pg)
+print(SI_Paragraph)
+print(pg.tag)
+# fff = 1
+#
+# print(getattr(__name__, "fff"))
