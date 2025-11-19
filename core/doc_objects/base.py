@@ -99,6 +99,13 @@ class BaseMurkupElement(ABC):
     def tag(self):
         return self._tag
 
+    def __repr__(self):
+        return f'<{type(self)} object at {hex(id(self))}>'
+
+    def __str__(self):
+        return f'{type(self)} object at {hex(id(self))}>'
+
+
 
 class BaseContainElement(BaseMurkupElement):
     # by default there are no restrictions

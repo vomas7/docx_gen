@@ -1,46 +1,54 @@
-# todo in the near future
-# проблема в метаклассах, а именно в неунификации классов для метакласса + проблема с access и req атрибутами, проблема в последовательном использовании. но один из варантов:
-# @classmethod
-#     def _resolve_class_references(cls, class_set):
-#         resolved = set()
-#         for item in class_set:
-#             if isinstance(item, str):
-#                 # Ищем класс в текущем модуле
-#                 import sys
-#                 current_module = sys.modules[__name__]
-#                 resolved_class = getattr(current_module, item, None)
-#                 if resolved_class:
-#                     resolved.add(resolved_class)
-#             else:
-#                 resolved.add(item)
-#         return resolved
+from core.doc_objects.paragraph import SI_Paragraph
 
-
-from core.doc_objects.base import BaseContainElement, BaseNonContainElement
+from core.doc_objects.base import (
+    BaseContainElement,
+    BaseNonContainElement,
+    BaseMurkupElement
+)
 from core.utils.serializers import serialize_ns_to_obj
+from typing import Sequence, FrozenSet, Type
+
+# todo придумать как автоматически генерировать обязательные атрибуты (скорее всего просто добавить сторонний метод для middleware списка)
+
 
 _namespace = globals()
+
+
+def serialize_related_obj(
+        seq: Sequence[str]
+) -> FrozenSet[Type[BaseMurkupElement]]:
+    return frozenset(
+        {serialize_ns_to_obj(ns=_namespace, attr=i) for i in seq}
+    )
 
 
 def tag_factory(
         tag_name,
         is_container,
         **kwargs
-):
+) -> Type[BaseMurkupElement]:
     """
     Factory of attributes, returns a class with <tag_name> class name without prefix <w:>
     """
-    class_name = tag_name.replace('w:', '').title()
+    _class_name = tag_name.replace('w:', 'SI_')
     _ParentCls = BaseContainElement if is_container else BaseNonContainElement
 
     class_attrs = {
-        '__name__': class_name,
-        '__qualname__': class_name,
+        '__name__': _class_name,
+        '__qualname__': _class_name,
+        '__module__': __name__,
     }
-    #todo добавить сериализацию для access и require
-    #todo придумать как автоматически генерировать обязательные атрибуты (скорее всего просто добавить сторонний метод для middleware списка)
 
-    class_attrs.update(kwargs)
+    attrs_mapping = {
+        "ACCESS_ATTRIBUTES": kwargs.get("ACCESS_ATTRIBUTES", []),
+        "ACCESS_CHILDREN": kwargs.get("ACCESS_CHILDREN", []),
+        "REQUIRED_CHILDREN": kwargs.get("REQUIRED_CHILDREN", []),
+        "REQUIRED_ATTRIBUTES": kwargs.get("REQUIRED_ATTRIBUTES", []),
+    }
+
+    for key, seq in attrs_mapping.items():
+        if seq:
+            class_attrs[key] = serialize_related_obj(seq)
 
     if is_container:
         def __init__(self, attrs=None, children=None):
@@ -52,67 +60,13 @@ def tag_factory(
 
     class_attrs['__init__'] = __init__
 
-    TagClass = type(class_name, (_ParentCls,), class_attrs)
+    TagClass = type(_class_name, (_ParentCls,), class_attrs)
 
     return TagClass
 
-# from core.doc_objects.base import BaseMurkupElement, BaseContainElement, BaseNonContainElement
-# from typing import Any, Set, Type
-#
-# # class MetaTagsElement(type):
-# #     """
-# #                 Initializes __init__ for each Tag class.
-# #                 Restricts  | __required_attributes | attributes for class
-# #                 and parent | __required_bases |
-# #     """
-# #
-# #     __required_bases = (BaseMurkupElement,)
-# #     __required_attributes = ("tag",)
-# #
-# #     # def __new__(cls, cls_name, bases, namespace):
-# #     #     # super().__init__(cls_name, bases, namespace)
-# #     #     # _original_init = getattr(cls, '__init__', None)
-# #     #     # _check_bases = all(issubclass(cls, b) for b in cls.__required_bases)
-# #     #     # _check_attr = all(a in namespace for a in cls.__required_attributes)
-# #     #     # if not _check_bases:
-# #     #     #     raise TypeError(
-# #     #     #         f"Class must be a subclass of {cls.__required_bases}"
-# #     #     #     )
-# #     #     # if not _check_attr:
-# #     #     #     raise TypeError(
-# #     #     #         f"Class must contain a required attributes "
-# #     #     #         f"{cls.__required_attributes}"
-# #     #     #     )
-# #     #
-# #     #     tag = getattr(cls, "tag", None)
-# #     #     def _init(self, *args, **kwargs):
-# #     #         super(cls, self).__init__(tag=tag, *args, **kwargs)
-# #     #
-# #     #     # cls.__init__ = _original_init or _init
-# #     #     namespace["__init__"] = _init
-# #     #     return super().__new__(cls, cls_name, bases, namespace)
-#
-# class Run(BaseContainElement):
-#     # ACCESS_CHILDREN: Set[Type[BaseMurkupElement]] = {}
-#     # REQUIRED_CHILDREN: Set[Type[BaseMurkupElement]] = {}
-#     # ACCESS_ATTRIBUTES: Set[...] = set()
-#     # REQUIRED_ATTRIBUTES: Set[...] = set()
-#
-#     tag = "w:r"
-#
-#
-# class Text(BaseNonContainElement):
-#     # ACCESS_CHILDREN: Set[Type[BaseMurkupElement]] = {}
-#     # REQUIRED_CHILDREN: Set[Type[BaseMurkupElement]] = {}
-#     # ACCESS_ATTRIBUTES: Set[...] = set()
-#     # REQUIRED_ATTRIBUTES: Set[...] = set()
-#
-#     tag = "w:t"
-#
-# class Paragraph(BaseContainElement):
-#     ACCESS_CHILDREN: Set[Type[BaseMurkupElement]] = {Text, Run, }
-#     REQUIRED_CHILDREN: Set[Type[BaseMurkupElement]] = {Run, }
-#     ACCESS_ATTRIBUTES: Set[...] = set()
-#     REQUIRED_ATTRIBUTES: Set[...] = set()
-#
-#     tag = "w:p"
+
+pgMarg = tag_factory(
+    'w:pgMarg',
+    is_container=True,
+    ACCESS_ATTRIBUTES=["SI_Paragraph"],
+)
