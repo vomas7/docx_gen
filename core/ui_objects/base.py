@@ -5,7 +5,7 @@ import copy
 
 from core.doc_objects.base import BaseMurkupElement, BaseContainElement
 from core.utils.v_objects import MiddlewareArray
-from core.validators.xml_components import validate_access_elem
+from core.validators.v_objects import validate_access_type
 from core.utils.annotaions import annotation_catcher
 from abc import abstractmethod, ABC
 
@@ -41,7 +41,7 @@ class BaseContainerDocx(BaseDocx):
                  linked_objects: List[BaseDocx] = None):
         super().__init__(si_element)
 
-        _object_actions = {validate_access_elem, self.__assign_parent}
+        _object_actions = {validate_access_type, self.__assign_parent}
         self.linked_objects = MiddlewareArray(
             iterable=linked_objects,
             actions=_object_actions,

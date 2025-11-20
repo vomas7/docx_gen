@@ -6,9 +6,49 @@ from core.doc_objects.base import (
     BaseMurkupElement
 )
 from core.utils.serializers import serialize_ns_to_obj
-from typing import Sequence, FrozenSet, Type
+from typing import Sequence, FrozenSet, Type, Dict, Any
 
 # todo придумать как автоматически генерировать обязательные атрибуты (скорее всего просто добавить сторонний метод для middleware списка)
+
+#
+# class TrackingMeta(type):
+#     _registry = {}
+#
+#     def __new__(cls, name, bases, attrs):
+#         # print(cls._registry)
+#         return super().__new__(cls, name, bases, attrs)
+#
+#     def __init__(cls, name, bases, attrs):
+#         super().__init__(name, bases, attrs)
+#         TrackingMeta._registry[name] = cls
+#
+#     @classmethod
+#     def get_registered_classes(cls):
+#         return cls._registry
+#
+#     def _initialize_references(f):
+#         pass
+#
+#
+# class BaseMeta(TrackingMeta):
+#     pass
+#
+#
+# class X(metaclass=BaseMeta):
+#     pass
+#
+#
+# class Y(X):
+#     pass
+#
+#
+# class Z(metaclass=BaseMeta):
+#     pass
+#
+#
+# print("Registered classes:", TrackingMeta.get_registered_classes())
+
+# {<class '__main__.X'>, <class '__main__.Y'>, <class '__main__.Z'>}
 
 
 _namespace = globals()
@@ -29,6 +69,14 @@ class BaseTagsMeta(ABCMeta):
 
         return super().__new__(cls, clsname, bases, attrs)
 
+    def __init__(cls, name, bases, attrs):
+        super().__init__(name, bases, attrs)
+        BaseTagsMeta._registry[name] = cls
+
+    @classmethod
+    def get_registered_classes(cls):
+        return cls._registry
+
 
 def serialize_related_obj(
         seq: Sequence[str]
@@ -36,6 +84,7 @@ def serialize_related_obj(
     return frozenset(
         {serialize_ns_to_obj(ns=_namespace, attr=i) for i in seq}
     )
+
 
 def tag_factory(
         tag_name,
@@ -68,10 +117,3 @@ def tag_factory(
     TagClass = BaseTagsMeta(_class_name, (_ParentCls,), class_attrs)
 
     return TagClass
-
-
-pgMarg = tag_factory(
-    'w:pgMarg',
-    is_container=True,
-    ACCESS_ATTRIBUTES=["SI_Paragraph"],
-)

@@ -110,21 +110,49 @@ sys.path.append(root_path)
 #
 
 
-from core.doc_objects.tags import pgMarg
-from core.doc_objects.paragraph import SI_Paragraph
-
-pg = pgMarg()
-print(
-    pg.REQUIRED_ATTRIBUTES,
-    pg.ACCESS_ATTRIBUTES,
-    pg.ACCESS_CHILDREN,
-    pg.REQUIRED_CHILDREN
-
-)
-
-print(pg)
-print(SI_Paragraph)
-print(pg.tag)
-# fff = 1
+# from core.doc_objects.tags import pgMarg
+# from core.doc_objects.paragraph import SI_Paragraph
+#
+# pg = pgMarg()
+# print(
+#     pg.REQUIRED_ATTRIBUTES,
+#     pg.ACCESS_ATTRIBUTES,
+#     pg.ACCESS_CHILDREN,
+#     pg.REQUIRED_CHILDREN
+#
+# )
+#
+# print(pg)
+# print(SI_Paragraph)
+# print(pg.tag)
+# # fff = 1
 #
 # print(getattr(__name__, "fff"))
+
+
+#
+# from core.doc_objects.tags import tag_factory
+#
+#
+# pgMarg = tag_factory(
+#     'w:pgMarg',
+#     is_container=True,
+#     ACCESS_ATTRIBUTES=["SI_Paragraph"],
+# )
+# from __future__ import annotations
+from typing import cast, Type, Generic, TypeVar, ClassVar
+from core.doc_objects.base import BaseMurkupElement, BaseContainElement, BaseNonContainElement
+
+
+
+_T = TypeVar(bound=BaseContainElement, name="_T")
+
+eleme: Type[BaseMurkupElement]
+from core.doc_objects.paragraph import SI_Paragraph
+clv = ClassVar[Type["SI_Paragraph"]]
+print(clv)
+
+
+
+
+
