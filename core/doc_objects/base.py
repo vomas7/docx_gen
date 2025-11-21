@@ -110,7 +110,7 @@ class BaseMurkupElement(ABC):
 class BaseContainElement(BaseMurkupElement):
     # by default there are no restrictions
     ACCESS_CHILDREN: FrozenSet[Type[BaseMurkupElement]] = frozenset({
-        BaseMurkupElement
+        "BaseMurkupElement"
     })
     REQUIRED_CHILDREN: FrozenSet[Type[BaseMurkupElement]] = frozenset()
 
