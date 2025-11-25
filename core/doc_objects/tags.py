@@ -5,6 +5,7 @@ from core.doc_objects.base import (
     BaseNonContainElement,
     BaseMurkupElement
 )
+from core.utils.tracker_mixin import MetaRegister
 from core.exceptions.validation import ValidationError
 from core.utils.serializers import serialize_ns_to_obj
 from typing import Sequence, FrozenSet, Type, Dict, Any
@@ -22,96 +23,42 @@ from typing import Dict, Type, Set, TypeVar, ClassVar
 # Тип для элементов разметки
 T = TypeVar('T', bound='BaseMurkupElement')
 
-#todo придумать как завести и адаптировать для атрибутов бляяяяяяяяяяяяяяяяяя
-#todo не забыть про базовую иницилизацию
-#todo как вариант сделать ещё один метакласс, котторый занимается отслеживанием элементов. тогда скорее всего понвдобится самый высокий базовый элемент.
-class BaseTagsMeta(ABCMeta):
+
+# todo придумать как завести и адаптировать для атрибутов бляяяяяяяяяяяяяяяяяя
+# todo не забыть про базовую иницилизацию
+# todo как вариант сделать ещё один метакласс, котторый занимается отслеживанием элементов. тогда скорее всего понвдобится самый высокий базовый элемент.
+class BaseTagsMeta(ABCMeta, MetaRegister):
     """Метакласс для регистрации элементов разметки и управления их отношениями."""
 
-    _registry: ClassVar[Dict[str, Type['BaseMurkupElement']]] = {}
-    _base_attrs: ClassVar[Set[str]] = {"ACCESS_ATTRIBUTES",
-                                       "REQUIRED_ATTRIBUTES"}
-    _container_attrs: ClassVar[Set[str]] = {"ACCESS_CHILDREN",
-                                            "REQUIRED_CHILDREN"}
-
-    # Имена базовых классов для избежания циклических импортов
-    _base_class_names: ClassVar[Set[str]] = {
-        'BaseMurkupElement',
-        'BaseContainElement',
-        'BaseNonContainElement'
-    }
-
-    def __init__(cls, name: str, bases: tuple, attrs: dict) -> None:
-        super().__init__(name, bases, attrs)
-
-        # Проверяем атрибуты только для конкретных элементов (не базовых классов)
-        if BaseTagsMeta._is_concrete_element(name):
-            cls._validate_attributes()
-            BaseTagsMeta._registry[name] = cls
-
-    @classmethod
-    def _is_concrete_element(cls, class_name: str) -> bool:
-        """Проверяет, является ли класс конкретным элементом (исключает базовые классы)."""
-        return (class_name not in cls._base_class_names and
-                not class_name.startswith('Base'))
-
-    @classmethod
-    def _is_container_element(cls, target_class: Type[T]) -> bool:
-        """Проверяет, является ли класс контейнерным элементом по имени его базовых классов."""
-        # Проверяем по именам базовых классов чтобы избежать циклических импортов
-        base_names = {base.__name__ for base in target_class.__mro__}
-        return 'BaseContainElement' in base_names
-
-    def _validate_attributes(cls) -> None:
-        """Проверка обязательных атрибутов класса."""
-        if not obj_has_all_attrs(cls, BaseTagsMeta._base_attrs):
-            raise AttributeError(
-                f"Missing required base attributes in {cls.__name__}")
-
-        if BaseTagsMeta._is_container_element(cls):
-            if not obj_has_all_attrs(cls, BaseTagsMeta._container_attrs):
-                raise AttributeError(
-                    f"Missing container attributes in {cls.__name__}")
+    _expected_attrs: ClassVar[Set[str]] = {"ACCESS_ATTRIBUTES",
+                                           "REQUIRED_ATTRIBUTES",
+                                           "ACCESS_CHILDREN",
+                                           "REQUIRED_CHILDREN"}
 
     @classmethod
     def initialize_relations(cls) -> None:
         """Инициализирует отношения между классами после регистрации всех элементов."""
         for class_name, class_obj in cls._registry.items():
-            cls._resolve_class_references(class_obj)
+            for r_attrs in cls._expected_attrs:
+                if hasattr(class_obj, r_attrs):
+                    seq_ref = getattr(class_obj, r_attrs)
+                    resolved_ref = cls._resolve_class_references(seq_ref)
+                    setattr(class_obj, r_attrs, resolved_ref)
+
 
     @classmethod
-    def _resolve_class_references(cls, target_class: Type[T]) -> None:
+    def _resolve_class_references(cls, seq_ref: Set[Type[T]]) -> None:
         """Заменяет строковые ссылки на реальные классы в атрибутах."""
-        attrs_to_resolve = cls._base_attrs.copy()
 
-        if cls._is_container_element(target_class):
-            attrs_to_resolve.update(cls._container_attrs)
-
-        for attr_name in attrs_to_resolve:
-            original_values = getattr(target_class, attr_name, set())
-            resolved_classes = {
-                cls._registry[ref] for ref in original_values
-                if ref in cls._registry
-            }
-            # Сохраняем оригинальные значения для отладки
-            unresolved_refs = original_values - set(cls._registry.keys())
-            if unresolved_refs:
-                raise NameError(
-                    "Unresolved references in '%s'.'%s': '%s'" %
-                    (target_class.__name__, attr_name, unresolved_refs)
-                )
-
-            setattr(target_class, attr_name, resolved_classes)
-
-    @classmethod
-    def get_registry(cls) -> Dict[str, Type['BaseMurkupElement']]:
-        """Возвращает копию реестра зарегистрированных классов."""
-        return cls._registry.copy()
-
-    @classmethod
-    def register_base_class(cls, class_name: str) -> None:
-        """Добавляет имя класса в список базовых классов."""
-        cls._base_class_names.add(class_name)
+        # todo придумать решение
+        # if seq_ref - set(cls._registry.keys()):
+        #     raise NameError(
+        #             "Unresolved references in '%s'.'%s': '%s'" %
+        #             (clsname, , unresolved_refs)
+        #         )
+        resolved_ref = set()
+        for ref in seq_ref:
+            resolved_ref.add(cls._registry[ref])
 
 
 def tag_factory(
