@@ -13,10 +13,10 @@ if TYPE_CHECKING:
     from core.doc_objects.base import BaseTagElement
 
 from typing import Optional
-from lxml import etree
 
 # todo is temporary solution, in future need to migrate to own objects
 # todo it required for clean logic and independent project
+# todo at minimum problem in CT_HdrFtr, CT_HdrFtrRef and objects which is not defined in py-docx
 
 assign_si = {
     CT_R: SI_Run,

@@ -28,5 +28,5 @@ class Document:
     @property
     def body(self):
         if self._body is None:
-            self._body = Body(self._si_document.children[0])
+            self._body = Body(self._si_document.children[0]) #todo is dangerous until auto generation is absent
         return self._body

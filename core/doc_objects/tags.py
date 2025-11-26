@@ -4,17 +4,10 @@ from core.doc_objects.base import (
     BaseTagElement
 )
 
-# todo придумать как автоматически генерировать обязательные атрибуты (скорее всего просто добавить сторонний метод для middleware списка)
+# todo придумать как автоматически генерировать обязательные атрибуты
 
 
 from typing import Type
-
-
-
-# todo придумать как завести и адаптировать для атрибутов бляяяяяяяяяяяяяяяяяя
-# todo не забыть про базовую иницилизацию
-# todo как вариант сделать ещё один метакласс, котторый занимается отслеживанием элементов. тогда скорее всего понвдобится самый высокий базовый элемент.
-
 
 
 def tag_factory(
@@ -24,6 +17,9 @@ def tag_factory(
 ) -> Type[BaseTagElement]:
     """
     Factory of attributes, returns a class with <tag_name> class name without prefix <w:>
+    :param tag_name: tag name
+    :param is_container: if is container True otherwise False
+    :param kwargs: defines attributes into class
     """
     _class_name = tag_name.replace('w:', 'SI_')
     _ParentCls = BaseContainElement if is_container else BaseNonContainElement
@@ -48,3 +44,9 @@ def tag_factory(
     TagClass = type(_class_name, (_ParentCls,), class_attrs)
 
     return TagClass
+
+
+pgSz = tag_factory("pgSz", is_container=False)
+pgMar = tag_factory("pgMar", is_container=False)
+cols = tag_factory("cols", is_container=False)
+docGrid = tag_factory("docGrid", is_container=False)

@@ -1,9 +1,7 @@
 from __future__ import annotations
 from core.doc_objects.base import BaseContainElement, BaseTagElement, \
     BaseAttributeElement
-from typing import List, Set, Type
-from core.doc_objects.text import SI_Text
-from core.doc_objects.run import SI_Run
+from typing import List
 
 
 class SI_Paragraph(BaseContainElement):

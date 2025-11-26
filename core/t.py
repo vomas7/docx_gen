@@ -26,7 +26,7 @@ sys.path.append(root_path)
 # # todo 4 реализовать логику ридера +
 # # todo 5 добавть body и document single-элементы +
 # # todo 6 создать метакласс для автоматической генрации необходимых пациков (атрибуты) +
-# # todo 7 создать метакласс для автоматической генрации необходимых пациков (тэги)
+# # todo 7 создать метакласс для автоматической генрации необходимых пациков (тэги) +
 # # todo 8 проинициализировать их в lxml
 # # todo 9 определить documentPart через создающийся CT_DOCUMENT. Настроить flow открытия документа
 # # todo 10 Доремонтировать секции
@@ -44,7 +44,7 @@ sys.path.append(root_path)
 # # todo добавить общий базовый элемент у которого будет метакласс MetaTrucking!, затем замиксовать его с baseattrmeta!!!
 #
 #
-# # from docx import Document
+from docx import Document
 # # from docx.enum.section import WD_HEADER_FOOTER_INDEX
 # # from docx.oxml import CT_HdrFtr, CT_HdrFtrRef
 #
