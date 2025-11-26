@@ -1,4 +1,4 @@
-from core.doc_objects.base import BaseContainElement, BaseMurkupElement
+from core.doc_objects.base import BaseContainElement, BaseTagElement
 from typing import List
 from core.doc_objects.base import BaseAttributeElement, BaseNonContainElement
 from core.doc_objects.paragraph import SI_Paragraph, SI_pPr
@@ -49,7 +49,7 @@ class SI_SectPr(BaseContainElement):
     # xpath = "./w:body/w:p/w:pPr/w:sectPr | ./w:body/w:sectPr"
 
     def __init__(self,
-                 children: List[BaseMurkupElement] = None,
+                 children: List[BaseTagElement] = None,
                  attrs: List[BaseAttributeElement] = None):
         super().__init__("w:SectPr", attrs, children)
 

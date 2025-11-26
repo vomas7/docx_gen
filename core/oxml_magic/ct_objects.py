@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 from docx.oxml.xmlchemy import BaseOxmlElement
 
 if TYPE_CHECKING:
-    from core.doc_objects.base import BaseMurkupElement
+    from core.doc_objects.base import BaseTagElement
 
 from typing import Optional
 from lxml import etree
@@ -30,13 +30,13 @@ assign_si = {
 }
 
 
-def FromOxml(elem: "BaseOxmlElement") -> Optional["BaseMurkupElement"]:
+def FromOxml(elem: "BaseOxmlElement") -> Optional["BaseTagElement"]:
     if isinstance(elem, BaseOxmlElement):
         return assign_si[elem.__class__]()
     raise TypeError(f"Unsupported element type: {type(elem)}")
 
 
-def convert_to_Si(oxml_elem: "BaseOxmlElement") -> "BaseMurkupElement":
+def convert_to_Si(oxml_elem: "BaseOxmlElement") -> "BaseTagElement":
     si_element = FromOxml(oxml_elem)
     for child in oxml_elem:
         si_element.children.append(convert_to_Si(child))

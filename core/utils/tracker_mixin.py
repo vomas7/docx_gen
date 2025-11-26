@@ -1,8 +1,8 @@
-from typing import Set, Dict, Type, Union, List, Any
+from typing import Set, Dict, Type, Any, ClassVar, TypeVar
+from abc import ABCMeta
 
 
-
-class MetaRegister(type):
+class RegisterMeta(type):
     _registry: Dict[str, Any] = {}
 
     def __new__(mcls, clsname, clsbases, namespace):
@@ -12,111 +12,41 @@ class MetaRegister(type):
         return cls
 
 
+T = TypeVar('T', bound='BaseMurkupElement')
 
-# # === Реестр для отложенного разрешения строковых ссылок ===
-# class Registry:
-#     elements: Dict[str, Type['BaseMarkupElement']] = {}
-#     attributes: Dict[str, Type['BaseAttributeElement']] = {}
-#
-#     @classmethod
-#     def register_element(cls, klass):
-#         cls.elements[klass.__name__] = klass
-#
-#     @classmethod
-#     def register_attribute(cls, klass):
-#         cls.attributes[klass.__name__] = klass
-#
-#     @classmethod
-#     def resolve(cls, name: str):
-#         return cls.elements.get(name) or cls.attributes.get(name)
-#
-#
-# # === Базовые классы ===
-# class BaseAttributeElement:
-#     def __init_subclass__(cls, **kwargs):
-#         super().__init_subclass__(**kwargs)
-#         Registry.register_attribute(cls)
-#
-#     def __init__(self, name: str, value: str):
-#         self.name = name
-#         self.value = value
-#
-#
-# class BaseMarkupElement:
-#     REQUIRED_ATTRIBUTES: Set[Union[str, Type[BaseAttributeElement]]] = set()
-#     ACCESS_ATTRIBUTES: Set[Union[str, Type[BaseAttributeElement]]] = set()
-#
-#     def __init_subclass__(cls, **kwargs):
-#         super().__init_subclass__(**kwargs)
-#         Registry.register_element(cls)
-#
-#     def __init__(self):
-#         self.attributes: List[BaseAttributeElement] = []
-#
-#     def add_attribute(self, attr: BaseAttributeElement):
-#         if type(attr) in self._resolve_set(self.ACCESS_ATTRIBUTES):
-#             self.attributes.append(attr)
-#         else:
-#             raise ValueError(f"Attribute {type(attr).__name__} not allowed for {type(self).__name__}")
-#
-#     def _resolve_set(self, raw: Set[Union[str, Type]]):
-#         resolved = set()
-#         for item in raw:
-#             if isinstance(item, str):
-#                 resolved_class = Registry.resolve(item)
-#                 if resolved_class:
-#                     resolved.add(resolved_class)
-#             else:
-#                 resolved.add(item)
-#         return resolved
-#
-#
-# class BaseNonContainElement(BaseMarkupElement):
-#     def __init__(self):
-#         super().__init__()
-#
-#
-# class BaseContainElement(BaseMarkupElement):
-#     ACCESS_CHILDREN: Set[Union[str, Type['BaseMarkupElement']]] = set()
-#     REQUIRED_CHILDREN: Set[Union[str, Type['BaseMarkupElement']]] = set()
-#
-#     def __init__(self):
-#         super().__init__()
-#         self.children: List[BaseMarkupElement] = []
-#
-#     def add_child(self, child: 'BaseMarkupElement'):
-#         if type(child) in self._resolve_set(self.ACCESS_CHILDREN):
-#             self.children.append(child)
-#         else:
-#             raise ValueError(f"Child {type(child).__name__} not allowed in {type(self).__name__}")
-#
-#
-# # === Атрибуты ===
-# class Bold(BaseAttributeElement):
-#     pass
-#
-# class Italic(BaseAttributeElement):
-#     pass
-#
-# # === Элементы ===
-# class Text(BaseNonContainElement):
-#     ACCESS_ATTRIBUTES = {"Bold", "Italic"}
-#
-# class Run(BaseContainElement):
-#     ACCESS_CHILDREN = {"Text"}
-#     ACCESS_ATTRIBUTES = {"Bold"}
-#
-# class Paragraph(BaseContainElement):
-#     ACCESS_CHILDREN = {"Run"}
-#     REQUIRED_ATTRIBUTES = set()
-#
-#
-# # === Пример использования ===
-# p = Paragraph()
-# r = Run()
-# t = Text()
-# t.add_attribute(Bold("bold", "true"))
-# r.add_child(t)
-# p.add_child(r)
-#
-# print(f"Paragraph has {len(p.children)} children (e.g., Run)")
+
+class RelationDefMeta(ABCMeta, RegisterMeta):
+    """Метакласс для регистрации элементов разметки и управления их отношениями."""
+
+    _expected_attrs: ClassVar[Set[str]] = {"ACCESS_ATTRIBUTES",
+                                           "REQUIRED_ATTRIBUTES",
+                                           "ACCESS_CHILDREN",
+                                           "REQUIRED_CHILDREN"}
+
+    @classmethod
+    def initialize_relations(cls) -> None:
+        """Инициализирует отношения между классами после регистрации всех элементов."""
+        for cls_name, class_obj in cls._registry.items():
+            for r_attrs in cls._expected_attrs:
+                if hasattr(class_obj, r_attrs):
+                    seq_ref = getattr(class_obj, r_attrs)
+                    cls_ref = cls._resolve_cls_ref(seq_ref, r_attrs, cls_name)
+                    setattr(class_obj, r_attrs, cls_ref)
+
+    @classmethod
+    def _resolve_cls_ref(cls, seq_ref: Set, r_attr, cls_name) -> Set[Type[T]]:
+        """Заменяет строковые ссылки на реальные классы в атрибутах."""
+        resolved_ref = set()
+        for ref in seq_ref:
+            if isinstance(ref, str):
+                obj = cls._registry.get(ref)
+
+                if obj is None:
+                    raise NameError(
+                        "undefined references in "
+                        "class: '%s'. attribute: '%s' reference: '%s'" %
+                        (cls_name, r_attr, ref)
+                    )
+                ref = obj
+            resolved_ref.add(ref)
+        return resolved_ref

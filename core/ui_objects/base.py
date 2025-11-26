@@ -3,7 +3,7 @@
 from typing import FrozenSet, Type, List
 import copy
 
-from core.doc_objects.base import BaseMurkupElement, BaseContainElement
+from core.doc_objects.base import BaseTagElement, BaseContainElement
 from core.utils.v_objects import MiddlewareArray
 from core.validators.v_objects import validate_access_type
 from core.utils.annotaions import annotation_catcher
@@ -12,7 +12,7 @@ from abc import abstractmethod, ABC
 
 class BaseDocx(ABC):
 
-    def __init__(self, si_element: BaseMurkupElement):
+    def __init__(self, si_element: BaseTagElement):
         self._si_element = si_element
         self.parent = None
 
@@ -20,13 +20,13 @@ class BaseDocx(ABC):
     def si_element(self):
         return copy.deepcopy(self._si_element)
 
-    def to_SI_element(self) -> BaseMurkupElement:
+    def to_SI_element(self) -> BaseTagElement:
         return self._to_SI_element(self.si_element)
 
     @abstractmethod
     def _to_SI_element(
             self,
-            si_element: "BaseMurkupElement") -> BaseMurkupElement:
+            si_element: "BaseTagElement") -> BaseTagElement:
         pass
 
 
@@ -48,7 +48,7 @@ class BaseContainerDocx(BaseDocx):
             access_val=self.ACCESS_CHILDREN
         )
 
-    def _to_SI_element(self, si_element) -> BaseMurkupElement:
+    def _to_SI_element(self, si_element) -> BaseTagElement:
         for child in self.linked_objects:
             si_element.children.append_or_extend(child.to_SI_element())
         return si_element
@@ -63,5 +63,5 @@ class BaseContainerDocx(BaseDocx):
 
 class BaseNonContainerDocx(BaseDocx):
 
-    def _to_SI_element(self, si_element) -> BaseMurkupElement:
+    def _to_SI_element(self, si_element) -> BaseTagElement:
         return si_element

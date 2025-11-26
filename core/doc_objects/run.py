@@ -1,4 +1,4 @@
-from core.doc_objects.base import BaseContainElement, BaseMurkupElement
+from core.doc_objects.base import BaseContainElement, BaseTagElement
 from typing import List
 from core.doc_objects.base import BaseAttributeElement
 
@@ -7,6 +7,6 @@ class SI_Run(BaseContainElement):
     # todo Заполнить подходящими значениями Атрибуты и тэги
 
     def __init__(self,
-                 children: List[BaseMurkupElement] = None,
+                 children: List[BaseTagElement] = None,
                  attrs: List[BaseAttributeElement] = None):
         super().__init__("w:r", attrs, children)

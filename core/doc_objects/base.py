@@ -13,9 +13,15 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 from docx.oxml.xmlchemy import serialize_for_reading
 from lxml import etree
+from core.utils.tracker_mixin import RelationDefMeta
 
 
-class BaseAttributeElement:
+class BaseMarkupElement(metaclass=RelationDefMeta):
+    """Root element for word docx markup elements."""
+    pass
+
+
+class BaseAttributeElement(BaseMarkupElement):
 
     def __init__(self,
                  attr_name: str = None,
@@ -48,12 +54,12 @@ class BaseAttributeElement:
         self._value_attr = val
 
 
-class BaseMurkupElement(ABC):
+class BaseTagElement(BaseMarkupElement, ABC):
     """Base class for all markup elements"""
 
     # by default there are no restrictions
     ACCESS_ATTRIBUTES: FrozenSet[Type[BaseAttributeElement]] = frozenset({
-        BaseAttributeElement
+        "BaseAttributeElement"
     })
     REQUIRED_ATTRIBUTES: FrozenSet[Type[BaseAttributeElement]] = frozenset()
 
@@ -106,18 +112,17 @@ class BaseMurkupElement(ABC):
         return f'{type(self)} object at {hex(id(self))}>'
 
 
-
-class BaseContainElement(BaseMurkupElement):
+class BaseContainElement(BaseTagElement):
     # by default there are no restrictions
-    ACCESS_CHILDREN: FrozenSet[Type[BaseMurkupElement]] = frozenset({
-        "BaseMurkupElement"
+    ACCESS_CHILDREN: FrozenSet[Type[BaseTagElement]] = frozenset({
+        "BaseMarkupElement"
     })
-    REQUIRED_CHILDREN: FrozenSet[Type[BaseMurkupElement]] = frozenset()
+    REQUIRED_CHILDREN: FrozenSet[Type[BaseTagElement]] = frozenset()
 
     def __init__(self,
                  tag: str,
                  attrs: List[BaseAttributeElement] = None,
-                 children: List[BaseMurkupElement] = None):
+                 children: List[BaseTagElement] = None):
         super().__init__(tag, attrs)
 
         _tag_actions = {validate_access_type, }
@@ -142,7 +147,7 @@ class BaseContainElement(BaseMurkupElement):
         return oxml_elem
 
 
-class BaseNonContainElement(BaseMurkupElement):
+class BaseNonContainElement(BaseTagElement):
     def __init__(self,
                  tag: str,
                  attrs: List[BaseAttributeElement]):
