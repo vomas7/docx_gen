@@ -44,9 +44,3 @@ def tag_factory(
     TagClass = type(_class_name, (_ParentCls,), class_attrs)
 
     return TagClass
-
-
-pgSz = tag_factory("pgSz", is_container=False)
-pgMar = tag_factory("pgMar", is_container=False)
-cols = tag_factory("cols", is_container=False)
-docGrid = tag_factory("docGrid", is_container=False)
