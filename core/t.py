@@ -5,151 +5,138 @@ current_path = os.getcwd()
 root_path = os.path.abspath(os.path.join(current_path, ".."))
 sys.path.append(root_path)
 #
-# # todo аналог pydocx
-#
-# # todo создать элементы - аналогичние CT_*, отличие в том что нет наследия от BaseOxmlMeta.
-# # Логика pydocx заключается в том чтобы  добавлять элементы непосредственно в код XML,
-# # а поскольку мы работаем с чистыми объектами python, возможность изменения XML - будет узким горлышком.
-# # отриисовка будет производиться в конце программы. создавая xml код
-#
-# # todo МЫСЛЯ мы Добавляем на абстрактный уровень доп ирерахию для рабыты с элементами в том предсталении, в котором нам это нужно. Потому что на уровне с xml, правила будут противоречить друг другу, поэтомы так мы обходим структуру xml'я
-#
 # # todo ИДЕЯ, создать метакласс для автоматической генрации необходимых пациков (как атрибутов так и тэгов)
-# # todo значит нужен ещё один слой обстакции. т.к чтобы добавить стиль для элемента, придётся создавать несколько объкутов внутри него например p нужен pPr и Marg и т.п
-# # todo также получится добавить простой способ добавления элементов! в общем он нужен и для упрощённой последовательности элементов
-#
 # # todo главное чтобы метаклассы тегов не переопределяли передающие в него какие-либо элементы!
+
 # # todo------------
-# # todo 1 привожу метаклассы атрибутов в порядок +
-# # todo 2 делаю прикол с секциями - по-факту транслит из нормальной последовательности элементов в нужную и наоборот +
-# # todo 3 создать второй слой абстракции +
-# # todo 4 реализовать логику ридера +
-# # todo 5 добавть body и document single-элементы +
+# todo 1 избавиться от зависимости ct_element, инициализировать si_element в lxml ---- в процессе
+# # todo 1.1 инициализировать элементы в lxml
+# # todo 1.2 переписать логику отрисовки и добавления элементов на нижнем уровне
+# # todo 1.3 проверить что нормально создаются и отрисовываются
+# todo 2 Добавить объекты, которые необходимы для правильного парсинга документа .docx
+# # todo 2.1 добавить si_объекты
+# # todo 2.2 инициализироваь в lxml
+# # todo 2.3 проверить что отрисовываются, начиная с корневого элемента, с разными случаями
+
+
+# todo 3 определить documentPart через создающийся CT_DOCUMENT. Настроить flow открытия документа  (начало положено)
+# # todo 3.1 проверить что все элемнты отрисовываюся, необходимые для ворд - разметки
+# # todo 3.2 проинициализировать объект через core->ui-objects -> api.py
+
+# todo 4 Сделать Styler для элементов
+##note:
+# для стайлера релизовать во первых его как отдельный объект, у каждого верхоуровнего элемента как атрибут и можно обращаться parahraph.style.align = center
+# некоторые параметры styler'а могут иметь отдельные классы или енумы, в целом продумать этот моментик. чтобы пользователю было понятно каке атрибуты и параметры он может туда херачить. например у align есть 4 параметра
+
+# # todo 4.1 определить базовый класс BaseStyler
+# # todo 4.2 определить классы Styler для каждого элементв, типа ParagraphStyler и т.п + атрибуты которые он принимает, аля pgSize, PgMargin
+# # todo 4.3 адаптировать в объкутах тегов
+# # # todo 4.3.1 добавить в init каждого верхнего объекта класса атрибут style
+# # # todo 4.3.2 определить методы, которые будут добавлять, обновлять стили в объект,
+# # # todo 4.3.3 сделать парсинг стилей в низкий уровень в виже атрибутов, при отрисовке
+
+
+# todo 5 Доделать секции
+# # todo 5.1 сделать так чтобы они могли оборачиваться в pPr (при отрисовке, чтобы было удобно работать с ними, ну или продумать моментик)
+
+# todo 6 Донастроить инициализацию связей между объектами на нижнем уровне
+# # todo 6.1 убрать текущие ошибки
+# # todo 6.2 улучшить код (необязательно)
+
+# todo 7 Сделать автоматическое добавление элементов в низкоуровневые объекты
+# # todo 7.1 считывать обязательные атрибуты и элементы
+# # todo 7.2 реализовать их создание
+# # todo 7.3 посмотреть по todo в программе, насколько перекрывает потребность в этой фиче
+
+# todo 8 перенести простые элементы в программу
+# # todo 8.1 создать объкты
+# # todo 8.2 инициализировать элементы в lxml
+# # todo 8.3 протестить, что всё создаётся и торисовывается полностью
+
+# todo 9 Настроить экспортёр
+# # todo 9.1 используя файл io-> export.py переписать под подходящий случай
+
+
+# todo 10 перенести все элементы (непросыте элементы по типу таблиц и непопулярных объектов)
+# # todo 10.1 реализовать таблицы
+# # todo 10.2 картинки
+# # todo 10.3 все остальные теги и атрибуты
+
+
+# хзхзхз
+# # todo 11 сделать простой доступ к элементам или автоматизировать некоторые моменты. Пример: чтобы постоянно не обращаться к секции, которая лежит в Body, автоматически делать обращение к первой сеции
+
+
+# # todo -----------
+
+
+from docx.oxml import OxmlElement
+
+from core.ui_objects.section import Section
+from core.ui_objects.paragraph import Paragraph
+from core.ui_objects.document import Document
+
+# preparation
+# ==========
+ct_doc = OxmlElement("w:document")
+ct_doc.append(OxmlElement("w:body"))
+# ==========
+
+
+# Инициализации корневых элементов
+
+doc = Document(document_elem=ct_doc, document_part="now skip it")
+
+print(doc._si_document, " элемент документа: SI_Document\n")
+
+body = doc.body  # Body() object
+
+# ====== создаём и заполняем секции =====
+
+par_one = Paragraph()  # пустой парграф
+par_two = Paragraph()  # пустой парграф
+
+section = Section(linked_objects=[par_one,par_two])
+
+print(section.linked_objects, "  что внутри секции ")
+
+# Добавляем секцию в бади
+body.linked_objects.append(section)
+
+print(body.linked_objects, " внутри бади")
+
+### выведем дерево xml
+
+si_doc = body.si_element  # элемент бади
+tree_of_doc = body.to_SI_element()  # дерево в виде si_элементов
+print(si_doc, "просто элемент бади\n")
+print("\nНачиная от бади")
+print(tree_of_doc.to_xml_string())  #
+print("Начиная от документа")
+print(doc._si_document.to_xml_string())  # начиная от докумениа
+
+# особенности верхнего уровня:
+
+# как происходит преобразование в xml на верхнем уровне?
+# из-за хранящихся элементов si_ внутри, метод to_SI_element, рекурсия
+
+# верхний ровень позволяет нам делать с элементами чё угодно, т.к отрисовка происходит на нижнем уровне
+
+# можно обратиться к родителькому элементу
+
+print(section.parent, f" - Батя для {section}")
+
+# не просто добавляет, но и расширяет
+# пример с секцией
+section_two = Section(linked_objects=[par_one, par_two])
+# print(section_two.parent) # None
+# вызовет ошибку:
+# print(section_two.to_SI_element())
+body.linked_objects.append(section_two)
+print(
+    section_two.to_SI_element())  # распаковывает section, по аналогии можно делать и с другими элементами
+
+# секции не оборачиваются в pPr
+
 # # todo 6 создать метакласс для автоматической генрации необходимых пациков (атрибуты) +
 # # todo 7 создать метакласс для автоматической генрации необходимых пациков (тэги) +
-# # todo 8 проинициализировать их в lxml
-# # todo 9 определить documentPart через создающийся CT_DOCUMENT. Настроить flow открытия документа
-# # todo 10 Доремонтировать секции
-# # todo 11 перенести простые элементы
-# # todo 12 Настроить экспортёр
-# # todo 13 перенести все элементы
-# # todo ... добавить enum'ы для всех тегов
-# # todo -----------
-# # todo для стайлера релизовать во первых его как отдельный объект, у каждого верхоуровнего элемента как атрибут и можно обращаться parahraph.style.align = center
-# # todo некоторые параметры styler'а могут иметь отдельные классы или енумы, в целом продумать этот моментик. чтобы пользователю было понятно каке атрибуты и параметры он может туда херачить. например у align есть 4 параметра
-# # todo в дальнейшем можно подумать над тем, чтобы убрать объекты из frozenset (related-объектов) и перевести их сразу в строку, можно рассмотреть множсвтенное указание элементов.
-
-
-
-# # todo добавить общий базовый элемент у которого будет метакласс MetaTrucking!, затем замиксовать его с baseattrmeta!!!
-#
-#
-from docx import Document
-# # from docx.enum.section import WD_HEADER_FOOTER_INDEX
-# # from docx.oxml import CT_HdrFtr, CT_HdrFtrRef
-#
-#
-# # doc = Document()
-# #
-# # s = doc.sections[0]
-# # s._sectPr.add_footerReference(WD_HEADER_FOOTER_INDEX.EVEN_PAGE, "11111111")
-# # ref = s._sectPr.get_footerReference(WD_HEADER_FOOTER_INDEX.EVEN_PAGE)
-# #
-# # print(
-# #     ref
-# # )
-#
-# #===========
-#
-# from core.ui_objects.api import Document
-# from docx import Document
-# from docx.oxml import CT_P
-# from core.ui_objects.paragraph import Paragraph
-# from core.ui_objects.section import Section
-#
-# #
-# p = Paragraph()
-# p2 = Paragraph(linked_objects=[p])
-#
-# #
-# sec = Section(linked_objects=[p2])
-# p.linked_objects.append()
-# p3 = Paragraph(linked_objects=[sec])
-# # print(p3.to_SI_element().to_xml_string())
-# # print(p3.to_SI_element().to_xml_string())
-# # print(p3.to_SI_element().to_xml_string())
-#
-#
-# # doc = Document()
-#
-# # doc.body.to_SI_element().to_xml_string()
-#
-#
-#
-#
-# from typing import TYPE_CHECKING
-# from core.doc_objects.paragraph import SI_Paragraph
-# from core.doc_objects.section import SI_SectPr
-# from core.doc_objects.text import SI_Text
-#
-# import sys
-#
-# import time
-# import importlib
-#
-#
-# start = time.time()
-# #todo реализовать файл со всеми тегами (импорт онных) + реализовтаь сериализацию строковых классов
-#
-# print(globals().get("__name__"))
-#
-#
-#
-#
-#
-#
-# print(time.time() - start)
-#
-#
-
-
-# from core.doc_objects.tags import pgMarg
-# from core.doc_objects.paragraph import SI_Paragraph
-#
-# pg = pgMarg()
-# print(
-#     pg.REQUIRED_ATTRIBUTES,
-#     pg.ACCESS_ATTRIBUTES,
-#     pg.ACCESS_CHILDREN,
-#     pg.REQUIRED_CHILDREN
-#
-# )
-#
-# print(pg)
-# print(SI_Paragraph)
-# print(pg.tag)
-# # fff = 1
-#
-# print(getattr(__name__, "fff"))
-
-
-#
-# from core.doc_objects.tags import tag_factory
-#
-#
-# pgMarg = tag_factory(
-#     'w:pgMarg',
-#     is_container=True,
-#     ACCESS_ATTRIBUTES=["SI_Paragraph"],
-# )
-# from __future__ import annotations
-# from typing import cast, Type, Generic, TypeVar, ClassVar
-# from core.doc_objects.base import BaseMurkupElement, BaseContainElement, BaseNonContainElement
-#
-#
-
-from core.doc_objects import SI_Run, SI_Paragraph
-
-si = SI_Run()
-
-

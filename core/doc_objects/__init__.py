@@ -24,17 +24,17 @@ from core.doc_objects.section import (
 _RelationDefMeta.initialize_relations()
 
 from docx.oxml.parser import register_element_cls
-
-# ---------------------------------------------------------------------------
-# DrawingML-related elements
-
-register_element_cls("w:r", SI_Run)
-register_element_cls("w:p", SI_Paragraph)
-register_element_cls("w:docGrid", SI_docGrid)
-register_element_cls("w:cols", SI_cols)
-register_element_cls("w:pgMar", SI_PageMar)
-register_element_cls("w:pgSz", SI_PageSz)
-register_element_cls("w:headerReference", SI_HdrRef)
-register_element_cls("w:footerReference", SI_FtrRef)
-register_element_cls("w:hdr", SI_Hdr)
-register_element_cls("w:ftr", SI_Ftr)
+#
+# # ---------------------------------------------------------------------------
+# # DrawingML-related elements
+#
+# register_element_cls("w:r", SI_Run)
+# register_element_cls("w:p", SI_Paragraph)
+# register_element_cls("w:docGrid", SI_docGrid)
+# register_element_cls("w:cols", SI_cols)
+# register_element_cls("w:pgMar", SI_PageMar)
+# register_element_cls("w:pgSz", SI_PageSz)
+# register_element_cls("w:headerReference", SI_HdrRef)
+# register_element_cls("w:footerReference", SI_FtrRef)
+# register_element_cls("w:hdr", SI_Hdr)
+# register_element_cls("w:ftr", SI_Ftr)
