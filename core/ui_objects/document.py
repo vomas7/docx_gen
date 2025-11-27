@@ -30,3 +30,12 @@ class Document:
         if self._body is None:
             self._body = Body(self._si_document.children[0]) #todo is dangerous until auto generation is absent
         return self._body
+
+    def save(self, path):
+
+        self._part._element.clear()
+        self._part._element.append(self.body.to_SI_element().to_oxml())
+
+        self._part.save(path)
+
+from docx.oxml.document import CT_Body

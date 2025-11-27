@@ -13,6 +13,7 @@ sys.path.append(root_path)
 # # todo 1.1 инициализировать элементы в lxml
 # # todo 1.2 переписать логику отрисовки и добавления элементов на нижнем уровне
 # # todo 1.3 проверить что нормально создаются и отрисовываются
+
 # todo 2 Добавить объекты, которые необходимы для правильного парсинга документа .docx
 # # todo 2.1 добавить si_объекты
 # # todo 2.2 инициализироваь в lxml
@@ -71,72 +72,92 @@ sys.path.append(root_path)
 
 
 from docx.oxml import OxmlElement
+from docx import Document
 
 from core.ui_objects.section import Section
 from core.ui_objects.paragraph import Paragraph
 from core.ui_objects.document import Document
-
 # preparation
 # ==========
-ct_doc = OxmlElement("w:document")
-ct_doc.append(OxmlElement("w:body"))
-# ==========
+# ct_doc = OxmlElement("w:document")
+# ct_doc.append(OxmlElement("w:body"))
+# # ==========
+#
+#
+# # Инициализации корневых элементов
+#
+# doc = Document(document_elem=ct_doc, document_part="now skip it")
+#
+# print(doc._si_document, " элемент документа: SI_Document\n")
+#
+# body = doc.body  # Body() object
+#
+# # ====== создаём и заполняем секции =====
+#
+# par_one = Paragraph()  # пустой парграф
+# par_two = Paragraph()  # пустой парграф
+#
+# section = Section(linked_objects=[par_one,par_two])
+#
+# print(section.linked_objects, "  что внутри секции ")
+#
+# # Добавляем секцию в бади
+# body.linked_objects.append(section)
+#
+# print(body.linked_objects, " внутри бади")
+#
+# ### выведем дерево xml
+#
+# si_doc = body.si_element  # элемент бади
+# tree_of_doc = body.to_SI_element()  # дерево в виде si_элементов
+# print(si_doc, "просто элемент бади\n")
+# print("\nНачиная от бади")
+# print(tree_of_doc.to_xml_string())  #
+# print("Начиная от документа")
+# print(doc._si_document.to_xml_string())  # начиная от докумениа
+#
+# # особенности верхнего уровня:
+#
+# # как происходит преобразование в xml на верхнем уровне?
+# # из-за хранящихся элементов si_ внутри, метод to_SI_element, рекурсия
+#
+# # верхний ровень позволяет нам делать с элементами чё угодно, т.к отрисовка происходит на нижнем уровне
+#
+# # можно обратиться к родителькому элементу
+#
+# print(section.parent, f" - Батя для {section}")
+#
+# # не просто добавляет, но и расширяет
+# # пример с секцией
+# section_two = Section(linked_objects=[par_one, par_two])
+# # print(section_two.parent) # None
+# # вызовет ошибку:
+# # print(section_two.to_SI_element())
+# body.linked_objects.append(section_two)
+# print(
+#     section_two.to_SI_element())  # распаковывает section, по аналогии можно делать и с другими элементами
+#
+from core.ui_objects.api import Document
+from core.ui_objects.paragraph import Paragraph, Run, Text
+
+doc = Document()
+
+t = Text('Hello World')
+r = Run()
+r.linked_objects.append(t)
+p = Paragraph()
+p.linked_objects.append(r)
 
 
-# Инициализации корневых элементов
 
-doc = Document(document_elem=ct_doc, document_part="now skip it")
+doc.body.linked_objects.append(p)
 
-print(doc._si_document, " элемент документа: SI_Document\n")
+print(doc.body.to_SI_element().to_xml_string())
+print(doc.body.linked_objects)
 
-body = doc.body  # Body() object
-
-# ====== создаём и заполняем секции =====
-
-par_one = Paragraph()  # пустой парграф
-par_two = Paragraph()  # пустой парграф
-
-section = Section(linked_objects=[par_one,par_two])
-
-print(section.linked_objects, "  что внутри секции ")
-
-# Добавляем секцию в бади
-body.linked_objects.append(section)
-
-print(body.linked_objects, " внутри бади")
-
-### выведем дерево xml
-
-si_doc = body.si_element  # элемент бади
-tree_of_doc = body.to_SI_element()  # дерево в виде si_элементов
-print(si_doc, "просто элемент бади\n")
-print("\nНачиная от бади")
-print(tree_of_doc.to_xml_string())  #
-print("Начиная от документа")
-print(doc._si_document.to_xml_string())  # начиная от докумениа
-
-# особенности верхнего уровня:
-
-# как происходит преобразование в xml на верхнем уровне?
-# из-за хранящихся элементов si_ внутри, метод to_SI_element, рекурсия
-
-# верхний ровень позволяет нам делать с элементами чё угодно, т.к отрисовка происходит на нижнем уровне
-
-# можно обратиться к родителькому элементу
-
-print(section.parent, f" - Батя для {section}")
-
-# не просто добавляет, но и расширяет
-# пример с секцией
-section_two = Section(linked_objects=[par_one, par_two])
-# print(section_two.parent) # None
-# вызовет ошибку:
-# print(section_two.to_SI_element())
-body.linked_objects.append(section_two)
-print(
-    section_two.to_SI_element())  # распаковывает section, по аналогии можно делать и с другими элементами
+doc.save('d.docx')
 
 # секции не оборачиваются в pPr
 
-# # todo 6 создать метакласс для автоматической генрации необходимых пациков (атрибуты) +
-# # todo 7 создать метакласс для автоматической генрации необходимых пациков (тэги) +
+# # todo  создать метакласс для автоматической генрации необходимых пациков (атрибуты) +
+# # todo  создать метакласс для автоматической генрации необходимых пациков (тэги) +

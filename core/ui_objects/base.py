@@ -48,6 +48,9 @@ class BaseContainerDocx(BaseDocx):
             access_val=self.ACCESS_CHILDREN
         )
 
+    def add(self, elem):
+        self.linked_objects.append(elem)
+
     def _to_SI_element(self, si_element) -> BaseTagElement:
         for child in self.linked_objects:
             si_element.children.append_or_extend(child.to_SI_element())

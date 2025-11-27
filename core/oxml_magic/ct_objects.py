@@ -39,5 +39,9 @@ def FromOxml(elem: "BaseOxmlElement") -> Optional["BaseTagElement"]:
 def convert_to_Si(oxml_elem: "BaseOxmlElement") -> "BaseTagElement":
     si_element = FromOxml(oxml_elem)
     for child in oxml_elem:
-        si_element.children.append(convert_to_Si(child))
+        try:
+            si_element.children.append(convert_to_Si(child))
+        except:
+            print(child)
+            continue
     return si_element

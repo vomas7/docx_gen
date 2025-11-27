@@ -11,7 +11,6 @@ class SI_Text(BaseNonContainElement):
         self.text = text
         super().__init__("w:t", attrs)
 
-    def _to_oxml_element(self):
-        oxml = self.to_oxml()
+    def _to_oxml_element(self, oxml):
         oxml.text = self.text
         return oxml
