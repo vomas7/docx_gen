@@ -22,7 +22,7 @@ class Document:
                  document_elem: CT_Document,
                  document_part: DocumentPart):
         self._part = document_part
-        self._si_document = convert_to_Si(document_elem)
+        self._si_document = convert_to_Si(document_elem) #конвертит все вложенные ct_елементы
         self._body = None
 
     @property
