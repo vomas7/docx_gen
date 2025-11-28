@@ -2,7 +2,7 @@ from __future__ import annotations
 from core.doc_objects.base import BaseContainElement, BaseTagElement, \
     BaseAttributeElement
 from typing import List
-from core.doc_objects.tags import tag_factory
+# from core.doc_objects.tags import tag_factory
 
 
 

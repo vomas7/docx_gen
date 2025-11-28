@@ -4,9 +4,12 @@ from core.doc_objects.base import BaseAttributeElement
 
 
 class SI_Run(BaseContainElement):
-    # todo Заполнить подходящими значениями Атрибуты и тэги
 
-    def __init__(self,
+    # todo Заполнить подходящими значениями Атрибуты и тэги
+    """"""
+
+    #todo убирается _init как вызывающий иницилизатор
+    def _init(self,
                  children: List[BaseTagElement] = None,
                  attrs: List[BaseAttributeElement] = None):
-        super().__init__("w:r", attrs, children)
+        super()._init(children, attrs)

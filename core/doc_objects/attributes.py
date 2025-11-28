@@ -3,41 +3,11 @@ from docx.oxml.simpletypes import ST_TwipsMeasure
 from typing import Type
 from docx.enum.base import BaseXmlEnum
 from docx.oxml.simpletypes import BaseSimpleType
+from docx.oxml.ns import nsmap
 
+#todo .....
 
-def attr_factory(attr_name,
-                 simple_type=ST_TwipsMeasure,
-                 default=None):
-    """
-    Factory of attributes, returns a class with <attr_name> class name without prefix <w:>
-    """
-    class_name = attr_name.replace('w:', '').title()
-
-    class AttributeClass(BaseAttributeElement):
-        _default_value = default
-        _simple_type = simple_type
-
-        def __init__(self,
-                     value=_default_value,
-                     simple_type: Type[BaseSimpleType] | Type[
-                         BaseXmlEnum] = _simple_type
-                     ):
-            super().__init__(
-                value=value,
-                simple_type=simple_type,
-                attr_name=attr_name
-            )
-
-    AttributeClass.__name__ = class_name
-    AttributeClass.__qualname__ = class_name
-    return AttributeClass
-
-
-AT_Right = attr_factory(
-    "w:right",
-    simple_type=ST_TwipsMeasure,
-    default=None
-)
-AT_Left = attr_factory(default=100000, attr_name="w:left")
-AT_Top = attr_factory(default=500, attr_name="w:top")
-AT_Bottom = attr_factory(default=500, attr_name="w:bottom")
+# SI_Right = attr_factory("w:right", simple_type=ST_TwipsMeasure)
+# SI_Left = attr_factory(attr_name="w:left")
+# SI_Top = attr_factory(attr_name="w:top")
+# SI_Bottom = attr_factory(attr_name="w:bottom")

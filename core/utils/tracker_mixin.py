@@ -12,7 +12,7 @@ class RegisterMeta(type):
         return cls
 
 
-T = TypeVar('T', bound='BaseMurkupElement')
+T = TypeVar('T', bound='BaseMarkupElement')
 
 # todo There's a problem with an invalid import. This means that when initializing this meta-object in one module and calling the ref object in another, an exception is thrown. now all objects should import from one module
 

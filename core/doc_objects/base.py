@@ -22,6 +22,7 @@ class BaseMarkupElement(metaclass=RelationDefMeta):
 
 
 class BaseAttributeElement(BaseMarkupElement):
+    """Base class for attribute elements."""
 
     def __init__(self,
                  attr_name: str = None,
@@ -54,7 +55,7 @@ class BaseAttributeElement(BaseMarkupElement):
         self._value_attr = val
 
 
-class BaseTagElement(BaseMarkupElement, ABC):
+class BaseTagElement(BaseMarkupElement, etree.ElementBase, ABC):
     """Base class for all markup elements"""
 
     # by default there are no restrictions
@@ -63,12 +64,9 @@ class BaseTagElement(BaseMarkupElement, ABC):
     })
     REQUIRED_ATTRIBUTES: FrozenSet[Type[BaseAttributeElement]] = frozenset()
 
-    def __init__(self,
-                 tag: str,
-                 attrs: List[BaseAttributeElement] = None):
-        self._tag = tag
+    def _init(self, attrs: List[BaseAttributeElement] = None):
         _attribute_actions = {validate_access_type, }
-
+        # Note: attributes should be added into array from existing elements in initializing
         self.attrs = MiddlewareArray(
             attrs,
             actions=_attribute_actions,
@@ -76,34 +74,29 @@ class BaseTagElement(BaseMarkupElement, ABC):
             access_val=self.ACCESS_ATTRIBUTES
         )
 
-    def _assignment_attr(self, obj: etree.ElementBase) -> Any:
+    def _assignment_attr(self) -> Any:
         """Assigns an OxmlElement attribute"""
         for attr in self.attrs:
             oxml_val = attr.get_oxml_value()
             if oxml_val is None:
                 raise AttributeError(f"Attribute {attr} has no value")
-            obj.set(attr._clark_name, oxml_val)
+            self.set(attr._clark_name, oxml_val)
 
+    # todo согласовать найминг, т.к self уже является объектом
     def to_oxml(self) -> etree.ElementBase:
-        """Transforms an object into an etree.element"""
-        _oxml = cast(etree.ElementBase, OxmlElement(self.tag))
-
-        return self._to_oxml_element(_oxml)
+        """Transforms a single objects into tree of markup elements."""
+        # _oxml = cast(etree.ElementBase, OxmlElement(self.tag))
+        self._assignment_attr()
+        return self._fold_elements()
 
     def to_xml_string(self) -> str:
         """Transforms an object into an XML string"""
+
         return serialize_for_reading(self.to_oxml())
 
     @abstractmethod
-    def _to_oxml_element(
-            self,
-            oxml_elem: etree.ElementBase
-    ) -> etree.ElementBase:
+    def _fold_elements(self) -> etree.ElementBase:
         pass
-
-    @property
-    def tag(self):
-        return self._tag
 
     def __repr__(self):
         return f'<{type(self)} object at {hex(id(self))}>'
@@ -113,19 +106,23 @@ class BaseTagElement(BaseMarkupElement, ABC):
 
 
 class BaseContainElement(BaseTagElement):
+    """Base class for all contain-markup elements"""
+    # todo .....
+
     # by default there are no restrictions
     ACCESS_CHILDREN: FrozenSet[Type[BaseTagElement]] = frozenset({
         "BaseMarkupElement"
     })
     REQUIRED_CHILDREN: FrozenSet[Type[BaseTagElement]] = frozenset()
 
-    def __init__(self,
-                 tag: str,
-                 attrs: List[BaseAttributeElement] = None,
-                 children: List[BaseTagElement] = None):
-        super().__init__(tag, attrs)
+    def _init(self,
+              attrs: List[BaseAttributeElement] = None,
+              children: List[BaseTagElement] = None):
+        super()._init(attrs)
 
         _tag_actions = {validate_access_type, }
+        # Note: children should be added into array from existing elements in initializing. Because letter this elements will be drawing!
+
         self.children = MiddlewareArray(
             children,
             actions=_tag_actions,
@@ -133,28 +130,21 @@ class BaseContainElement(BaseTagElement):
             access_val=self.ACCESS_CHILDREN
         )
 
-    def _to_oxml_element(self,
-                         oxml_elem: etree.ElementBase) -> etree.ElementBase:
-        """
-            Transforms an object into an
-            OxmlElement recursively with its descendants
-        """
-
-        self._assignment_attr(oxml_elem)
+    def _fold_elements(self) -> etree.ElementBase:
+        """To collect all child elements into tree elements"""
 
         for child in self.children:
-            oxml_elem.append(child.to_oxml())
-        return oxml_elem
+            self.append(child.to_oxml())
+        return self
 
 
 class BaseNonContainElement(BaseTagElement):
-    def __init__(self,
-                 tag: str,
-                 attrs: List[BaseAttributeElement]):
-        super().__init__(tag, attrs)
+    """Base class for all non contain-markup elements"""
 
-    def _to_oxml_element(self, oxml_elem) -> etree.ElementBase:
-        """Transforms an object into an OxmlElement"""
+    def _init(self, attrs: List[BaseAttributeElement] = None):
+        super()._init(attrs)
 
-        self._assignment_attr(oxml_elem)
-        return oxml_elem
+    def _fold_elements(self) -> etree.ElementBase:
+        """To collect into tree of elements"""
+
+        return self

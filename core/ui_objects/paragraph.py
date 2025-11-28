@@ -25,6 +25,3 @@ class Text(BaseNonContainerDocx):
         super().__init__(
             si_element=SI_Text(text=text)
         )
-
-p = Paragraph(text='соси хуй')
-print(p.to_SI_element().to_xml_string())

@@ -11,6 +11,6 @@ class SI_Text(BaseNonContainElement):
         self.text = text
         super().__init__("w:t", attrs)
 
-    def _to_oxml_element(self, oxml):
-        oxml.text = self.text
-        return oxml
+    def _fold_elements(self):
+        self.text = self.text
+        return self

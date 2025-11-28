@@ -1,7 +1,7 @@
 from core.doc_objects.base import BaseTagElement, BaseAttributeElement, \
     BaseContainElement
 from typing import List
-from core.doc_objects.tags import tag_factory
+# from core.doc_objects.tags import tag_factory
 
 # SI_Document = tag_factory("w:document", is_container=True)
 
