@@ -12,6 +12,7 @@ from core.doc_objects.base import (
 from core.doc_objects.paragraph import SI_Paragraph
 from core.doc_objects.run import SI_Run
 from core.doc_objects.text import SI_Text
+from core.doc_objects.document import SI_Document, SI_Body
 from core.doc_objects.section import (
     SI_docGrid,
     SI_cols,
@@ -24,7 +25,7 @@ from core.doc_objects.section import (
 
 # _RelationDefMeta.initialize_relations()
 
-from docx.oxml.parser import register_element_cls
+from core.oxml_magic.parser import register_element_cls
 
 #
 # # ---------------------------------------------------------------------------
@@ -43,3 +44,9 @@ register_element_cls("w:headerReference", SI_HdrFtrRef)
 register_element_cls("w:footerReference", SI_HdrFtrRef)
 register_element_cls("w:hdr", SI_HdrFtr)
 register_element_cls("w:ftr", SI_HdrFtr)
+
+
+register_element_cls("w:document", SI_Document)
+register_element_cls("w:body", SI_Body)
+
+

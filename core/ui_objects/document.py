@@ -2,8 +2,11 @@ from typing import List
 from core.ui_objects.base import BaseContainerDocx, BaseDocx
 from core.doc_objects.document import SI_Body
 from docx.parts.document import DocumentPart
-from docx.oxml import CT_Document
-#
+from core.oxml_magic.parser import to_si_element
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from docx.oxml import CT_Document
+
 
 class Body(BaseContainerDocx):
 
@@ -16,24 +19,24 @@ class Body(BaseContainerDocx):
         )
 
 
-# class Document:
-#     def __init__(self,
-#                  document_elem: CT_Document,
-#                  document_part: DocumentPart):
-#         self._part = document_part
-#         self._si_document = convert_to_Si(document_elem) #конвертит все вложенные ct_елементы
-#         self._body = None
-#
-#     @property
-#     def body(self):
-#         if self._body is None:
-#             self._body = Body(self._si_document.children[0])
-#         return self._body
-#
-#     def save(self, path):
-#
-#         self._part._element.clear()
-#         self._part._element.append(self.body.to_SI_element().to_oxml())
-#
-#         self._part.save(path)
+class Document:
+    def __init__(self,
+                 document_elem: "CT_Document",
+                 document_part: DocumentPart):
+        self._part = document_part
+        self._si_document = to_si_element(document_elem)
+        self._body = None
+
+    @property
+    def body(self):
+        if self._body is None:
+            self._body = Body(self._si_document.children[0])
+        return self._body
+
+    def save(self, path):
+
+        self._part._element.clear()
+        self._part._element.append(self.body.to_SI_element().to_oxml())
+
+        self._part.save(path)
 

@@ -62,6 +62,7 @@ class BaseTagElement(BaseMarkupElement, etree.ElementBase, ABC):
         _attribute_actions = {validate_access_markup, }
         # todo Note: attributes should be added into array from existing elements in initializing
         self.attrs = MiddlewareArray(
+            # self.attrib.keys().copy(),
             actions=_attribute_actions,
             access_vals=self.ACCESS_ATTRIBUTES
         )
@@ -69,6 +70,7 @@ class BaseTagElement(BaseMarkupElement, etree.ElementBase, ABC):
     def _assignment_attr(self) -> Any:
         """Assigns an OxmlElement attribute"""
         for attr in self.attrs:
+
             oxml_val = attr.get_oxml_value()
             if oxml_val is None:
                 raise AttributeError(f"Attribute {attr} has no value")
@@ -108,6 +110,7 @@ class BaseContainElement(BaseTagElement):
         _tag_actions = {validate_access_markup, }
         # todo Note: children should be added into array from existing elements in initializing. Because letter this elements will be drawing!
         self.children = MiddlewareArray(
+            self.getchildren().copy(),
             actions=_tag_actions,
             access_vals=self.ACCESS_CHILDREN
         )
