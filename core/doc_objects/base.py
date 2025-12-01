@@ -1,19 +1,16 @@
 from abc import ABC, abstractmethod
 
 from core.utils.v_objects import MiddlewareArray
-from core.validators.v_objects import validate_access_type
+from core.validators.v_objects import validate_access_markup
 
-from typing import List
-from typing import cast
 from typing import Type, Any, FrozenSet
 
 from docx.enum.base import BaseXmlEnum
 from docx.oxml.simpletypes import BaseSimpleType
-from docx.oxml.ns import qn
-from docx.oxml import OxmlElement
 from docx.oxml.xmlchemy import serialize_for_reading
 from lxml import etree
 from core.utils.tracker_mixin import RelationDefMeta
+from docx.oxml.ns import qn
 
 
 class BaseMarkupElement(metaclass=RelationDefMeta):
@@ -59,19 +56,14 @@ class BaseTagElement(BaseMarkupElement, etree.ElementBase, ABC):
     """Base class for all markup elements"""
 
     # by default there are no restrictions
-    ACCESS_ATTRIBUTES: FrozenSet[Type[BaseAttributeElement]] = frozenset({
-        "BaseAttributeElement"
-    })
-    REQUIRED_ATTRIBUTES: FrozenSet[Type[BaseAttributeElement]] = frozenset()
+    ACCESS_ATTRIBUTES: FrozenSet[str] = frozenset()
 
-    def _init(self, attrs: List[BaseAttributeElement] = None):
-        _attribute_actions = {validate_access_type, }
-        # Note: attributes should be added into array from existing elements in initializing
+    def _init(self):
+        _attribute_actions = {validate_access_markup, }
+        # todo Note: attributes should be added into array from existing elements in initializing
         self.attrs = MiddlewareArray(
-            attrs,
             actions=_attribute_actions,
-            required_types=self.REQUIRED_ATTRIBUTES,
-            access_val=self.ACCESS_ATTRIBUTES
+            access_vals=self.ACCESS_ATTRIBUTES
         )
 
     def _assignment_attr(self) -> Any:
@@ -85,7 +77,7 @@ class BaseTagElement(BaseMarkupElement, etree.ElementBase, ABC):
     # todo согласовать найминг, т.к self уже является объектом
     def to_oxml(self) -> etree.ElementBase:
         """Transforms a single objects into tree of markup elements."""
-        # _oxml = cast(etree.ElementBase, OxmlElement(self.tag))
+
         self._assignment_attr()
         return self._fold_elements()
 
@@ -107,27 +99,17 @@ class BaseTagElement(BaseMarkupElement, etree.ElementBase, ABC):
 
 class BaseContainElement(BaseTagElement):
     """Base class for all contain-markup elements"""
-    # todo .....
 
     # by default there are no restrictions
-    ACCESS_CHILDREN: FrozenSet[Type[BaseTagElement]] = frozenset({
-        "BaseMarkupElement"
-    })
-    REQUIRED_CHILDREN: FrozenSet[Type[BaseTagElement]] = frozenset()
+    ACCESS_CHILDREN: FrozenSet[str] = frozenset()
 
-    def _init(self,
-              attrs: List[BaseAttributeElement] = None,
-              children: List[BaseTagElement] = None):
-        super()._init(attrs)
-
-        _tag_actions = {validate_access_type, }
-        # Note: children should be added into array from existing elements in initializing. Because letter this elements will be drawing!
-
+    def _init(self):
+        super()._init()
+        _tag_actions = {validate_access_markup, }
+        # todo Note: children should be added into array from existing elements in initializing. Because letter this elements will be drawing!
         self.children = MiddlewareArray(
-            children,
             actions=_tag_actions,
-            required_types=self.REQUIRED_CHILDREN,
-            access_val=self.ACCESS_CHILDREN
+            access_vals=self.ACCESS_CHILDREN
         )
 
     def _fold_elements(self) -> etree.ElementBase:
@@ -141,8 +123,8 @@ class BaseContainElement(BaseTagElement):
 class BaseNonContainElement(BaseTagElement):
     """Base class for all non contain-markup elements"""
 
-    def _init(self, attrs: List[BaseAttributeElement] = None):
-        super()._init(attrs)
+    def _init(self):
+        super()._init()
 
     def _fold_elements(self) -> etree.ElementBase:
         """To collect into tree of elements"""

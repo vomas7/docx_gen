@@ -45,7 +45,7 @@ class BaseContainerDocx(BaseDocx):
         self.linked_objects = MiddlewareArray(
             iterable=linked_objects,
             actions=_object_actions,
-            access_val=self.ACCESS_CHILDREN
+            access_vals=self.ACCESS_CHILDREN
         )
 
     def add(self, elem):

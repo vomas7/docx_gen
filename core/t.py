@@ -72,134 +72,17 @@ sys.path.append(root_path)
 # # todo -----------
 
 
-from docx.oxml import OxmlElement
-from docx import Document
+from core.doc_objects import SI_Run, SI_Paragraph
 
-from core.ui_objects.section import Section
-from core.ui_objects.paragraph import Paragraph
-from core.ui_objects.document import Document
-# preparation
-# ==========
-# ct_doc = OxmlElement("w:document")
-# ct_doc.append(OxmlElement("w:body"))
-# # ==========
-#
-#
-# # Инициализации корневых элементов
-#
-# doc = Document(document_elem=ct_doc, document_part="now skip it")
-#
-# print(doc._si_document, " элемент документа: SI_Document\n")
-#
-# body = doc.body  # Body() object
-#
-# # ====== создаём и заполняем секции =====
-#
-# par_one = Paragraph()  # пустой парграф
-# par_two = Paragraph()  # пустой парграф
-#
-# section = Section(linked_objects=[par_one,par_two])
-#
-# print(section.linked_objects, "  что внутри секции ")
-#
-# # Добавляем секцию в бади
-# body.linked_objects.append(section)
-#
-# print(body.linked_objects, " внутри бади")
-#
-# ### выведем дерево xml
-#
-# si_doc = body.si_element  # элемент бади
-# tree_of_doc = body.to_SI_element()  # дерево в виде si_элементов
-# print(si_doc, "просто элемент бади\n")
-# print("\nНачиная от бади")
-# print(tree_of_doc.to_xml_string())  #
-# print("Начиная от документа")
-# print(doc._si_document.to_xml_string())  # начиная от докумениа
-#
-# # особенности верхнего уровня:
-#
-# # как происходит преобразование в xml на верхнем уровне?
-# # из-за хранящихся элементов si_ внутри, метод to_SI_element, рекурсия
-#
-# # верхний ровень позволяет нам делать с элементами чё угодно, т.к отрисовка происходит на нижнем уровне
-#
-# # можно обратиться к родителькому элементу
-#
-# print(section.parent, f" - Батя для {section}")
-#
-# # не просто добавляет, но и расширяет
-# # пример с секцией
-# section_two = Section(linked_objects=[par_one, par_two])
-# # print(section_two.parent) # None
-# # вызовет ошибку:
-# # print(section_two.to_SI_element())
-# body.linked_objects.append(section_two)
-# print(
-#     section_two.to_SI_element())  # распаковывает section, по аналогии можно делать и с другими элементами
-#
-# from core.ui_objects.api import Document
-# from core.ui_objects.paragraph import Paragraph, Run, Text
-#
-# doc = Document()
-#
-# t = Text('Hello World')
-# r = Run()
-# r.linked_objects.append(t)
-# p = Paragraph()
-# p.linked_objects.append(r)
-#
-#
-#
-# doc.body.linked_objects.append(p)
-#
-# print(doc.body.to_SI_element().to_xml_string())
-# print(doc.body.linked_objects)
-#
-# doc.save('d.docx')
-#
-# # секции не оборачиваются в pPr
-#
-# from docx.oxml.ns import qn, NamespacePrefixedTag
-#
-# from core.ui_objects.paragraph import Paragraph
-# from core.doc_objects.attributes import SI_Top, SI_Bottom, SI_Left
-#
-# par = Paragraph()
-# si = par.si_element
-#
-# si.attrs.extend([SI_Top(), SI_Bottom(), SI_Left()])
-#
-# print(si.to_xml_string())
-# print(si.to_oxml().get(qn("w:top")))
-# e = si.to_oxml()
-# print(
-# e.attrib
-#
-# )
-#
-# for i,x in e.attrib.items():
-#     print(NamespacePrefixedTag.from_clark_name(i), x)
-from docx.oxml import OxmlElement
-# from docx import Document
-from lxml import etree
-# doc = Document()
-
-# ct = doc._element
-# print(type(ct.attrib))
-
-
-from core.doc_objects import SI_Run
-from docx.oxml import OxmlElement
-from core.doc_objects.attributes import SI_Top
-
-si_run:SI_Run=OxmlElement("w:r")
-si_run1:SI_Run=OxmlElement("w:r")
-
-print(si_run.to_xml_string())
-si_run.attrs.append(SI_Top())
-
-print(si_run.to_xml_string())
-
+# from docx.oxml.parser import element_class_lookup
+# from docx.oxml.ns import NamespacePrefixedTag, nsmap
+# from lxml import etree
 
 from docx.oxml import OxmlElement
+
+
+o: SI_Run = OxmlElement('w:r')
+o1: SI_Run = OxmlElement('w:r')
+p = OxmlElement('w:p')
+o.children.append(p)
+print(o.children)

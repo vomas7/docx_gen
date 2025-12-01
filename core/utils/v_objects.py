@@ -51,13 +51,10 @@ class MiddlewareArray(list):
                           if func_name else "")
                 raise ValidationError(_base)
 
-    def action(self, item: Any):
-        """Checks whether the item can be added"""
-        self._action(item)
 
     def append(self, item: Any) -> None:
         """Adds an element with validation"""
-        self.action(item)
+        self._action(item)
         super().append(item)
 
     def extend(self, iterable: List[Any]) -> None:
@@ -78,7 +75,7 @@ class MiddlewareArray(list):
 
     def insert(self, index: int, item: Any) -> None:
         """Inserts an element with validation"""
-        self.action(item)
+        self._action(item)
         super().insert(index, item)
 
     def remove(self, item: Any) -> None:
@@ -99,7 +96,7 @@ class MiddlewareArray(list):
 
     def __setitem__(self, index: int, item: Any) -> None:
         """Sets the element by index with validation"""
-        self.action(item)
+        self._action(item)
         super().__setitem__(index, item)
         self._check_required_types(func_name=self.__setitem__.__name__)
 
