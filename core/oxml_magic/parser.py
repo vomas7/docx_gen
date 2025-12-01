@@ -64,5 +64,5 @@ def to_si_element(element: etree._Element) -> "BaseMarkupElement":
     si_tree = cast("BaseMarkupElement", OxmlElement(
         NamespacePrefixedTag.from_clark_name(element.tag), element.attrib))
     for child in element:
-        si_tree.append(child)
+        si_tree.children.append(child)
     return si_tree

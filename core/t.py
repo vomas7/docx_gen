@@ -98,6 +98,6 @@ print(doc.body)
 
 from core.oxml_magic.parser import to_si_element
 el = doc._si_document
-# print(el.children)
+print(el.children)
 
 # print(el)
