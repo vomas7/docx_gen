@@ -6,7 +6,3 @@ class SI_Text(BaseNonContainElement):
 
     # todo заполнить ограничения
     # ACCESS_ATTRIBUTES.... = frozenset([qn('w:t')])
-
-    def _fold_elements(self):
-        self.text = self.text
-        return self

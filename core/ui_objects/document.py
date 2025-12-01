@@ -3,7 +3,6 @@ from core.ui_objects.base import BaseContainerDocx, BaseDocx
 from core.doc_objects.document import SI_Body
 from docx.parts.document import DocumentPart
 from docx.oxml import CT_Document
-from core.oxml_magic.ct_objects import convert_to_Si
 
 
 class Body(BaseContainerDocx):
@@ -17,25 +16,24 @@ class Body(BaseContainerDocx):
         )
 
 
-class Document:
-    def __init__(self,
-                 document_elem: CT_Document,
-                 document_part: DocumentPart):
-        self._part = document_part
-        self._si_document = convert_to_Si(document_elem) #конвертит все вложенные ct_елементы
-        self._body = None
+# class Document:
+#     def __init__(self,
+#                  document_elem: CT_Document,
+#                  document_part: DocumentPart):
+#         self._part = document_part
+#         self._si_document = convert_to_Si(document_elem) #конвертит все вложенные ct_елементы
+#         self._body = None
+#
+#     @property
+#     def body(self):
+#         if self._body is None:
+#             self._body = Body(self._si_document.children[0])
+#         return self._body
+#
+#     def save(self, path):
+#
+#         self._part._element.clear()
+#         self._part._element.append(self.body.to_SI_element().to_oxml())
+#
+#         self._part.save(path)
 
-    @property
-    def body(self):
-        if self._body is None:
-            self._body = Body(self._si_document.children[0]) #todo is dangerous until auto generation is absent
-        return self._body
-
-    def save(self, path):
-
-        self._part._element.clear()
-        self._part._element.append(self.body.to_SI_element().to_oxml())
-
-        self._part.save(path)
-
-from docx.oxml.document import CT_Body

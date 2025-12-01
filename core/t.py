@@ -78,6 +78,11 @@ from core.doc_objects import *
 
 from docx.oxml import OxmlElement
 
+from core.ui_objects.paragraph import Paragraph
+from core.ui_objects.section import Section
+p_b = Paragraph()
+p = Paragraph(text="sosi")
+s= Section(linked_objects=[p])
+p_b.add(s)
 
-
-
+print(p_b.to_SI_element().to_xml_string())
