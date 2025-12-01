@@ -20,52 +20,23 @@ def _name_autofill_by_tag(tag_name: str) -> str:
     return 'SI_' + tag_name.replace(f'{prefix}:', '').title()
 
 
-# def tag_factory(
-#         class_name,
-#         parent_cls,
-#         **kwargs
-# ) -> Type[BaseTagElement]:
-#     """
-#     Factory of attributes, returns a class with <tag_name> class name without prefix <w:>
-#     :param class_name: class name
-#     :param is_container: if is container True otherwise False
-#     :param kwargs: defines attributes into class
-#     """
-#
-#     class_attrs = {
-#         '__name__': class_name,
-#         '__qualname__': class_name,
-#         '__module__': __name__,
-#     }
-#     class_attrs.update(kwargs)
-#
-#     if is_container:
-#         def _init(self, attrs=None, children=None):
-#             super(type(self), self)._init(attrs, children)
-#
-#     else:
-#         def _init(self, attrs=None):
-#             super(type(self), self)._init(attrs)
-#
-#     class_attrs['_init'] = _init
-#
-#     return type(class_name, (parent_cls,), class_attrs)
-
-
 def attr_factory(attr_name,
                  simple_type,
                  parent_cls,
                  cls_name=None,
                  default=None):
     """
-    Factory of attributes, returns a class with <attr_name> class name without prefix <w:>
+    Factory of attributes
+        Parameters:
+        param: attr_name is a markup attribute name
+        param: simple_type is rule how to convert this attribute
+        param: parent_cls is the parent class
+        param: cls_name is the class name, if not provided, the auto-fill method will be used
+        param: default: default value for markup attribute
     """
 
     class_name = cls_name or _name_autofill_by_tag(attr_name)
 
-    # class AttributeClass(BaseAttributeElement):
-    #     _default_value = default
-    #     _simple_type = simple_type
     class_attrs = {"__name__": class_name,
                    "__module__": __name__, }
 

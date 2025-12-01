@@ -72,17 +72,12 @@ sys.path.append(root_path)
 # # todo -----------
 
 
-from core.doc_objects import SI_Run, SI_Paragraph
+from core.doc_objects import *
 
-# from docx.oxml.parser import element_class_lookup
-# from docx.oxml.ns import NamespacePrefixedTag, nsmap
-# from lxml import etree
+
 
 from docx.oxml import OxmlElement
 
 
-o: SI_Run = OxmlElement('w:r')
-o1: SI_Run = OxmlElement('w:r')
-p = OxmlElement('w:p')
-o.children.append(p)
-print(o.children)
+
+

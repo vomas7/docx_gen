@@ -1,9 +1,9 @@
-from core.doc_objects.base import BaseAttributeElement
-from docx.oxml.simpletypes import ST_TwipsMeasure
-from typing import Type
-from docx.enum.base import BaseXmlEnum
-from docx.oxml.simpletypes import BaseSimpleType
-from docx.oxml.ns import nsmap
+# from core.doc_objects.base import BaseAttributeElement
+# from docx.oxml.simpletypes import ST_TwipsMeasure
+# from typing import Type
+# from docx.enum.base import BaseXmlEnum
+# from docx.oxml.simpletypes import BaseSimpleType
+# from docx.oxml.ns import nsmap
 
 #todo .....
 

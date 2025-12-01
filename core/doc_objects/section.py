@@ -1,10 +1,6 @@
-from core.doc_objects.base import BaseContainElement, BaseTagElement
-from typing import List
-from core.doc_objects.base import BaseAttributeElement
+from core.doc_objects.base import BaseContainElement, BaseNonContainElement
 from core.doc_objects.paragraph import SI_Paragraph, SI_pPr
-# from core.doc_objects.tags import tag_factory
 
-# from docx.oxml
 
 # todo реализовать логику header footer SI элементов. имеет 2 тега в 1 SI_HdrFtr SI_HdrFtrRef
 
@@ -18,20 +14,29 @@ from core.doc_objects.paragraph import SI_Paragraph, SI_pPr
 # SI_Hdr = tag_factory('w:hdr', is_container=True)
 # SI_Ftr = tag_factory('w:ftr', is_container=True)
 
+class SI_docGrid(BaseNonContainElement): ...
+
+
+class SI_cols(BaseNonContainElement): ...
+
+
+class SI_PageMar(BaseNonContainElement): ...
+
+
+class SI_PageSz(BaseNonContainElement): ...
+
+
+class SI_HdrFtrRef(BaseContainElement): ...
+
+
+class SI_HdrFtr(BaseContainElement): ...
+
 
 class SI_SectPr(BaseContainElement):
-    """
-    Display <Section> without any
-    wrapping at the object level
-    """
+    """representation of w:SectPr"""
 
-    # todo Заполнить подходящими значениями Атрибуты и тэги
-    # xpath = "./w:body/w:p/w:pPr/w:sectPr | ./w:body/w:sectPr"
-
-    def __init__(self,
-                 children: List[BaseTagElement] = None,
-                 attrs: List[BaseAttributeElement] = None):
-        super().__init__("w:SectPr", attrs, children)
+    # todo заполнить ограничения
+    # ACCESS_CHILDREN = frozenset([qn('w:r')])
 
     def wrap_to_paragraph(self) -> SI_Paragraph:
         """Returns a new Paragraph containing the existing SectPr"""

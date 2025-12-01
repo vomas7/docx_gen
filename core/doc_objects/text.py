@@ -1,15 +1,11 @@
-from core.doc_objects.base import BaseNonContainElement, BaseAttributeElement
-from typing import List
+from core.doc_objects.base import BaseNonContainElement
 
 
 class SI_Text(BaseNonContainElement):
-    # todo Заполнить подходящими значениями Атрибуты и тэги
+    """representation of w:t"""
 
-    def __init__(self,
-                 text: str = "",
-                 attrs: List[BaseAttributeElement] = None):
-        self.text = text
-        super().__init__("w:t", attrs)
+    # todo заполнить ограничения
+    # ACCESS_ATTRIBUTES.... = frozenset([qn('w:t')])
 
     def _fold_elements(self):
         self.text = self.text
