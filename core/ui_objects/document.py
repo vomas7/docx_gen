@@ -28,15 +28,16 @@ class Document:
         self._body = None
 
     @property
-    def body(self):
+    def body(self) -> Body:
         if self._body is None:
             self._body = Body(self._si_document.children[0])
         return self._body
 
     def save(self, path):
 
+
         self._part._element.clear()
-        self._part._element.append(self.body.to_SI_element().to_oxml())
+
+        self._part._element.append(self.body.to_SI_element().to_oxml()) # todo подумать над автоматическом собрании элементов
 
         self._part.save(path)
-

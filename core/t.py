@@ -71,33 +71,22 @@ sys.path.append(root_path)
 
 # # todo -----------
 
+#todo сделать ридер
 
-#
-#
-#
-# from docx.oxml import OxmlElement
-#
-# from core.ui_objects.paragraph import Paragraph
-# from core.ui_objects.section import Section
-# p_b = Paragraph()
-# p = Paragraph(text="sosi")
-# s= Section(linked_objects=[p])
-# p_b.add(s)
-#
-# print(p_b.to_SI_element().to_xml_string())
-
-from lxml import etree
 from core.ui_objects.api import Document
-from core.doc_objects.document import SI_Document, SI_Body
-from core.doc_objects import *
+from core.ui_objects.section import Section
+from core.ui_objects.paragraph import Paragraph
 doc = Document()
 
-print(doc.body)
-#todo ошибка не парсит эллементы из lxml списка
-#todo проверить валидный ли перенос функций из pydocx и по-хорошему мигрировать полностью
 
-from core.oxml_magic.parser import to_si_element
-el = doc._si_document
-print(el.children)
+body = doc.body
+print(body.to_SI_element().to_xml_string())
+# par = Paragraph(text="wiebano x2!")
+# sect = Section(linked_objects=[par])
+# body.linked_objects.append(sect)
+#
+# print(body)
+# si = doc
+# doc.save("wiebano.docx")
 
-# print(el)
+

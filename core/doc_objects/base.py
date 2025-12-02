@@ -85,7 +85,6 @@ class BaseTagElement(BaseMarkupElement, etree.ElementBase, ABC):
 
     def to_xml_string(self) -> str:
         """Transforms an object into an XML string"""
-
         return serialize_for_reading(self.to_oxml())
 
     @abstractmethod

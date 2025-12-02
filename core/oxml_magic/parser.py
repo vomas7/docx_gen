@@ -37,7 +37,6 @@ def register_element_cls(tag: str, cls: Type["BaseOxmlElement"]):
     namespace = element_class_lookup.get_namespace(nsmap[nspfx])
     namespace[tagroot] = cls
 
-
 def OxmlElement(
         nsptag_str: str,
         attrs: Dict[str, str] | None = None,
@@ -56,13 +55,18 @@ def OxmlElement(
     nsptag = NamespacePrefixedTag(nsptag_str)
     if nsdecls is None:
         nsdecls = nsptag.nsmap
-    return oxml_parser.makeelement(nsptag.clark_name, attrib=attrs,
-                                   nsmap=nsdecls)
+
+    return oxml_parser.makeelement(nsptag.clark_name, attrib=attrs, nsmap=nsdecls)
 
 
 def to_si_element(element: etree._Element) -> "BaseMarkupElement":
-    si_tree = cast("BaseMarkupElement", OxmlElement(
-        NamespacePrefixedTag.from_clark_name(element.tag), element.attrib))
+    """transform any subclass of <etree._Element> to si element."""
+
+    si_tree = OxmlElement(
+        NamespacePrefixedTag.from_clark_name(element.tag), element.attrib
+    )
     for child in element:
-        si_tree.children.append(child)
+        si_tree.children.append(to_si_element(child))
     return si_tree
+
+#todo should licked

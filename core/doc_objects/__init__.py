@@ -35,7 +35,7 @@ register_element_cls("w:r", SI_Run)
 register_element_cls("w:p", SI_Paragraph)
 register_element_cls("w:t", SI_Text)
 
-register_element_cls("w:SectPr", SI_SectPr)
+register_element_cls("w:sectPr", SI_SectPr)
 register_element_cls("w:docGrid", SI_docGrid)
 register_element_cls("w:cols", SI_cols)
 register_element_cls("w:pgMar", SI_PageMar)

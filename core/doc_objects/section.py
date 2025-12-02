@@ -33,7 +33,7 @@ class SI_HdrFtr(BaseContainElement): ...
 
 
 class SI_SectPr(BaseContainElement):
-    """representation of w:SectPr"""
+    """representation of w:sectPr"""
 
     # todo заполнить ограничения
     # ACCESS_CHILDREN = frozenset([qn('w:r')])

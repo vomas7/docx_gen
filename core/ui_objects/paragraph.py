@@ -5,7 +5,7 @@ from core.ui_objects.base import (
     BaseDocx,
     BaseNonContainerDocx
 )
-from docx.oxml import OxmlElement
+from core.oxml_magic.parser import OxmlElement
 
 
 class Paragraph(BaseContainerDocx):
