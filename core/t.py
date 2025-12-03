@@ -71,22 +71,26 @@ sys.path.append(root_path)
 
 # # todo -----------
 
-#todo сделать ридер
+#todo возможно стоит подумать как сделать мроще для понимания сборку элементов и без сборки si_
 
 from core.ui_objects.api import Document
 from core.ui_objects.section import Section
 from core.ui_objects.paragraph import Paragraph
-doc = Document()
+doc = Document("wiebano.docx")
+from core.oxml_magic.parser import OxmlElement
 
 
 body = doc.body
-print(body.to_SI_element().to_xml_string())
-# par = Paragraph(text="wiebano x2!")
-# sect = Section(linked_objects=[par])
-# body.linked_objects.append(sect)
+print(doc._si_document.to_xml_string())
 #
-# print(body)
-# si = doc
-# doc.save("wiebano.docx")
+# old = si.children
+# _get = si.getchildren()
+# print(old)
+# print(_get)
+#
+# si.append(p)
+#
+# print(si.getchildren())
+
 
 

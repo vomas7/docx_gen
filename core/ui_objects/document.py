@@ -4,6 +4,7 @@ from core.doc_objects.document import SI_Body
 from docx.parts.document import DocumentPart
 from core.oxml_magic.parser import to_si_element
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from docx.oxml import CT_Document
 
@@ -34,10 +35,8 @@ class Document:
         return self._body
 
     def save(self, path):
-
-
         self._part._element.clear()
-
-        self._part._element.append(self.body.to_SI_element().to_oxml()) # todo подумать над автоматическом собрании элементов
+        # todo подумать над автоматическом собрании элементов
+        self._part._element.append(self.body.to_SI_element().to_oxml())
 
         self._part.save(path)

@@ -11,6 +11,7 @@ from docx.oxml.xmlchemy import serialize_for_reading
 from lxml import etree
 from core.utils.tracker_mixin import RelationDefMeta
 from docx.oxml.ns import qn
+import copy
 
 
 class BaseMarkupElement(metaclass=RelationDefMeta):
@@ -62,7 +63,7 @@ class BaseTagElement(BaseMarkupElement, etree.ElementBase, ABC):
         _attribute_actions = {validate_access_markup, }
         # todo Note: attributes should be added into array from existing elements in initializing
         self.attrs = MiddlewareArray(
-            # self.attrib.keys().copy(),
+            # self.attrib.keys(),
             actions=_attribute_actions,
             access_vals=self.ACCESS_ATTRIBUTES
         )
@@ -92,10 +93,41 @@ class BaseTagElement(BaseMarkupElement, etree.ElementBase, ABC):
         pass
 
     def __repr__(self):
-        return f'<{type(self)} object at {hex(id(self))}>'
+        return f'{type(self)} object at {hex(id(self))}>'
 
     def __str__(self):
         return f'{type(self)} object at {hex(id(self))}>'
+
+    def __deepcopy__(self, memo):
+        # Создаем новый элемент
+        new_element = copy.copy(self)
+        memo[id(self)] = new_element
+
+        # Копируем детей
+        for child in self:
+            new_element.append(copy.deepcopy(child, memo))
+
+        # Копируем __dict__ если он есть
+        if hasattr(self, '__dict__'):
+            for key, value in self.__dict__.items():
+                # Пропускаем специальные атрибуты, если нужно
+                if not key.startswith('__'):
+                    try:
+                        setattr(new_element, key, copy.deepcopy(value, memo))
+                    except Exception:
+                        # Если не получается скопировать
+                        setattr(new_element, key, value)
+
+        # Также обрабатываем слоты
+        for slot in self.__class__.__slots__:
+            if slot != '__dict__' and hasattr(self, slot):
+                try:
+                    value = getattr(self, slot)
+                    setattr(new_element, slot, copy.deepcopy(value, memo))
+                except (AttributeError, TypeError):
+                    continue
+
+        return new_element
 
 
 class BaseContainElement(BaseTagElement):
@@ -107,9 +139,8 @@ class BaseContainElement(BaseTagElement):
     def _init(self):
         super()._init()
         _tag_actions = {validate_access_markup, }
-        # todo Note: children should be added into array from existing elements in initializing. Because letter this elements will be drawing!
         self.children = MiddlewareArray(
-            self.getchildren().copy(),
+            self.getchildren(),
             actions=_tag_actions,
             access_vals=self.ACCESS_CHILDREN
         )

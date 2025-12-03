@@ -45,7 +45,7 @@ class BaseContainerDocx(BaseDocx):
         self.linked_objects = MiddlewareArray(
             iterable=linked_objects,
             actions=_object_actions,
-            access_vals=self.ACCESS_CHILDREN #todo изменилось название атрибута access_val
+            access_vals=self.ACCESS_CHILDREN # todo изменилось название атрибута access_val
         )
 
     def add(self, elem):
@@ -60,7 +60,9 @@ class BaseContainerDocx(BaseDocx):
     @staticmethod
     def __assign_parent(args):
         if not isinstance(args.value, BaseDocx):
-            raise TypeError(f"{args.value} is not a BaseDocx instance")
+            raise TypeError(
+                f"{args.value} is not a {BaseDocx.__class__.__name__} instance"
+            )
         args.value.parent = args.self
 
 
