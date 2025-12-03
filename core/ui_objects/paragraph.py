@@ -9,6 +9,7 @@ from core.oxml_magic.parser import OxmlElement
 
 
 class Paragraph(BaseContainerDocx):
+
     #todo нет проверки на отсутсвие текста, поэтому может создать ненужные ran и text
     def __init__(self, linked_objects: List[BaseDocx] = None, text: str = ''):
         super().__init__(

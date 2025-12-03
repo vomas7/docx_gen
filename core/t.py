@@ -73,24 +73,16 @@ sys.path.append(root_path)
 
 #todo возможно стоит подумать как сделать мроще для понимания сборку элементов и без сборки si_
 
-from core.ui_objects.api import Document
-from core.ui_objects.section import Section
+
 from core.ui_objects.paragraph import Paragraph
-doc = Document("wiebano.docx")
-from core.oxml_magic.parser import OxmlElement
+from core.ui_objects.api import Document
 
+document = Document()
 
-body = doc.body
-print(doc._si_document.to_xml_string())
-#
-# old = si.children
-# _get = si.getchildren()
-# print(old)
-# print(_get)
-#
-# si.append(p)
-#
-# print(si.getchildren())
+p = Paragraph()
 
-
+print(p.to_SI_element().to_xml_string())
+body = document.body
+body.add(p)
+document.save('test.docx')
 

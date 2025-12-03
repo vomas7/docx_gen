@@ -55,13 +55,11 @@ def OxmlElement(
     nsptag = NamespacePrefixedTag(nsptag_str)
     if nsdecls is None:
         nsdecls = nsptag.nsmap
-
     return oxml_parser.makeelement(nsptag.clark_name, attrib=attrs, nsmap=nsdecls)
 
 
 def to_si_element(element: etree._Element) -> "BaseMarkupElement":
     """transform any subclass of <etree._Element> to si element."""
-
     si_tree = OxmlElement(
         NamespacePrefixedTag.from_clark_name(element.tag), element.attrib
     )
