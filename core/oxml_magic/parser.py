@@ -5,8 +5,11 @@
 from typing import TYPE_CHECKING, Dict, Type, cast
 
 from lxml import etree
+from lxml.etree import XMLParser
 
+from core.doc_objects import SI_Text
 from core.oxml_magic.ns import NamespacePrefixedTag, nsmap
+
 
 if TYPE_CHECKING:
     from core.doc_objects.base import BaseMarkupElement
@@ -57,12 +60,28 @@ def OxmlElement(
         nsdecls = nsptag.nsmap
     return oxml_parser.makeelement(nsptag.clark_name, attrib=attrs, nsmap=nsdecls)
 
+from docx.oxml.xmlchemy import BaseOxmlElement
+
+def _set_text_or_skip(old_elem: etree.Element, new_elem: "BaseMarkupElement"):
+    _text = None
+    if isinstance(old_elem, BaseOxmlElement):
+        _text = old_elem.xpath("../w:t") #todo работает не совсем правильно
+
+    elif isinstance(old_elem, etree._Element):
+        _text = old_elem.xpath("../w:t", namespaces=nsmap)
+
+    if _text:
+        new_elem.text= _text[0].text
+
+
 
 def to_si_element(element: etree._Element) -> "BaseMarkupElement":
     """transform any subclass of <etree._Element> to si element."""
     si_tree = OxmlElement(
         NamespacePrefixedTag.from_clark_name(element.tag), element.attrib
     )
+
+    _set_text_or_skip(element, si_tree)
     for child in element:
         si_tree.children.append(to_si_element(child))
     return si_tree

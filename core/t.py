@@ -76,13 +76,12 @@ sys.path.append(root_path)
 
 from core.ui_objects.paragraph import Paragraph
 from core.ui_objects.api import Document
+from docx.oxml.text.run import CT_R
 
-document = Document()
 
-p = Paragraph()
-
-print(p.to_SI_element().to_xml_string())
-body = document.body
-body.add(p)
-document.save('test.docx')
+document = Document("wiebano.docx")
+#todo короче нужно подумать как изначально принимать si_document или перевести blob в норм тему
+print(
+    document._si_document.to_oxml().to_xml_string()
+)
 
