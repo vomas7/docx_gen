@@ -72,16 +72,39 @@ sys.path.append(root_path)
 # # todo -----------
 
 #todo возможно стоит подумать как сделать мроще для понимания сборку элементов и без сборки si_
-
-
-from core.ui_objects.paragraph import Paragraph
-from core.ui_objects.api import Document
-from docx.oxml.text.run import CT_R
-
-
-document = Document("wiebano.docx")
 #todo короче нужно подумать как изначально принимать si_document или перевести blob в норм тему
-print(
-    document._si_document.to_oxml().to_xml_string()
-)
+
+
+
+# from core.doc_objects.attributes import SI_Right
+
+#
+# from core.oxml_magic.parser import OxmlElement
+# from core.doc_objects.base import BaseContainElement
+# from core.doc_objects.metric_system import CM
+# from docx.text.paragraph import Run
+#
+# p :BaseContainElement= OxmlElement("w:p")
+#
+#
+# p.attrs.append(SI_Right(CM(5)))
+#
+# print(p.to_xml_string())
+
+# from core.ui_objects.api import Document
+# from core.ui_objects.paragraph import Paragraph
+#
+# doc = Document("wiebano.docx")
+#
+#
+# body = doc.body
+#
+# body.add(Paragraph(text='hello world'))
+# doc.save("wiebano.docx")
+
+
+from docx import Document
+
+
+doc = Document()
 

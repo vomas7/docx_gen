@@ -27,6 +27,13 @@ class Document:
         self._part = document_part
         self._si_document = to_si_element(document_elem)
         self._body = None
+        self.read_for()
+
+    def read_for(self):
+        print(self._part.blob)
+        return
+
+
 
     @property
     def body(self) -> Body:
