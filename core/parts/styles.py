@@ -5,14 +5,14 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 
-from docx.opc.constants import CONTENT_TYPE as CT
-from docx.opc.packuri import PackURI
-from docx.opc.part import XmlPart
+from core.opc.constants import CONTENT_TYPE as CT
+from core.opc.packuri import PackURI
+from core.opc.part import XmlPart
 from docx.oxml.parser import parse_xml
 from docx.styles.styles import Styles
 
 if TYPE_CHECKING:
-    from docx.opc.package import OpcPackage
+    from core.opc.package import OpcPackage
 
 
 class StylesPart(XmlPart):

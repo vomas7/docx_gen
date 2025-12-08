@@ -103,8 +103,8 @@ sys.path.append(root_path)
 # doc.save("wiebano.docx")
 
 
-from docx import Document
-
-
-doc = Document()
+# from docx import Document
+#
+#
+# doc = Document()
 

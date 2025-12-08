@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict, cast
 
-from docx.opc.oxml import CT_Relationships
+from core.opc.oxml import CT_Relationships
 
 if TYPE_CHECKING:
-    from docx.opc.part import Part
+    from core.opc.part import Part
 
 
 class Relationships(Dict[str, "_Relationship"]):

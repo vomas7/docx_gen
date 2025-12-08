@@ -6,15 +6,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable, Type, cast
 
-from docx.opc.oxml import serialize_part_xml
-from docx.opc.packuri import PackURI
-from docx.opc.rel import Relationships
-from docx.opc.shared import cls_method_fn
-from docx.oxml.parser import parse_xml
-from docx.shared import lazyproperty
+from core.opc.oxml import serialize_part_xml
+from core.opc.packuri import PackURI
+from core.opc.rel import Relationships
+from core.opc.shared import cls_method_fn
+from core.oxml_magic.parser import parse_xml
+from core.utils.shared import lazyproperty
 
 if TYPE_CHECKING:
-    from docx.oxml.xmlchemy import BaseOxmlElement
+    from core.doc_objects.base import BaseMarkupElement
     from docx.package import Package
 
 

@@ -1,7 +1,7 @@
 """|NumberingPart| and closely related objects."""
 
-from ..opc.part import XmlPart
-from ..shared import lazyproperty
+from core.opc.part import XmlPart
+from docx.shared import lazyproperty
 
 
 class NumberingPart(XmlPart):

@@ -8,15 +8,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Iterable
 
-from docx.opc.constants import CONTENT_TYPE as CT
-from docx.opc.oxml import CT_Types, serialize_part_xml
-from docx.opc.packuri import CONTENT_TYPES_URI, PACKAGE_URI
-from docx.opc.phys_pkg import PhysPkgWriter
-from docx.opc.shared import CaseInsensitiveDict
-from docx.opc.spec import default_content_types
+from core.opc.constants import CONTENT_TYPE as CT
+from core.opc.oxml import CT_Types, serialize_part_xml
+from core.opc.packuri import CONTENT_TYPES_URI, PACKAGE_URI
+from core.opc.phys_pkg import PhysPkgWriter
+from core.opc.shared import CaseInsensitiveDict
+from core.opc.spec import default_content_types
 
 if TYPE_CHECKING:
-    from docx.opc.part import Part
+    from core.opc.part import Part
 
 
 class PackageWriter:

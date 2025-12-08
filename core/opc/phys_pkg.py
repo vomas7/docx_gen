@@ -3,8 +3,8 @@
 import os
 from zipfile import ZIP_DEFLATED, ZipFile, is_zipfile
 
-from docx.opc.exceptions import PackageNotFoundError
-from docx.opc.packuri import CONTENT_TYPES_URI
+from core.opc.exceptions import PackageNotFoundError
+from core.opc.packuri import CONTENT_TYPES_URI
 
 
 class PhysPkgReader:

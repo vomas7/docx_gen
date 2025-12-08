@@ -5,12 +5,7 @@ These are broadly-standardized attributes like author, last-modified, etc.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-from docx.oxml.coreprops import CT_CoreProperties
-
-if TYPE_CHECKING:
-    from docx.oxml.coreprops import CT_CoreProperties
+from core.oxml.coreprops import CT_CoreProperties
 
 
 class CoreProperties:

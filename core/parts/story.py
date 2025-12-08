@@ -4,15 +4,15 @@ from __future__ import annotations
 
 from typing import IO, TYPE_CHECKING, Tuple, cast
 
-from docx.opc.constants import RELATIONSHIP_TYPE as RT
-from docx.opc.part import XmlPart
+from core.opc.constants import RELATIONSHIP_TYPE as RT
+from core.opc.part import XmlPart
 from docx.oxml.shape import CT_Inline
 from docx.shared import Length, lazyproperty
 
 if TYPE_CHECKING:
     from docx.enum.style import WD_STYLE_TYPE
     from docx.image.image import Image
-    from docx.parts.document import DocumentPart
+    from core.parts.document import DocumentPart
     from docx.styles.style import BaseStyle
 
 

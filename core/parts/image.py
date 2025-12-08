@@ -10,8 +10,8 @@ from docx.opc.part import Part
 from docx.shared import Emu, Inches
 
 if TYPE_CHECKING:
-    from docx.opc.package import OpcPackage
-    from docx.opc.packuri import PackURI
+    from core.opc.package import OpcPackage
+    from core.opc.packuri import PackURI
 
 
 class ImagePart(Part):

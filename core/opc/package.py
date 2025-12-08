@@ -4,19 +4,19 @@ from __future__ import annotations
 
 from typing import IO, TYPE_CHECKING, Iterator, cast
 
-from docx.opc.constants import RELATIONSHIP_TYPE as RT
-from docx.opc.packuri import PACKAGE_URI, PackURI
-from docx.opc.part import PartFactory
-from docx.opc.parts.coreprops import CorePropertiesPart
-from docx.opc.pkgreader import PackageReader
-from docx.opc.pkgwriter import PackageWriter
-from docx.opc.rel import Relationships
+from core.opc.constants import RELATIONSHIP_TYPE as RT
+from core.opc.packuri import PACKAGE_URI, PackURI
+from core.opc.part import PartFactory
+from core.opc.parts.coreprops import CorePropertiesPart
+from core.opc.pkgreader import PackageReader
+from core.opc.pkgwriter import PackageWriter
+from core.opc.rel import Relationships
 from docx.shared import lazyproperty
 
 if TYPE_CHECKING:
-    from docx.opc.coreprops import CoreProperties
-    from docx.opc.part import Part
-    from docx.opc.rel import _Relationship  # pyright: ignore[reportPrivateUsage]
+    from core.opc.coreprops import CoreProperties
+    from core.opc.part import Part
+    from core.opc.rel import _Relationship  # pyright: ignore[reportPrivateUsage]
 
 
 class OpcPackage:
