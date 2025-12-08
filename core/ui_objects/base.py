@@ -1,82 +1,88 @@
-# todo remove duplicate logic with base elements in low-level and high-level elements!
-
-from typing import FrozenSet, Type, List
-import copy
-
-from core.doc_objects.base import BaseTagElement, BaseContainElement
-from core.utils.v_objects import MiddlewareArray
-from core.validators.v_objects import validate_access_type
-from core.utils.annotaions import annotation_catcher
+from collections import UserList
+from typing import FrozenSet, Type
 from abc import abstractmethod, ABC
 
 
-class BaseDocx(ABC):
+class BaseDocx:
 
-    def __init__(self, si_element: BaseTagElement):
-        self._si_element = si_element
-        self.parent = None
+    __slots__: tuple = ()
+    """
+         Abstract base class for XML tag representation.
+         All concrete tag classes must:
+         1. Define __slots__ containing the tag's attributes
+         2. Implement the 'tag' property returning the tag name
+         3. Initialize all slot attributes in __init__
+         The class automatically converts slot-based attributes
+         into XML attribute dictionary with proper namespace prefixes.
+     """
 
     @property
-    def si_element(self):
-        return copy.deepcopy(self._si_element)
+    @abstractmethod
+    def tag(self):
+        pass
 
-    def to_SI_element(self) -> BaseTagElement:
-        return 'self._to_SI_element(self.si_element)'
+    @property
+    def attrs(self):
+        slots = getattr(self, '__slots__', ())
+        if not slots:
+            raise AttributeError(
+                f"Class {self.__class__.__name__} "
+                f"must define non-empty __slots__"
+            )
+        return {
+            f"w:{item.replace('_', '')}": getattr(self, item.replace("_", ""))
+            for item in slots
+        }
 
-    # @abstractmethod
-    # def _to_SI_element(self, si_element: "BaseTagElement") -> BaseTagElement:
-    #     pass
 
-
-class BaseContainerDocx(BaseDocx):
-    # all  <BaseDocx> elements are available by default
+class LinkedObjects(UserList):
     ACCESS_CHILDREN: FrozenSet[Type[BaseDocx]] = frozenset({
         BaseDocx
     })
-    high_attrs: dict = {}
-    attrs: {}
 
-    def __init__(self,
-                 si_element: BaseContainElement,
-                 linked_objects: List[BaseDocx] = None):
-        super().__init__(si_element)
+    def __init__(self, initlist=None):
+        super().__init__(initlist)
 
-        _object_actions = {validate_access_type, self.__assign_parent}
-        self.linked_objects = MiddlewareArray(
-            iterable=linked_objects,
-            actions=_object_actions,
-            access_vals=self.ACCESS_CHILDREN # todo изменилось название атрибута access_val
-        )
+    def append(self, item):
+        validate_access_children(item, self.ACCESS_CHILDREN)
+        super().append(item)
 
-    def __asdict(self) -> dict:
-        return asdict(self.attrs)
+    def insert(self, i, item):
+        validate_access_children(item, self.ACCESS_CHILDREN)
+        super().insert(i, item)
 
-    def func(self) -> dict:
-        return self.attrs
-
-    def add(self, elem):
-        self.linked_objects.append(elem)
-
-    def _to_SI_element(self, si_element) -> BaseTagElement:
-        for child in self.linked_objects:
-            si_element.children.append_or_extend(child.to_SI_element())
-        return si_element
-
-    @annotation_catcher("self", "value")
-    @staticmethod
-    def __assign_parent(args):
-        if not isinstance(args.value, BaseDocx):
-            raise TypeError(
-                f"{args.value} is not a {BaseDocx.__class__.__name__} instance"
-            )
-        args.value.parent = args.self
-
-    @abstractmethod
-    def func(self) -> dict:
-        pass
+    def extend(self, other):
+        if isinstance(other, list):
+            validate_access_childrens(other, self.ACCESS_CHILDREN)
+            super().extend(other)
+        elif isinstance(other, LinkedObjects):
+            super().extend(other)
 
 
-class BaseNonContainerDocx(BaseDocx):
+def validate_access_children(item, access_children):
+    if isinstance(item, BaseDocx) and isinstance(item, tuple(access_children)):
+        return True
+    raise TypeError(f"It is prohibited to add {str(item)} to"
+                    f"linked objects.")
 
-    def _to_SI_element(self, si_element) -> BaseTagElement:
-        return si_element
+
+def validate_access_childrens(items, access_childrens):
+    map(lambda item: validate_access_children(item, access_childrens), items)
+
+
+class BaseContainerDocx(ABC, BaseDocx):
+    _linked_objects: LinkedObjects = LinkedObjects()
+    _linked_objects.ACCESS_CHILDREN = frozenset()
+    __slots__: tuple = ()
+
+    @property
+    def linked_objects(self) -> LinkedObjects:
+        return self._linked_objects
+
+    def add(self, item: BaseDocx):
+        self._linked_objects.append(item)
+
+
+class BaseNonContainerDocx(ABC, BaseDocx):
+    __slots__: tuple = ()
+    pass

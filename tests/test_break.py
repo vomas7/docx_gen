@@ -10,7 +10,7 @@ def br():
 
 def test_br_tag(br):
     """tag cannot be changed and another attrs cannot be set"""
-    assert br.tag == 'br'
+    assert br.tag == 'w:br'
     # check that tag cannot be set
     with pytest.raises(AttributeError):
         br.tag = 'another_tag'
@@ -24,8 +24,8 @@ def test_br_type_from_int():
     # Test 0-6 (all should be line break)
     for i in range(0, 7):
         br = Break(type=i)
-        assert br.type == ''
-        assert br.clear == ''  # clear should not be affected
+        assert br.type is None
+        assert br.clear is None  # clear should not be affected
     # Test page break
     br = Break(type=7)
     assert br.type == 'page'
@@ -52,7 +52,7 @@ def test_br_type_from_wd_break_type():
     """Test all WD_BREAK_TYPE values"""
     # Test LINE (0)
     br = Break(type=WD_BREAK_TYPE.LINE)
-    assert br.type == ''
+    assert br.type is None
 
     # Test PAGE (7)
     br = Break(type=WD_BREAK_TYPE.PAGE)
@@ -79,8 +79,8 @@ def test_br_type_from_wd_break_type():
 def test_br_type_from_string():
     """Test string inputs (case insensitive)"""
     test_cases = [
-        ('line', ''),
-        ('LINE', ''),
+        ('line', None),
+        ('LINE', None),
         (' page ', 'page'),
         ('COLUMN', 'column'),
         ('textwrapping', 'textWrapping'),
@@ -95,7 +95,7 @@ def test_br_type_from_string():
 def test_br_type_from_enum():
     """Test BreakTypes enum inputs"""
     br = Break(type=BreakTypes.line)
-    assert br.type == ''
+    assert br.type is None
 
     br = Break(type=BreakTypes.page)
     assert br.type == 'page'
@@ -119,7 +119,7 @@ def test_br_type_invalid_inputs():
 def test_br_combined_init():
     """Test initialization with both type and clear"""
     br = Break(type=6, clear='right')
-    assert br.type == ''
+    assert br.type is None
     assert br.clear == 'right'
 
     br = Break(type=9, clear='right')
@@ -140,17 +140,17 @@ def test_br_reverse_combined_init():
 def test_br_empty_string_type():
     """Test empty string type"""
     br = Break(type='')
-    assert br.type == ''
-    assert br.clear == ''
+    assert br.type is None
+    assert br.clear is None
 
 
 def test_br_none_handling():
     """Test how None values are handled"""
     br = Break(type=None)
-    assert br.type == ''
+    assert br.type is None
     try:
         br = Break(clear=None)
-        assert br.clear == ''
+        assert br.clear is None
     except (ValueError, AttributeError):
         pass
 

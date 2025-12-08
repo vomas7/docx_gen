@@ -1,40 +1,40 @@
 from enum import Enum
 from typing import Literal
 from docx.enum.text import WD_BREAK_TYPE
-from core.ui_objects.TagABC import TagABC
+from core.ui_objects.base import BaseNonContainerDocx
 
 
 class BreakTypes(Enum):
-    line = ''
+    line = None
     page = "page"
     column = "column"
     textwrapping = "textWrapping"
 
 
 class ClearTypes(Enum):
-    empty = ''
+    empty = None
     left = 'left'
     right = 'right'
     all = 'all'
 
 
-Types = str | WD_BREAK_TYPE | BreakTypes | Literal[6, 7, 8, 9, 10, 11]
+Types = str | WD_BREAK_TYPE | BreakTypes | Literal[6, 7, 8, 9, 10, 11] | None
 
 
-class Break(TagABC):
+class Break(BaseNonContainerDocx):
     """Break tag <w:br> assignment"""
 
     __slots__ = ('__type', '__clear')
 
     def __init__(self,
                  type: Types = BreakTypes.line,
-                 clear: str | ClearTypes = ClearTypes.empty):
+                 clear: str | ClearTypes | None = ClearTypes.empty):
         self.clear = clear
         self.type = type
 
     @property
     def tag(self) -> str:
-        return 'br'
+        return 'w:br'
 
     @property
     def type(self) -> str:
@@ -98,3 +98,7 @@ class Break(TagABC):
             raise ValueError(
                 f"Validation error: Unable to determine clear {new_clear}"
             )
+
+a = Break()
+
+print(a.attrs)
