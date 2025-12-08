@@ -1,6 +1,7 @@
+import collections.abc
 from typing import List, Any, Callable, Set, FrozenSet
 from core.exceptions.validation import ValidationError
-import collections.abc
+
 
 class MiddlewareArray(list):
     def __init__(self,
@@ -50,7 +51,6 @@ class MiddlewareArray(list):
                 _base += (f"! Operation '{func_name}' not allowed"
                           if func_name else "")
                 raise ValidationError(_base)
-
 
     def append(self, item: Any) -> None:
         """Adds an element with validation"""

@@ -47,8 +47,7 @@ def attr_factory(attr_name,
                  ):
         super(type(self), self).__init__(value=value,
                                          simple_type=simple_type,
-                                         attr_name=attr_name
-                                         )
+                                         attr_name=attr_name)
 
     class_attrs['__init__'] = __init__
     return type(class_name, (parent_cls,), class_attrs)

@@ -21,13 +21,11 @@ class BaseDocx(ABC):
         return copy.deepcopy(self._si_element)
 
     def to_SI_element(self) -> BaseTagElement:
-        return self._to_SI_element(self.si_element)
+        return 'self._to_SI_element(self.si_element)'
 
-    @abstractmethod
-    def _to_SI_element(
-            self,
-            si_element: "BaseTagElement") -> BaseTagElement:
-        pass
+    # @abstractmethod
+    # def _to_SI_element(self, si_element: "BaseTagElement") -> BaseTagElement:
+    #     pass
 
 
 class BaseContainerDocx(BaseDocx):
@@ -35,6 +33,8 @@ class BaseContainerDocx(BaseDocx):
     ACCESS_CHILDREN: FrozenSet[Type[BaseDocx]] = frozenset({
         BaseDocx
     })
+    high_attrs: dict = {}
+    attrs: {}
 
     def __init__(self,
                  si_element: BaseContainElement,
@@ -47,6 +47,12 @@ class BaseContainerDocx(BaseDocx):
             actions=_object_actions,
             access_vals=self.ACCESS_CHILDREN # todo изменилось название атрибута access_val
         )
+
+    def __asdict(self) -> dict:
+        return asdict(self.attrs)
+
+    def func(self) -> dict:
+        return self.attrs
 
     def add(self, elem):
         self.linked_objects.append(elem)
@@ -64,6 +70,10 @@ class BaseContainerDocx(BaseDocx):
                 f"{args.value} is not a {BaseDocx.__class__.__name__} instance"
             )
         args.value.parent = args.self
+
+    @abstractmethod
+    def func(self) -> dict:
+        pass
 
 
 class BaseNonContainerDocx(BaseDocx):
