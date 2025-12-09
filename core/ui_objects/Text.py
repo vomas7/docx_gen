@@ -1,7 +1,8 @@
 from collections import UserString
+from core.ui_objects.base.BaseContentTag import BaseContentTag
 
 
-class Text(UserString):
+class Text(UserString, BaseContentTag):
     """tag <w:t> text assignment"""
 
     def __init__(self, text: str = ''):
@@ -15,4 +16,4 @@ class Text(UserString):
 
     @property
     def tag(self) -> str:
-        return 't'
+        return 'w:t'
