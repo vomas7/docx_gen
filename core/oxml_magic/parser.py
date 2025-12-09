@@ -1,7 +1,7 @@
 # pyright: reportImportCycles=false
 
 """XML parser for python-ui_objects."""
-
+from tkinter.font import names
 from typing import TYPE_CHECKING, Dict, Type, cast
 
 from lxml import etree
@@ -86,4 +86,29 @@ def to_si_element(element: etree._Element) -> "BaseMarkupElement":
         si_tree.children.append(to_si_element(child))
     return si_tree
 
-#todo should licked
+
+from core.ui_objects.base import BaseDocx, BaseContainerDocx, BaseNonContainerDocx
+from lxml import etree
+from core.oxml_magic.ns import qn, nsmap, NamespacePrefixedTag
+from core.oxml_magic.register_tag import get_cls_by_tag
+
+
+def make_xml_tree(cls_element: BaseDocx) -> etree.Element:
+    xml_tree = etree.Element(qn(cls_element.tag), nsmap=nsmap)
+    if isinstance(cls_element, BaseContainerDocx):
+        for ch in cls_element.linked_objects:
+            xml_tree.append(make_xml_tree(ch))
+    return xml_tree
+
+def convert_xml_to_cls(xml_tree: str):
+    cls = get_cls_by_tag(NamespacePrefixedTag.from_clark_name(xml_tree.tag))
+    if cls is None:
+        raise TypeError(f"{xml_tree} object is not readable")
+    obj = cls()
+    for child in xml_tree:
+        obj.linked_objects.append(convert_xml_to_cls(child))
+    return cls
+
+
+def to_xml_str(xml_tree: etree.Element) -> str:
+    return etree.tostring(xml_tree, pretty_print=True).decode()

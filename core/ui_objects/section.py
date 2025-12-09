@@ -8,7 +8,6 @@ from core.oxml_magic.parser import OxmlElement
 class Section(BaseContainerDocx):
     def __init__(self, linked_objects: List[BaseDocx] = None):
         super().__init__(
-            si_element=OxmlElement("w:sectPr"),
             linked_objects=linked_objects
         )
         # todo it may be necessary to add a switch

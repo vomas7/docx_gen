@@ -1,3 +1,4 @@
+from ctypes.wintypes import tagMSG
 from typing import List
 from core.ui_objects.base import BaseContainerDocx, BaseDocx
 from core.doc_objects.document import SI_Body
@@ -12,27 +13,25 @@ if TYPE_CHECKING:
 class Body(BaseContainerDocx):
 
     def __init__(self,
-                 si_element: SI_Body,
                  linked_objects: List[BaseDocx] = None):
         super().__init__(
-            si_element=si_element,
             linked_objects=linked_objects
         )
 
 
-class Document:
+class Document(BaseContainerDocx):
     def __init__(self,
                  document_elem: "CT_Document",
                  document_part: DocumentPart):
+        super().__init__()
         self._part = document_part
-        self._si_document = to_si_element(document_elem)
         self._body = None
-        self.read_for()
 
-    def read_for(self):
-        print(self._part.blob)
-        return
 
+
+    @property
+    def tag(self):
+        return "w:document"
 
 
     @property

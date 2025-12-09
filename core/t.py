@@ -1,95 +1,19 @@
 import os
 import sys
 
+# from core.ui_objects import Run
+
 current_path = os.getcwd()
 root_path = os.path.abspath(os.path.join(current_path, ".."))
 sys.path.append(root_path)
-#
-# # todo ИДЕЯ, создать метакласс для автоматической генрации необходимых пациков (как атрибутов так и тэгов)
-# # todo главное чтобы метаклассы тегов не переопределяли передающие в него какие-либо элементы!
 
-# # todo------------
-# todo 1 избавиться от зависимости ct_element, инициализировать si_element в lxml ---- в процессе
-# # todo 1.1 инициализировать элементы в lxml
-# # todo 1.2 переписать логику отрисовки и добавления элементов на нижнем уровне
-# # todo 1.3 проверить что нормально создаются и отрисовываются
-
-# todo 2 Добавить объекты, которые необходимы для правильного парсинга документа .docx
-# # todo 2.1 добавить si_объекты
-# # todo 2.2 инициализироваь в lxml
-# # todo 2.3 проверить что отрисовываются, начиная с корневого элемента, с разными случаями
-# # todo 2.4 добавить атрибуты чтение
-
-
-# todo 3 определить documentPart через создающийся CT_DOCUMENT. Настроить flow открытия документа  (начало положено)
-# # todo 3.1 проверить что все элемнты отрисовываюся, необходимые для ворд - разметки
-# # todo 3.2 проинициализировать объект через core->ui-objects -> api.py
-
-# todo 4 Сделать Styler для элементов
-##note:
-# для стайлера релизовать во первых его как отдельный объект, у каждого верхоуровнего элемента как атрибут и можно обращаться parahraph.style.align = center
-# некоторые параметры styler'а могут иметь отдельные классы или енумы, в целом продумать этот моментик. чтобы пользователю было понятно каке атрибуты и параметры он может туда херачить. например у align есть 4 параметра
-
-# # todo 4.1 определить базовый класс BaseStyler
-# # todo 4.2 определить классы Styler для каждого элементв, типа ParagraphStyler и т.п + атрибуты которые он принимает, аля pgSize, PgMargin
-# # todo 4.3 адаптировать в объкутах тегов
-# # # todo 4.3.1 добавить в init каждого верхнего объекта класса атрибут style
-# # # todo 4.3.2 определить методы, которые будут добавлять, обновлять стили в объект,
-# # # todo 4.3.3 сделать парсинг стилей в низкий уровень в виже атрибутов, при отрисовке
-
-
-# todo 5 Доделать секции
-# # todo 5.1 сделать так чтобы они могли оборачиваться в pPr (при отрисовке, чтобы было удобно работать с ними, ну или продумать моментик)
-
-# todo 6 Донастроить инициализацию связей между объектами на нижнем уровне
-# # todo 6.1 убрать текущие ошибки
-# # todo 6.2 улучшить код (необязательно)
-
-# todo 7 Сделать автоматическое добавление элементов в низкоуровневые объекты
-# # todo 7.1 считывать обязательные атрибуты и элементы
-# # todo 7.2 реализовать их создание
-# # todo 7.3 посмотреть по todo в программе, насколько перекрывает потребность в этой фиче
-
-# todo 8 перенести простые элементы в программу
-# # todo 8.1 создать объкты
-# # todo 8.2 инициализировать элементы в lxml
-# # todo 8.3 протестить, что всё создаётся и торисовывается полностью
-
-# todo 9 Настроить экспортёр
-# # todo 9.1 используя файл io-> export.py переписать под подходящий случай
-
-
-# todo 10 перенести все элементы (непросыте элементы по типу таблиц и непопулярных объектов)
-# # todo 10.1 реализовать таблицы
-# # todo 10.2 картинки
-# # todo 10.3 все остальные теги и атрибуты
-
-
-# хзхзхз
-# # todo 11 сделать простой доступ к элементам или автоматизировать некоторые моменты. Пример: чтобы постоянно не обращаться к секции, которая лежит в Body, автоматически делать обращение к первой сеции
-
-
-# # todo -----------
 
 #todo возможно стоит подумать как сделать мроще для понимания сборку элементов и без сборки si_
 #todo короче нужно подумать как изначально принимать si_document или перевести blob в норм тему
 
 
 
-# from core.doc_objects.attributes import SI_Right
 
-#
-# from core.oxml_magic.parser import OxmlElement
-# from core.doc_objects.base import BaseContainElement
-# from core.doc_objects.metric_system import CM
-# from docx.text.paragraph import Run
-#
-# p :BaseContainElement= OxmlElement("w:p")
-#
-#
-# p.attrs.append(SI_Right(CM(5)))
-#
-# print(p.to_xml_string())
 
 # from core.ui_objects.api import Document
 # from core.ui_objects.paragraph import Paragraph
@@ -102,9 +26,14 @@ sys.path.append(root_path)
 # body.add(Paragraph(text='hello world'))
 # doc.save("wiebano.docx")
 
+from core.oxml_magic.register_tag import get_cls_by_tag
+from core.ui_objects import base
+from core.oxml_magic.parser import make_xml_tree, to_xml_str, convert_xml_to_cls
+from core.ui_objects.paragraph import Paragraph, Run, Text
 
-# from docx import Document
-#
-#
-# doc = Document()
 
+from docx import Document
+
+elem= Document()._element.body
+
+print(convert_xml_to_cls(elem))
