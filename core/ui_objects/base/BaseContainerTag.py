@@ -8,6 +8,9 @@ class BaseContainerTag(BaseTag):
 
     __slots__: tuple = ('_linked_objects', )
 
+    def __init__(self, linked_objects: LinkedObjects | list = None):
+        self.linked_objects = linked_objects
+
     @property
     @abstractmethod
     def tag(self) -> str:
@@ -16,12 +19,9 @@ class BaseContainerTag(BaseTag):
 
     @property
     @abstractmethod
-    def allowed_children(self) -> set[BaseTag]:
+    def access_children(self) -> set[BaseTag]:
         """Must assign children class that can be in linked_objects"""
         pass
-
-    def __init__(self, linked_objects: LinkedObjects | list = None):
-        self.linked_objects = linked_objects
 
     @property
     def linked_objects(self) -> LinkedObjects:
@@ -29,12 +29,13 @@ class BaseContainerTag(BaseTag):
 
     @linked_objects.setter
     def linked_objects(self, new: LinkedObjects):
-        if isinstance(new, LinkedObjects):
+        if new is None:
+            self._linked_objects = LinkedObjects(self, [])
+        elif isinstance(new, LinkedObjects):
             new.linked_parent = self
             self._linked_objects = new
         elif isinstance(new, list):
-            if all(map(lambda x: isinstance(x, BaseTag), new)):
-                self._linked_objects = LinkedObjects(self, new)
+            self._linked_objects = LinkedObjects(self, new)
         else:
             raise TypeError(f"{new} has not BaseTag objects")
 

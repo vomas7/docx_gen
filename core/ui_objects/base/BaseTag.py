@@ -35,9 +35,8 @@ class BaseTag(ABC):
                 attrs[attribute.xml_name] = attribute.value
         return attrs
 
-    def get_attribute(self, attribute_name: str) -> BaseAttribute:
-        if hasattr(self, attribute_name):
-            return getattr(self, attribute_name)
+    def get_attribute(self, attribute: str) -> BaseAttribute:
+        return getattr(self, attribute) if hasattr(self, attribute) else None
 
     def __str__(self):
         attrs = self.attrs

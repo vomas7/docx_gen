@@ -1,6 +1,6 @@
 from enum import Enum
 from abc import abstractmethod
-from typing import ClassVar, Optional, Type, Any
+from typing import ClassVar, Optional, Type
 
 
 class BaseAttribute:
