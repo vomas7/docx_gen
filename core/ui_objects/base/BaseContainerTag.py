@@ -1,21 +1,42 @@
-from abc import ABC
+import copy
+from abc import abstractmethod
 from core.ui_objects.base.BaseTag import BaseTag
 from core.ui_objects.base.LinkedObjects import LinkedObjects
 
 
-class BaseContainerTag(ABC, BaseTag):
+class BaseContainerTag(BaseTag):
 
     __slots__: tuple = ('_linked_objects', )
-    _linked_objects: LinkedObjects
 
-    def __init__(self, linked_objects: LinkedObjects = None):
-        self._linked_objects = LinkedObjects(linked_objects)
-        self._linked_objects.object = self
-        self._linked_objects.validate_access_children(linked_objects)
+    @property
+    @abstractmethod
+    def tag(self) -> str:
+        """Must be implemented in child"""
+        pass
+
+    @property
+    @abstractmethod
+    def allowed_children(self) -> set[BaseTag]:
+        """Must assign children class that can be in linked_objects"""
+        pass
+
+    def __init__(self, linked_objects: LinkedObjects | list = None):
+        self.linked_objects = linked_objects
 
     @property
     def linked_objects(self) -> LinkedObjects:
-        return self._linked_objects
+        return copy.deepcopy(self._linked_objects)
+
+    @linked_objects.setter
+    def linked_objects(self, new: LinkedObjects):
+        if isinstance(new, LinkedObjects):
+            new.linked_parent = self
+            self._linked_objects = new
+        elif isinstance(new, list):
+            if all(map(lambda x: isinstance(x, BaseTag), new)):
+                self._linked_objects = LinkedObjects(self, new)
+        else:
+            raise TypeError(f"{new} has not BaseTag objects")
 
     def add(self, item: BaseTag):
         self._linked_objects.append(item)

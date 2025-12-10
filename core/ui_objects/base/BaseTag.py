@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
+from core.ui_objects.base.BaseAttribute import BaseAttribute
 
 
-class BaseTag:
+class BaseTag(ABC):
 
     __slots__: tuple = ()
-    default_namespace: str = "w"
     """
          Abstract base class for XML tag representation.
          All concrete tag classes must:
@@ -18,20 +18,26 @@ class BaseTag:
     @property
     @abstractmethod
     def tag(self):
+        """Must assign tag like return string for safety"""
         pass
 
     @property
     def attrs(self):
+        """Complete dict with attributes for xml craft"""
         slots = getattr(self, '__slots__', ())
         if not slots:
             raise AttributeError(f"Class {self.__class__.__name__} "
                                  f"must define non-empty __slots__")
-        attrs = dict()
-        for attribute_property in slots:
-            attr_name = attribute_property.replace("_", "")
-            attr_value = getattr(self, attr_name)
-            attrs[f'{self.default_namespace}:{attr_name}'] = attr_value
+        attrs = {}
+        for slot in slots:
+            attribute = self.get_attribute(slot)
+            if attribute:
+                attrs[attribute.xml_name] = attribute.value
         return attrs
+
+    def get_attribute(self, attribute_name: str) -> BaseAttribute:
+        if hasattr(self, attribute_name):
+            return getattr(self, attribute_name)
 
     def __str__(self):
         attrs = self.attrs

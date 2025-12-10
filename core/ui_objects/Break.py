@@ -14,7 +14,7 @@ class BreakTypeAttribute(EnumAttribute):
     def __init__(self, value: str):
         super().__init__(
             namespace="w",
-            xml_name="w:type",
+            xml_name="type",
             name="type",
             value=value
         )
@@ -25,7 +25,7 @@ class BreakClearAttribute(EnumAttribute):
     def __init__(self, value: str):
         super().__init__(
             namespace="w",
-            xml_name="w:clear",
+            xml_name="clear",
             name="clear",
             value=value
         )
@@ -40,12 +40,12 @@ class BreakClearAttribute(EnumAttribute):
 class Break(BaseContentTag):
     """Break tag <w:br> assignment"""
 
-    __slots__ = ('__type', '__clear')
+    __slots__ = ('_type', '_clear')
 
     def __init__(self,
                  type: str | BreakTypeAttribute = None,
                  clear: str | BreakClearAttribute = None):
-        self.clear = clear
+        self.clear = BreakClearAttribute(clear)
         self.type = BreakTypeAttribute(type)
 
     @property
@@ -53,38 +53,38 @@ class Break(BaseContentTag):
         return 'w:br'
 
     @property
-    def type(self) -> str:
-        if not isinstance(self.__type, BreakTypeAttribute):
+    def type(self) -> BreakTypeAttribute:
+        if not isinstance(self._type, BreakTypeAttribute):
             raise AttributeError(
-                f"Attribute <type> has not type(BrakeTypes) "
-                f"Its type - {type(self.__type)}!"
+                f"Attribute <type> has not type(BreakTypeAttribute) "
+                f"Its type - {type(self._type)}!"
             )
-        return self.__type.value
+        return self._type.value
 
     @type.setter
     def type(self, new_type: BreakTypeAttribute | str):
         if isinstance(new_type, str):
-            self.__type = BreakTypeAttribute(new_type)
+            self._type = BreakTypeAttribute(new_type)
         elif isinstance(new_type, BreakTypeAttribute):
-            self.__type = new_type
+            self._type = new_type
         else:
             raise TypeError(f"Wrong type for w:type!: {type(new_type)}")
 
     @property
-    def clear(self) -> str:
-        if not isinstance(self.__clear, BreakClearAttribute):
+    def clear(self) -> BreakClearAttribute:
+        if not isinstance(self._clear, BreakClearAttribute):
             raise AttributeError(
-                f"Attribute <w:clear> has not type(ClearTypes)"
-                f"Its has type: {type(self.__clear)}!"
+                f"Attribute <w:clear> has not type(BreakClearAttribute)"
+                f"Its has type: {type(self._clear)}!"
             )
-        return self.__clear.value
+        return self._clear.value
 
     @clear.setter
     def clear(self, new_clear: str | BreakClearAttribute):
         if isinstance(new_clear, str):
-            self.__clear = BreakClearAttribute(new_clear)
+            self._clear = BreakClearAttribute(new_clear)
         elif isinstance(new_clear, BreakClearAttribute):
-            self.__clear = new_clear
+            self._clear = new_clear
         else:
             raise ValueError(
                 f"Wrong type for w:clear!: {new_clear}"

@@ -1,7 +1,12 @@
-from abc import ABC
+from abc import abstractmethod
 from core.ui_objects.base.BaseTag import BaseTag
 
 
-class BaseContentTag(ABC, BaseTag):
+class BaseContentTag(BaseTag):
     __slots__: tuple = ()
-    pass
+
+    @property
+    @abstractmethod
+    def tag(self) -> str:
+        """Must be implemented in child"""
+        pass

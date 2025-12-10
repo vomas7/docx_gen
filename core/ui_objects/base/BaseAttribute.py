@@ -9,12 +9,10 @@ class BaseAttribute:
     def __init__(self,
                  namespace: str,
                  xml_name: str,
-                 name: str,
-                 value: str):
+                 name: str):
         self._namespace = namespace
         self._xml_name = xml_name
         self._name = name
-        self._value = value
 
     @property
     @abstractmethod
@@ -63,8 +61,8 @@ class EnumAttribute(BaseAttribute):
                 f"Example:\n\n"
                 f"class {cls.__name__}(EnumAttribute):\n"
                 f"    class Align(Enum):\n"
-                f"        LEFT = 'left'\n"
-                f"        CENTER = 'center'"
+                f"        left = 'left'\n"
+                f"        center = 'center'"
             )
         cls._enum_class = enum_class
 
@@ -72,23 +70,24 @@ class EnumAttribute(BaseAttribute):
                  namespace: str,
                  xml_name: str,
                  name: str,
-                 value: str):
+                 value):
         if not self._validate_enum_value(value):
             raise ValueError(
                 f"Invalid value '{value}' for {self.__class__.__name__}"
             )
-        super().__init__(namespace, xml_name, name, value)
+
+        super().__init__(namespace, xml_name, name)
+        self.value = value
 
     def _validate_enum_value(self, value: str) -> bool:
+        value = value.strip().lower() if value else value
         return any(
             enum_item.value == value or enum_item.name == value
             for enum_item in self._enum_class
         )
 
-    def _convert_to_string(self, value: Any) -> str:
-        """Конвертирует значение в строку, принимая как строки, так и Enum."""
+    def _convert_to_value(self, value) -> str | None:
         if isinstance(value, Enum):
-            # Если передали Enum член, берем его значение
             if not isinstance(value, self._enum_class):
                 raise TypeError(
                     f"Expected {self._enum_class.__name__}, "
@@ -96,9 +95,11 @@ class EnumAttribute(BaseAttribute):
                 )
             return value.value
         elif isinstance(value, str):
-            return value.strip().lower()
+            return getattr(self._enum_class, value.strip().lower()).value
+        elif value is None and value in {v.value for v in self._enum_class}:
+            return None
         else:
-            return str(value)
+            raise TypeError("Unable to determine value!")
 
     @property
     def value(self):
@@ -106,11 +107,11 @@ class EnumAttribute(BaseAttribute):
 
     @value.setter
     def value(self, new_value):
-        value_str = self._convert_to_string(new_value)
-        if not self._validate_enum_value(value_str):
+        value = self._convert_to_value(new_value)
+        if not self._validate_enum_value(value):
             allowed = [e.value for e in self._enum_class]
             raise ValueError(
-                f"Invalid value '{value_str}'. "
+                f"Invalid value '{value}'. "
                 f"Allowed: {allowed}"
             )
-        self._value = value_str
+        self._value = value

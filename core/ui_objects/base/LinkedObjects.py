@@ -1,13 +1,12 @@
-from typing import FrozenSet
 from collections import UserList
 
 
 class LinkedObjects(UserList):
-    ACCESS_CHILDREN: FrozenSet = frozenset({})
-    object: object
 
-    def __init__(self, initlist=None):
+    def __init__(self, linked_parent, initlist=None):
         super().__init__(initlist)
+        self.linked_parent = linked_parent
+        self.validate_access_children(initlist)
 
     def append(self, item):
         self.validate_access_child(item)
@@ -30,13 +29,17 @@ class LinkedObjects(UserList):
 
     def validate_access_child(self, item):
         from core.ui_objects.base.BaseContainerTag import BaseContainerTag
-
+        allowed = self.linked_parent.allowed_children
+        if not item or not allowed:
+            return
         if (isinstance(item, BaseContainerTag)
-                and isinstance(item, tuple(self.ACCESS_CHILDREN))):
+                and isinstance(item, tuple(allowed))):
             return True
         raise TypeError(
             f"It is prohibited to add {item.__class__.__name__} to "
-            f"linked_objects of {self.object.__class__.__name__}")
+            f"linked_objects of {self.linked_parent.__class__.__name__}"
+        )
 
     def validate_access_children(self, items):
-        map(lambda item: self.validate_access_child(item), items)
+        if items:
+            map(lambda item: self.validate_access_child(item), items)
