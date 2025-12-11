@@ -5,7 +5,7 @@ from core.ui_objects.base.LinkedObjects import LinkedObjects
 class BaseContainerTag:
     @property
     def access_children(self):
-        raise NotImplementedError
+        return None
 
 
 class TextTag(BaseContainerTag):
@@ -31,7 +31,7 @@ class ImageTag(BaseContainerTag):
 class ParagraphTag(BaseContainerTag):
     @property
     def access_children(self):
-        return {TextTag, ImageTag}
+        return {TextTag, ImageTag, str}
 
     @property
     def tag(self):
@@ -65,16 +65,16 @@ def test_linked_objects_with_container_tags():
     """Test with actual container tags"""
     paragraph = ParagraphTag()
 
-    lo = LinkedObjects(paragraph, [TextTag, ImageTag])
+    lo = LinkedObjects(paragraph, [TextTag(), ImageTag()])
 
     assert lo.linked_parent == paragraph
-    assert lo.linked_parent.access_children == (TextTag, ImageTag)
+    assert lo.linked_parent.access_children == {TextTag, ImageTag, str}
 
 
 def test_validate_access_child_allowed():
     """Test validation with allowed child"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, [TextTag])
+    lo = LinkedObjects(paragraph, [TextTag()])
 
     text_tag = TextTag()
     try:

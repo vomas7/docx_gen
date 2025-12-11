@@ -6,13 +6,8 @@ from typing import ClassVar, Optional, Type
 class BaseAttribute:
     """Base attribute properties"""
 
-    def __init__(self,
-                 namespace: str,
-                 xml_name: str,
-                 name: str):
-        self._namespace = namespace
+    def __init__(self, xml_name: str):
         self._xml_name = xml_name
-        self._name = name
 
     @property
     @abstractmethod
@@ -23,14 +18,6 @@ class BaseAttribute:
     @abstractmethod
     def value(self, another):
         pass
-
-    @property
-    def namespace(self):
-        return self._namespace
-
-    @property
-    def name(self):
-        return self._name
 
     @property
     def xml_name(self):
@@ -51,32 +38,30 @@ class EnumAttribute(BaseAttribute):
             attr_value = getattr(cls, attr_name)
             if (isinstance(attr_value, type)
                     and issubclass(attr_value, Enum)
-                    and attr_value is not Enum):
+                    and attr_value is not Enum
+                    and attr_value.__name__ == "Options"
+            ):
                 enum_class = attr_value
                 break
 
         if enum_class is None:
             raise TypeError(
-                f"{cls.__name__} must define an Enum class. "
+                f"{cls.__name__} must define an Enum class with name Options\n"
                 f"Example:\n\n"
                 f"class {cls.__name__}(EnumAttribute):\n"
-                f"    class Align(Enum):\n"
+                f"    class Options(Enum):\n"
                 f"        left = 'left'\n"
                 f"        center = 'center'"
             )
         cls._enum_class = enum_class
 
-    def __init__(self,
-                 namespace: str,
-                 xml_name: str,
-                 name: str,
-                 value):
+    def __init__(self, xml_name: str, value):
         if not self._validate_enum_value(value):
             raise ValueError(
                 f"Invalid value '{value}' for {self.__class__.__name__}"
             )
 
-        super().__init__(namespace, xml_name, name)
+        super().__init__(xml_name)
         self.value = value
 
     def _validate_enum_value(self, value: str) -> bool:

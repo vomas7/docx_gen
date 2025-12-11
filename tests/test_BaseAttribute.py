@@ -8,13 +8,11 @@ class EnumAttributeTest(EnumAttribute):
 
     def __init__(self, value: str):
         super().__init__(
-            namespace="w",
             xml_name="test",
-            name="test",
             value=value
         )
 
-    class TestEnum(Enum):
+    class Options(Enum):
         value1 = 'value1'
         value2 = 'value2'
         value3 = 'value3'
@@ -25,13 +23,11 @@ class EnumWithSpaces(EnumAttribute):
 
     def __init__(self, value: str):
         super().__init__(
-            namespace="w",
             xml_name="test",
-            name="test",
             value=value
         )
 
-    class AnotherEnum(Enum):
+    class Options(Enum):
         left = 'left'
         right = 'right'
         center = 'center'
@@ -48,12 +44,10 @@ def test_base_attribute_initialization():
         def value(self, new_value):
             self._value = new_value
 
-    attr = TestAttr('ns', 'xml_name', 'name')
+    attr = TestAttr('xml_name')
     attr.value = 'test_value'
 
-    assert attr.namespace == 'ns'
     assert attr.xml_name == 'xml_name'
-    assert attr.name == 'name'
     assert attr.value == 'test_value'
 
 
@@ -68,15 +62,13 @@ def test_enum_attribute_subclass_requires_enum():
 def test_enum_attribute_initialization():
     attr = EnumAttributeTest('value1')
 
-    assert attr.namespace == 'w'
     assert attr.xml_name == 'test'
-    assert attr.name == 'test'
     assert attr.value == 'value1'
 
 
 def test_enum_attribute_initialization_with_enum_instance():
     with pytest.raises(AttributeError):
-        EnumAttributeTest(EnumAttributeTest.TestEnum.value2)
+        EnumAttributeTest(EnumAttributeTest.Options.value2)
 
 
 def test_enum_attribute_case_insensitive():
@@ -99,7 +91,7 @@ def test_enum_attribute_setter_valid_value():
     attr = EnumAttributeTest('value1')
     attr.value = 'value2'
     assert attr.value == 'value2'
-    attr.value = EnumAttributeTest.TestEnum.value3
+    attr.value = EnumAttributeTest.Options.value3
     assert attr.value == 'value3'
 
 
@@ -126,12 +118,12 @@ def test_enum_attribute_setter_wrong_enum_type():
     with pytest.raises(TypeError) as exc_info:
         attr.value = WrongEnum.wrong
 
-    assert "Expected TestEnum" in str(exc_info.value)
+    assert "Expected Options" in str(exc_info.value)
 
 
 def test_enum_attribute_enum_class_assignment():
-    assert EnumAttributeTest._enum_class == EnumAttributeTest.TestEnum
-    assert EnumWithSpaces._enum_class == EnumWithSpaces.AnotherEnum
+    assert EnumAttributeTest._enum_class == EnumAttributeTest.Options
+    assert EnumWithSpaces._enum_class == EnumWithSpaces.Options
 
 
 def test_multiple_enum_attribute_classes():
@@ -150,14 +142,9 @@ def test_none_value_handling():
     class EnumWithNone(EnumAttribute):
 
         def __init__(self, value):
-            super().__init__(
-                '',
-                '',
-                '',
-                value
-            )
+            super().__init__('', value)
 
-        class TestEnum(Enum):
+        class Options(Enum):
             none = None
             value = 'value'
 
@@ -199,9 +186,9 @@ def test_enum_attribute_with_complex_values():
     class ComplexEnumAttribute(EnumAttribute):
 
         def __init__(self, value):
-            super().__init__('', '', '' , value)
+            super().__init__('', value)
 
-        class ComplexEnum(Enum):
+        class Options(Enum):
             with_spaces = 'with_spaces'
             with_special = 'special-chars_123'
             uppercase = 'UPPERCASE'

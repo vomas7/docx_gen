@@ -5,32 +5,22 @@ from core.ui_objects.base.BaseContentTag import BaseContentTag
 
 class BreakTypeAttribute(EnumAttribute):
 
-    class BreakTypes(Enum):
+    class Options(Enum):
         line = None
         page = "page"
         column = "column"
         textwrapping = "textWrapping"
 
     def __init__(self, value: str):
-        super().__init__(
-            namespace="w",
-            xml_name="type",
-            name="type",
-            value=value
-        )
+        super().__init__(xml_name="w:type", value=value)
 
 
 class BreakClearAttribute(EnumAttribute):
 
     def __init__(self, value: str):
-        super().__init__(
-            namespace="w",
-            xml_name="clear",
-            name="clear",
-            value=value
-        )
+        super().__init__(xml_name="w:clear", value=value)
 
-    class ClearTypes(Enum):
+    class Options(Enum):
         empty = None
         left = 'left'
         right = 'right'
