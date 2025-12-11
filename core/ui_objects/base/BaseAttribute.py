@@ -1,5 +1,5 @@
 from enum import Enum
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import ClassVar, Optional, Type
 
 
@@ -56,7 +56,7 @@ class EnumAttribute(BaseAttribute):
         cls._enum_class = enum_class
 
     def __init__(self, xml_name: str, value):
-        if not self._validate_enum_value(value):
+        if not self.validate(value):
             raise ValueError(
                 f"Invalid value '{value}' for {self.__class__.__name__}"
             )
@@ -64,7 +64,7 @@ class EnumAttribute(BaseAttribute):
         super().__init__(xml_name)
         self.value = value
 
-    def _validate_enum_value(self, value: str) -> bool:
+    def validate(self, value: str) -> bool:
         value = value.strip().lower() if value else value
         return any(
             enum_item.value == value or enum_item.name == value
@@ -93,7 +93,7 @@ class EnumAttribute(BaseAttribute):
     @value.setter
     def value(self, new_value):
         value = self._convert_to_value(new_value)
-        if not self._validate_enum_value(value):
+        if not self.validate(value):
             allowed = [e.value for e in self._enum_class]
             raise ValueError(
                 f"Invalid value '{value}'. "
