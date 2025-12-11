@@ -12,13 +12,6 @@ class Section(BaseContainerDocx):
         )
         # todo it may be necessary to add a switch
 
-    def _to_SI_element(self, si_element):
-        if self.parent is None:
-            raise ContainerError(
-                ("Element '%s' must be wrapped in a container element" % self)
-            )
-        seq_child = MiddlewareArray()
-        for child in self.linked_objects:
-            seq_child.append_or_extend(child.to_SI_element())
-        seq_child.append(si_element)  # todo make it optional
-        return seq_child
+    @property
+    def tag(self):
+        return "w:p"

@@ -2,7 +2,6 @@ from typing import List
 
 from core.ui_objects.base import (
     BaseContainerDocx,
-    BaseDocx,
     BaseNonContainerDocx
 )
 from core.oxml_magic.parser import OxmlElement

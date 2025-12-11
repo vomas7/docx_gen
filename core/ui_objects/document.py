@@ -1,13 +1,7 @@
-from ctypes.wintypes import tagMSG
 from typing import List
 from core.ui_objects.base import BaseContainerDocx, BaseDocx
-from core.doc_objects.document import SI_Body
-from docx.parts.document import DocumentPart
-from core.oxml_magic.parser import to_si_element
-from typing import TYPE_CHECKING
+from core.ui_objects.api import parse_document_part
 
-if TYPE_CHECKING:
-    from docx.oxml import CT_Document
 
 
 class Body(BaseContainerDocx):
@@ -18,13 +12,15 @@ class Body(BaseContainerDocx):
             linked_objects=linked_objects
         )
 
+    @property
+    def tag(self):
+        return "w:body"
+
 
 class Document(BaseContainerDocx):
-    def __init__(self,
-                 document_elem: "CT_Document",
-                 document_part: DocumentPart):
+    def __init__(self):
         super().__init__()
-        self._part = document_part
+        self._part = parse_document_part
         self._body = None
 
 

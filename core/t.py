@@ -16,8 +16,22 @@ sys.path.append(root_path)
 
 
 
-from core.ui_objects.paragraph import Paragraph
-
+from core.ui_objects import Paragraph, Run, Text
+from core.oxml_magic.parser import make_xml_tree, to_xml_str
 
 p = Paragraph()
-print(p._class_registry)
+r1 = Run()
+r2 = Run()
+t1 = Text()
+t2 = Text()
+t21 = Text()
+
+
+p.add(r1)
+p.add(r2)
+r1.add(t1)
+r1.add(t2)
+r2.add(t21)
+
+tree = make_xml_tree(p)
+print(to_xml_str(tree))

@@ -90,7 +90,11 @@ def to_si_element(element: etree._Element) -> "BaseMarkupElement":
 from core.ui_objects.base import BaseDocx, BaseContainerDocx
 from lxml import etree
 from core.oxml_magic.ns import qn, nsmap, NamespacePrefixedTag
-from core.oxml_magic.register_tag import get_cls_by_tag
+
+
+def get_cls_by_tag(tag: str):
+    from core.ui_objects import CLASS_REGISTRY
+    return CLASS_REGISTRY.get(tag)
 
 
 def make_xml_tree(cls_element: BaseDocx) -> etree.Element:
