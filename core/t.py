@@ -15,25 +15,9 @@ sys.path.append(root_path)
 
 
 
-# from core.ui_objects.api import Document
-# from core.ui_objects.paragraph import Paragraph
-#
-# doc = Document("wiebano.docx")
-#
-#
-# body = doc.body
-#
-# body.add(Paragraph(text='hello world'))
-# doc.save("wiebano.docx")
 
-from core.oxml_magic.register_tag import get_cls_by_tag
-from core.ui_objects import base
-from core.oxml_magic.parser import make_xml_tree, to_xml_str, convert_xml_to_cls
-from core.ui_objects.paragraph import Paragraph, Run, Text
+from core.ui_objects.paragraph import Paragraph
 
 
-from docx import Document
-
-elem= Document()._element.body
-
-print(convert_xml_to_cls(elem))
+p = Paragraph()
+print(p._class_registry)
