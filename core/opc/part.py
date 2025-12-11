@@ -14,7 +14,6 @@ from core.oxml_magic.parser import parse_xml
 from core.utils.shared import lazyproperty
 
 if TYPE_CHECKING:
-    from core.doc_objects.base import BaseMarkupElement
     from docx.package import Package
 
 

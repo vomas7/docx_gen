@@ -87,7 +87,7 @@ def to_si_element(element: etree._Element) -> "BaseMarkupElement":
     return si_tree
 
 
-from core.ui_objects.base import BaseDocx, BaseContainerDocx, BaseNonContainerDocx
+from core.ui_objects.base import BaseDocx, BaseContainerDocx
 from lxml import etree
 from core.oxml_magic.ns import qn, nsmap, NamespacePrefixedTag
 from core.oxml_magic.register_tag import get_cls_by_tag

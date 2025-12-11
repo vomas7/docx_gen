@@ -6,8 +6,8 @@ import datetime as dt
 import re
 from typing import TYPE_CHECKING, Any, Callable
 
-from docx.oxml.ns import nsdecls, qn
-from docx.oxml.parser import parse_xml
+from core.oxml_magic.ns import nsdecls, qn
+from core.oxml_magic.parser import parse_xml
 from docx.oxml.xmlchemy import BaseOxmlElement, ZeroOrOne
 
 if TYPE_CHECKING:

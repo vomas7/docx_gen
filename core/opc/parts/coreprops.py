@@ -5,14 +5,14 @@ from __future__ import annotations
 import datetime as dt
 from typing import TYPE_CHECKING
 
-from docx.opc.constants import CONTENT_TYPE as CT
-from docx.opc.coreprops import CoreProperties
-from docx.opc.packuri import PackURI
-from docx.opc.part import XmlPart
-from docx.oxml.coreprops import CT_CoreProperties
+from core.opc.constants import CONTENT_TYPE as CT
+from core.opc.coreprops import CoreProperties
+from core.opc.packuri import PackURI
+from core.opc.part import XmlPart
+from core.oxml.coreprops import CT_CoreProperties
 
 if TYPE_CHECKING:
-    from docx.opc.package import OpcPackage
+    from core.opc.package import OpcPackage
 
 
 class CorePropertiesPart(XmlPart):
