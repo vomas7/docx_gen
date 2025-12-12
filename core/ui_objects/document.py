@@ -1,32 +1,40 @@
 from typing import List
-from core.ui_objects.base import BaseContainerDocx, BaseDocx
-from core.doc_objects.document import SI_Body
-from docx.parts.document import DocumentPart
-from core.oxml_magic.parser import to_si_element
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from docx.oxml import CT_Document
+from core.ui_objects import Run
+from core.ui_objects import BaseContainerTag
+from core.ui_objects.api import parse_document_part
 
 
-class Body(BaseContainerDocx):
+class Body(BaseContainerTag):
 
     def __init__(self,
-                 si_element: SI_Body,
-                 linked_objects: List[BaseDocx] = None):
+                 linked_objects: List = None):
         super().__init__(
-            si_element=si_element,
             linked_objects=linked_objects
         )
 
+    @property
+    def tag(self):
+        return "w:body"
 
-class Document:
-    def __init__(self,
-                 document_elem: "CT_Document",
-                 document_part: DocumentPart):
-        self._part = document_part
-        self._si_document = to_si_element(document_elem)
+    @property
+    def access_children(self):
+        return {Run}
+
+
+class Document(BaseContainerTag):
+    def __init__(self):
+        super().__init__()
+        self._part = parse_document_part
         self._body = None
+
+
+    @property
+    def tag(self):
+        return "w:document"
+
+    @property
+    def access_children(self):
+        return {Body}
 
     @property
     def body(self) -> Body:
@@ -38,5 +46,4 @@ class Document:
         self._part._element.clear()
         # todo подумать над автоматическом собрании элементов
         self._part._element.append(self.body.to_SI_element().to_oxml())
-
         self._part.save(path)

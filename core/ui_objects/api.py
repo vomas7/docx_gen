@@ -1,5 +1,3 @@
-from core.ui_objects.document import Document as ObjectDocument
-
 import os
 from typing import IO, TYPE_CHECKING, cast
 
@@ -10,7 +8,7 @@ if TYPE_CHECKING:
     from docx.parts.document import DocumentPart
 
 
-def Document(docx: str | IO[bytes] | None = None) -> ObjectDocument:
+def parse_document_part(docx: str | IO[bytes] | None = None) -> "DocumentPart":
     """Return a |Document| object loaded from `ui_objects`, where `docx` can be either a path
     to a ``.docx`` file (a string) or a file-like object.
 
@@ -22,7 +20,7 @@ def Document(docx: str | IO[bytes] | None = None) -> ObjectDocument:
     if document_part.content_type != CT.WML_DOCUMENT_MAIN:
         tmpl = "file '%s' is not a Word file, content type is '%s'"
         raise ValueError(tmpl % (docx, document_part.content_type))
-    return ObjectDocument(document_part._element, document_part=document_part)
+    return document_part
 
 
 def _default_docx_path():

@@ -1,4 +1,5 @@
 from abc import abstractmethod, ABC
+from core.oxml_magic.ns import qn
 from core.ui_objects.base.BaseAttribute import BaseAttribute
 
 
@@ -25,14 +26,14 @@ class BaseTag(ABC):
     def attrs(self):
         """Complete dict with attributes for xml craft"""
         slots = getattr(self, '__slots__', ())
-        if not slots:
-            raise AttributeError(f"Class {self.__class__.__name__} "
-                                 f"must define non-empty __slots__")
         attrs = {}
+        # if not slots:
+            # raise AttributeError(f"Class {self.__class__.__name__} "
+            #                      f"must define non-empty __slots__")
         for slot in slots:
             attribute = self.get_attribute(slot)
-            if attribute:
-                attrs[attribute.xml_name] = attribute.value
+            if attribute and attribute.value is not None:
+                attrs[qn(attribute.xml_name)] = attribute.value
         return attrs
 
     def get_attribute(self, attribute: str) -> BaseAttribute:

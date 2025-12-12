@@ -6,8 +6,6 @@ from core.ui_objects.base.LinkedObjects import LinkedObjects
 
 class BaseContainerTag(BaseTag):
 
-    __slots__: tuple = ('_linked_objects', )
-
     def __init__(self, linked_objects: LinkedObjects | list = None):
         self.linked_objects = linked_objects
 

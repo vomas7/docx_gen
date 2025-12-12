@@ -71,7 +71,7 @@ class BaseTagElement(BaseMarkupElement, etree.ElementBase, ABC):
     def _assignment_attr(self) -> Any:
         """Assigns an OxmlElement attribute"""
         for attr in self.attrs:
-
+            print(attr, "111111")
             oxml_val = attr.get_oxml_value()
             if oxml_val is None:
                 raise AttributeError(f"Attribute {attr} has no value")
@@ -99,26 +99,22 @@ class BaseTagElement(BaseMarkupElement, etree.ElementBase, ABC):
         return f'{type(self)} object at {hex(id(self))}>'
 
     def __deepcopy__(self, memo):
-        # Создаем новый элемент
+        """adapted for lxml"""
+
         new_element = copy.copy(self)
         memo[id(self)] = new_element
 
-        # Копируем детей
         for child in self:
             new_element.append(copy.deepcopy(child, memo))
 
-        # Копируем __dict__ если он есть
         if hasattr(self, '__dict__'):
             for key, value in self.__dict__.items():
-                # Пропускаем специальные атрибуты, если нужно
                 if not key.startswith('__'):
                     try:
                         setattr(new_element, key, copy.deepcopy(value, memo))
                     except Exception:
-                        # Если не получается скопировать
                         setattr(new_element, key, value)
 
-        # Также обрабатываем слоты
         for slot in self.__class__.__slots__:
             if slot != '__dict__' and hasattr(self, slot):
                 try:

@@ -25,9 +25,9 @@ from core.ui_objects.base.LinkedObjects import LinkedObjects
 
 class Run(BaseContainerTag):
 
-    __slots__ = ()
+    __slots__ = ("_bold", )
 
-    def __init__(self, linked_objects: LinkedObjects | list):
+    def __init__(self, linked_objects: LinkedObjects | list = None):
         super().__init__(linked_objects)
 
     @property
