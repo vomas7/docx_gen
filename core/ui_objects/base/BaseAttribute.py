@@ -100,3 +100,28 @@ class EnumAttribute(BaseAttribute):
                 f"Allowed: {allowed}"
             )
         self._value = value
+
+
+class BooleanAttribute(BaseAttribute):
+    def __init__(self, xml_name: str, value):
+        super().__init__(xml_name)
+        self.name = xml_name
+        self.value = value
+
+    @property
+    def value(self) -> str:
+        if isinstance(self._value, bool):
+            return str(self._value).lower()
+        else:
+            raise TypeError(f"Attribute {self.name} "
+                            f"has two states True|False "
+                            f"not {type(self._value)}!")
+
+    @value.setter
+    def value(self, another):
+        if isinstance(another, bool):
+            self._value = another
+        else:
+            raise TypeError(f"Attribute {self.name} "
+                            f"has two states True|False "
+                            f"not {type(another)}!")
