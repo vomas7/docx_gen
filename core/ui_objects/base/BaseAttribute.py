@@ -1,5 +1,5 @@
 from enum import Enum
-from abc import abstractmethod, ABC
+from abc import abstractmethod
 from typing import ClassVar, Optional, Type
 
 
