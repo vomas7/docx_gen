@@ -1,12 +1,12 @@
 from collections import UserList
-from typing import Collection, TYPE_CHECKING
+from collections.abc import Collection
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from core.ui_objects.base.BaseContainerTag import BaseContainerTag
+    from core.ui_objects.base.base_container_tag import BaseContainerTag
 
 
 class LinkedObjects(UserList):
-
     def __init__(self, linked_parent, initlist=None):
         self.linked_parent = linked_parent
         self.validate_access_children(initlist)
@@ -31,7 +31,7 @@ class LinkedObjects(UserList):
         self.validate_access_child(value)
         super().__setitem__(key, value)
 
-    def validate_access_child(self, item: 'BaseContainerTag'):
+    def validate_access_child(self, item: "BaseContainerTag"):
         allowed = self.linked_parent.access_children
         if not item or not allowed:
             return
@@ -42,7 +42,7 @@ class LinkedObjects(UserList):
             f"linked_objects of {self.linked_parent.__class__.__name__}"
         )
 
-    def validate_access_children(self, items: Collection['BaseContainerTag']):
+    def validate_access_children(self, items: Collection["BaseContainerTag"]):
         if items:
             for item in items:
                 self.validate_access_child(item)

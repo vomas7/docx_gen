@@ -1,6 +1,6 @@
-from enum import Enum
 from abc import abstractmethod
-from typing import ClassVar, Optional, Type
+from enum import Enum
+from typing import ClassVar
 
 
 class BaseAttribute:
@@ -27,7 +27,7 @@ class BaseAttribute:
 class EnumAttribute(BaseAttribute):
     """Base class for attributes with enum values"""
 
-    _enum_class: ClassVar[Optional[Type[Enum]]] = None
+    _enum_class: ClassVar[type[Enum] | None] = None
 
     def __init_subclass__(cls, **kwargs):
         """check that Enum class is assigned in child"""
@@ -36,10 +36,11 @@ class EnumAttribute(BaseAttribute):
         enum_class = None
         for attr_name in dir(cls):
             attr_value = getattr(cls, attr_name)
-            if (isinstance(attr_value, type)
-                    and issubclass(attr_value, Enum)
-                    and attr_value is not Enum
-                    and attr_value.__name__ == "Options"
+            if (
+                isinstance(attr_value, type)
+                and issubclass(attr_value, Enum)
+                and attr_value is not Enum
+                and attr_value.__name__ == "Options"
             ):
                 enum_class = attr_value
                 break
@@ -57,9 +58,7 @@ class EnumAttribute(BaseAttribute):
 
     def __init__(self, xml_name: str, value):
         if not self.validate(value):
-            raise ValueError(
-                f"Invalid value '{value}' for {self.__class__.__name__}"
-            )
+            raise ValueError(f"Invalid value '{value}' for {self.__class__.__name__}")
 
         super().__init__(xml_name)
         self.value = value
@@ -75,8 +74,7 @@ class EnumAttribute(BaseAttribute):
         if isinstance(value, Enum):
             if not isinstance(value, self._enum_class):
                 raise TypeError(
-                    f"Expected {self._enum_class.__name__}, "
-                    f"got {type(value).__name__}"
+                    f"Expected {self._enum_class.__name__}, got {type(value).__name__}"
                 )
             return value.value
         elif isinstance(value, str):
@@ -95,10 +93,7 @@ class EnumAttribute(BaseAttribute):
         value = self._convert_to_value(new_value)
         if not self.validate(value):
             allowed = [e.value for e in self._enum_class]
-            raise ValueError(
-                f"Invalid value '{value}'. "
-                f"Allowed: {allowed}"
-            )
+            raise ValueError(f"Invalid value '{value}'. Allowed: {allowed}")
         self._value = value
 
 
@@ -113,15 +108,17 @@ class BooleanAttribute(BaseAttribute):
         if isinstance(self._value, bool):
             return str(self._value).lower()
         else:
-            raise TypeError(f"Attribute {self.name} "
-                            f"has two states True|False "
-                            f"not {type(self._value)}!")
+            raise TypeError(
+                f"Attribute {self.name} "
+                f"has two states True|False "
+                f"not {type(self._value)}!"
+            )
 
     @value.setter
     def value(self, another):
         if isinstance(another, bool):
             self._value = another
         else:
-            raise TypeError(f"Attribute {self.name} "
-                            f"has two states True|False "
-                            f"not {type(another)}!")
+            raise TypeError(
+                f"Attribute {self.name} has two states True|False not {type(another)}!"
+            )

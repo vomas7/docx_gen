@@ -1,5 +1,6 @@
 from abc import abstractmethod
-from core.ui_objects.base.BaseTag import BaseTag
+
+from core.ui_objects.base.base_tag import BaseTag
 
 
 class BaseContentTag(BaseTag):

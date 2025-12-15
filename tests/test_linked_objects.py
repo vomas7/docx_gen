@@ -1,5 +1,6 @@
 import pytest
-from core.ui_objects.base.LinkedObjects import LinkedObjects
+
+from core.ui_objects.base.linked_objects import LinkedObjects
 
 
 class BaseContainerTag:
@@ -120,15 +121,15 @@ def test_append_with_validation():
 def test_insert_with_validation():
     """Test that insert validates before adding"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, ['item1', 'item3'])
+    lo = LinkedObjects(paragraph, ["item1", "item3"])
 
     text_tag = TextTag()
 
     lo.insert(1, text_tag)
     assert len(lo) == 3
-    assert lo[0] == 'item1'
+    assert lo[0] == "item1"
     assert lo[1] == text_tag
-    assert lo[2] == 'item3'
+    assert lo[2] == "item3"
 
     table_tag = TableTag()
 
@@ -213,7 +214,7 @@ def test_initialization_validation():
     assert len(lo1) == 1
 
     try:
-        lo2 = LinkedObjects(paragraph, [table_tag])
+        LinkedObjects(paragraph, [table_tag])
         pytest.fail("Should have raised TypeError")
     except TypeError:
         pass
@@ -247,7 +248,7 @@ def test_non_container_tag_validation():
     lo = LinkedObjects(paragraph, [])
 
     with pytest.raises(TypeError):
-        lo.validate_access_child(type('regular', (), {}))
+        lo.validate_access_child(type("regular", (), {}))
 
 
 def test_real_scenario_paragraph_children():

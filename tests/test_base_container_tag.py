@@ -1,11 +1,11 @@
 import pytest
-from core.ui_objects.base.BaseTag import BaseTag
-from core.ui_objects.base.LinkedObjects import LinkedObjects
-from core.ui_objects.base.BaseContainerTag import BaseContainerTag
+
+from core.ui_objects.base.base_container_tag import BaseContainerTag
+from core.ui_objects.base.base_tag import BaseTag
+from core.ui_objects.base.linked_objects import LinkedObjects
 
 
 class ConcreteTag(BaseTag):
-
     def __init__(self, name="TestTag"):
         self.name = name
         super().__init__()
@@ -15,8 +15,7 @@ class ConcreteTag(BaseTag):
 
 
 class ConcreteContainer(BaseContainerTag):
-
-    __slots__ = ("attr", )
+    __slots__ = ("attr",)
 
     def __init__(self, lo=None):
         super().__init__(lo)
@@ -164,7 +163,7 @@ def test_linked_objects_setter_with_invalid_list():
     """Test linked_objects setter with list containing non-BaseTag"""
     container = ConcreteContainer()
 
-    with pytest.raises(TypeError) as exc_info:
+    with pytest.raises(TypeError):
         container.linked_objects = [ConcreteTag("Tag1"), "invalid"]
 
 
@@ -247,7 +246,6 @@ def test_add_with_type_checking():
             return {ConcreteTag}
 
     class OtherTag(BaseTag):
-
         @property
         def tag(self) -> str:
             return "test"
@@ -280,7 +278,7 @@ def test_slots_prevent_dynamic_attributes():
 
 def test_slots_contains_linked_objects():
     """Test that _linked_objects is in __slots__"""
-    assert '_linked_objects' in BaseContainerTag.__slots__
+    assert "_linked_objects" in BaseContainerTag.__slots__
 
 
 def test_deepcopy_with_nested_structure():
@@ -341,13 +339,11 @@ def test_memory_efficiency_with_slots():
     import sys
 
     container_with_slots = ConcreteContainer()
-    container_without_slots = type('NoSlots', (), {})()
+    container_without_slots = type("NoSlots", (), {})()
 
     slots_size = sys.getsizeof(container_with_slots)
 
-    container_without_slots._linked_objects = LinkedObjects(
-        container_with_slots, []
-    )
+    container_without_slots._linked_objects = LinkedObjects(container_with_slots, [])
 
     no_slots_size = sys.getsizeof(container_without_slots)
 
@@ -358,13 +354,11 @@ def test_integration_with_linked_objects_validation():
     """Test integration with LinkedObjects validation"""
 
     class TextTag(BaseTag):
-
         @property
         def tag(self) -> str:
             return "text"
 
     class ImageTag(BaseTag):
-
         @property
         def tag(self) -> str:
             return "image"
