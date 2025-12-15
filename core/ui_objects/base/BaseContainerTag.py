@@ -35,7 +35,7 @@ class BaseContainerTag(BaseTag):
         elif isinstance(new, list):
             self._linked_objects = LinkedObjects(self, new)
         else:
-            raise TypeError(f"{new} has not BaseTag objects")
+            raise TypeError(f"{new} is not an instance of BaseTag")
 
     def add(self, item: BaseTag):
         self._linked_objects.append(item)
