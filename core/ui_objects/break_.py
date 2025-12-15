@@ -1,10 +1,10 @@
 from enum import Enum
-from core.ui_objects.base.BaseAttribute import EnumAttribute
-from core.ui_objects.base.BaseContentTag import BaseContentTag
+
+from core.ui_objects.base.base_attribute import EnumAttribute
+from core.ui_objects.base.base_content_tag import BaseContentTag
 
 
 class Type(EnumAttribute):
-
     class Options(Enum):
         line = None
         page = "page"
@@ -16,31 +16,28 @@ class Type(EnumAttribute):
 
 
 class Clear(EnumAttribute):
-
     def __init__(self, value: str):
         super().__init__(xml_name="w:clear", value=value)
 
     class Options(Enum):
         empty = None
-        left = 'left'
-        right = 'right'
-        all = 'all'
+        left = "left"
+        right = "right"
+        all = "all"
 
 
 class Break(BaseContentTag):
     """Break tag <w:br> assignment"""
 
-    __slots__ = ('_type', '_clear')
+    __slots__ = ("_type", "_clear")
 
-    def __init__(self,
-                 type: str | Type = None,
-                 clear: str | Clear = None):
+    def __init__(self, type: str | Type = None, clear: str | Clear = None):
         self.clear = Clear(clear)
         self.type = Type(type)
 
     @property
     def tag(self) -> str:
-        return 'w:br'
+        return "w:br"
 
     @property
     def type(self) -> Type:
@@ -76,6 +73,4 @@ class Break(BaseContentTag):
         elif isinstance(new_clear, Clear):
             self._clear = new_clear
         else:
-            raise ValueError(
-                f"Wrong type for w:clear!: {new_clear}"
-            )
+            raise ValueError(f"Wrong type for w:clear!: {new_clear}")

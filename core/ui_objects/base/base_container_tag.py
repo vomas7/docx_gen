@@ -1,10 +1,13 @@
 import copy
+
 from abc import abstractmethod
-from core.ui_objects.base.BaseTag import BaseTag
-from core.ui_objects.base.LinkedObjects import LinkedObjects
+
+from core.ui_objects.base.base_tag import BaseTag
+from core.ui_objects.base.linked_objects import LinkedObjects
 
 
 class BaseContainerTag(BaseTag):
+    __slots__ = ("_linked_objects",)
 
     def __init__(self, linked_objects: LinkedObjects | list = None):
         self.linked_objects = linked_objects

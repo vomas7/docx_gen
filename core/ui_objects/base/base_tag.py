@@ -1,10 +1,10 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
+
 from core.oxml_magic.ns import qn
-from core.ui_objects.base.BaseAttribute import BaseAttribute
+from core.ui_objects.base.base_attribute import BaseAttribute
 
 
 class BaseTag(ABC):
-
     __slots__: tuple = ()
     """
          Abstract base class for XML tag representation.
@@ -25,11 +25,11 @@ class BaseTag(ABC):
     @property
     def attrs(self):
         """Complete dict with attributes for xml craft"""
-        slots = getattr(self, '__slots__', ())
+        slots = getattr(self, "__slots__", ())
         attrs = {}
         # if not slots:
-            # raise AttributeError(f"Class {self.__class__.__name__} "
-            #                      f"must define non-empty __slots__")
+        # raise AttributeError(f"Class {self.__class__.__name__} "
+        #                      f"must define non-empty __slots__")
         for slot in slots:
             attribute = self.get_attribute(slot)
             if attribute and attribute.value is not None:
@@ -41,7 +41,5 @@ class BaseTag(ABC):
 
     def __str__(self):
         attrs = self.attrs
-        attrs_str = ' '.join(
-            f'{key}="{value}"' for key, value in attrs.items()
-        )
+        attrs_str = " ".join(f'{key}="{value}"' for key, value in attrs.items())
         return f"{self.__class__.__name__}: <{self.tag} {attrs_str}/>"

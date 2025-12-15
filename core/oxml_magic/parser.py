@@ -1,17 +1,17 @@
 from lxml import etree
-from core.ui_objects import BaseTag, BaseContainerTag, Text
-from core.oxml_magic.ns import qn, nsmap, NamespacePrefixedTag
+
+from core.oxml_magic.ns import NamespacePrefixedTag, nsmap, qn
+from core.ui_objects import BaseContainerTag, BaseTag, Text
 
 
 def get_cls_by_tag(tag: str):
     from core.ui_objects import CLASS_REGISTRY
+
     return CLASS_REGISTRY.get(tag)
 
 
 def make_xml_tree(cls_element: BaseTag) -> etree.Element:
-    xml_tree = etree.Element(qn(cls_element.tag),
-                             attrib=cls_element.attrs,
-                             nsmap=nsmap)
+    xml_tree = etree.Element(qn(cls_element.tag), attrib=cls_element.attrs, nsmap=nsmap)
     if isinstance(cls_element, BaseContainerTag):
         for ch in cls_element.linked_objects:
             tp_elem = make_xml_tree(ch)
