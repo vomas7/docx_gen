@@ -20,3 +20,4 @@ class Text(BaseContentTag):
     @property
     def tag(self) -> str:
         return 'w:t'
+
