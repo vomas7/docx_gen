@@ -78,7 +78,7 @@ def test_init_with_invalid_type():
     with pytest.raises(TypeError) as exc_info:
         ConcreteContainer("invalid")
 
-    assert "has not BaseTag objects" in str(exc_info.value)
+    assert "is not an instance of BaseTag" in str(exc_info.value)
 
 
 def test_linked_objects_property_getter_returns_deepcopy():
@@ -156,7 +156,7 @@ def test_linked_objects_setter_with_invalid_type():
     with pytest.raises(TypeError) as exc_info:
         container.linked_objects = "invalid"
 
-    assert "has not BaseTag objects" in str(exc_info.value)
+    assert "is not an instance of BaseTag" in str(exc_info.value)
 
 
 def test_linked_objects_setter_with_invalid_list():
