@@ -18,8 +18,9 @@ for _, module_name, _ in pkgutil.iter_modules(__path__):
 
             for attr_name in dir(module):
                 attr = getattr(module, attr_name)
-                if isinstance(attr, type) and issubclass(attr.__base__, (
-                        BaseContentTag, BaseContainerTag)):
+                if isinstance(attr, type) and issubclass(
+                    attr.__base__, BaseContentTag | BaseContainerTag
+                ):
                     CLASS_REGISTRY[attr().tag] = attr
 
         except ImportError as e:

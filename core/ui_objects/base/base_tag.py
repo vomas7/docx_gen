@@ -30,8 +30,7 @@ class BaseTag(ABC):
         attrs = {}
         for slot in slots:
             attribute = self.get_attribute(slot)
-            if (isinstance(attribute, BaseAttribute)
-                    and attribute.value is not None):
+            if isinstance(attribute, BaseAttribute) and attribute.value is not None:
                 attrs[qn(attribute.xml_name)] = attribute.value
         return attrs
 

@@ -91,8 +91,10 @@ def test_attrs_property_with_values():
     attrs = tag.attrs
 
     assert len(attrs) == 2
-    assert attrs[("{http://schemas.openxmlformats.org/wordprocessingml/2006"
-                  "/main}attr1")] == "value1"
+    assert (
+        attrs[("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}attr1")]
+        == "value1"
+    )
     assert attrs["{http://www.w3.org/XML/1998/namespace}attr2"] == "value2"
 
 
@@ -123,8 +125,10 @@ def test_attrs_property_with_none_values():
 
     assert len(attrs) == 1
     assert "w:attr1" not in attrs
-    assert attrs[("{http://schemas.openxmlformats.org/wordprocessingml/2006/"
-                  "main}attr2")] == "actual_value"
+    assert (
+        attrs[("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}attr2")]
+        == "actual_value"
+    )
 
 
 def test_attrs_property_with_missing_attributes():
@@ -147,8 +151,10 @@ def test_attrs_property_with_missing_attributes():
     attrs = tag.attrs
 
     assert len(attrs) == 1
-    assert attrs[("{http://schemas.openxmlformats.org/wordprocessingml/2006/"
-                  "main}attr1")] == "value1"
+    assert (
+        attrs[("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}attr1")]
+        == "value1"
+    )
 
 
 def test_str_representation():
