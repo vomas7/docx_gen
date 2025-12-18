@@ -60,7 +60,6 @@ from core.opc.package import PackageReader
 from core.opc.package import OpcPackage
 from core.oxml_magic.parser import convert_xml_to_cls
 
-# PackageReader.from_file("test11111111111111.docx")
 ppkg = OpcPackage.open("aaaaaaaaaa.docx")
 
 ppkg.save("sosi.docx")
