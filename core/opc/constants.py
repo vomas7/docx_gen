@@ -530,3 +530,25 @@ class RELATIONSHIP_TYPE:
     XML_MAPS = (
         "http://schemas.openxmlformats.org/officeDocument/2006/relationships/xmlMaps"
     )
+
+
+default_content_types = (
+    ("bin", CONTENT_TYPE.PML_PRINTER_SETTINGS),
+    ("bin", CONTENT_TYPE.SML_PRINTER_SETTINGS),
+    ("bin", CONTENT_TYPE.WML_PRINTER_SETTINGS),
+    ("bmp", CONTENT_TYPE.BMP),
+    ("emf", CONTENT_TYPE.X_EMF),
+    ("fntdata", CONTENT_TYPE.X_FONTDATA),
+    ("gif", CONTENT_TYPE.GIF),
+    ("jpe", CONTENT_TYPE.JPEG),
+    ("jpeg", CONTENT_TYPE.JPEG),
+    ("jpg", CONTENT_TYPE.JPEG),
+    ("png", CONTENT_TYPE.PNG),
+    ("rels", CONTENT_TYPE.OPC_RELATIONSHIPS),
+    ("tif", CONTENT_TYPE.TIFF),
+    ("tiff", CONTENT_TYPE.TIFF),
+    ("wdp", CONTENT_TYPE.MS_PHOTO),
+    ("wmf", CONTENT_TYPE.X_WMF),
+    ("xlsx", CONTENT_TYPE.SML_SHEET),
+    ("xml", CONTENT_TYPE.XML),
+)

@@ -13,6 +13,7 @@ from core.opc.rel import Relationships
 from core.opc.pkgurl import PACKAGE_URI
 
 from core.parts.image import ImageParts
+from core.opc.pkgwriter import PackageWriter
 
 if TYPE_CHECKING:
     from core.opc.part import Part
@@ -76,6 +77,31 @@ class OpcPackage:
         for rel in walk_rels(self):
             yield rel
 
+    def iter_parts(self) -> Iterator[Part]:
+        """Generate exactly one reference to each of the parts in the package by
+        performing a depth-first traversal of the rels graph."""
+
+        def walk_parts(source, visited=[]):
+            for rel in source.rels.values():
+                if rel.is_external:
+                    continue
+                part = rel.target_part
+                if part in visited:
+                    continue
+                visited.append(part)
+                yield part
+                new_source = part
+                for part in walk_parts(new_source, visited):
+                    yield part
+
+        for part in walk_parts(self):
+            yield part
+
+    @property
+    def parts(self) -> list[Part]:
+        """Return a list containing a reference to each of the parts in this package."""
+        return list(self.iter_parts())
+
     @property
     def main_document_part(self):
         """Return a reference to the main document part for this package.
@@ -96,14 +122,14 @@ class OpcPackage:
         Unmarshaller.unmarshal(pkg_reader, package, PartFactory)
         return package
 
-    # def save(self, pkg_file: str | IO[bytes]):
-    #     """Save this package to `pkg_file`.
-    #
-    #     `pkg_file` can be either a file-path or a file-like object.
-    #     """
-    #     for part in self.parts:
-    #         part.before_marshal()
-    #     PackageWriter.write(pkg_file, self.rels, self.parts)
+    def save(self, pkg_file: str | IO[bytes]):
+        """Save this package to `pkg_file`.
+
+        `pkg_file` can be either a file-path or a file-like object.
+        """
+        for part in self.parts:
+            part.before_marshal()
+        PackageWriter.write(pkg_file, self.rels, self.parts)
 
 
 class Package(OpcPackage):
