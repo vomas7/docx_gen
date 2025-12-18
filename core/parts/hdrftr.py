@@ -5,9 +5,9 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 
-from docx.opc.constants import CONTENT_TYPE as CT
-from docx.oxml.parser import parse_xml
-from docx.parts.story import StoryPart
+from core.opc.constants import CONTENT_TYPE as CT
+from core.opc.oxml import parse_xml
+from core.parts.story import StoryPart
 
 if TYPE_CHECKING:
     from docx.package import Package

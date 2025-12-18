@@ -5,14 +5,13 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 
-from docx.opc.constants import CONTENT_TYPE as CT
-from docx.opc.packuri import PackURI
-from docx.opc.part import XmlPart
-from docx.oxml.parser import parse_xml
-from docx.styles.styles import Styles
+from core.opc.constants import CONTENT_TYPE as CT
+from core.opc.pkgurl import PackURI
+from core.opc.part import XmlPart
+from core.opc.oxml import parse_xml
 
 if TYPE_CHECKING:
-    from docx.opc.package import OpcPackage
+    from core.opc.package import OpcPackage
 
 
 class StylesPart(XmlPart):
@@ -31,7 +30,7 @@ class StylesPart(XmlPart):
     def styles(self):
         """The |_Styles| instance containing the styles (<w:style> element proxies) for
         this styles part."""
-        return Styles(self.element)
+        return self.element
 
     @classmethod
     def _default_styles_xml(cls):

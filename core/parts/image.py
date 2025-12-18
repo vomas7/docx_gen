@@ -5,13 +5,15 @@ from __future__ import annotations
 import hashlib
 from typing import TYPE_CHECKING
 
-from docx.image.image import Image
-from docx.opc.part import Part
-from docx.shared import Emu, Inches
+from core.image.image import Image
+from core.opc.part import Part
+from core.utils.metrics import Emu, Inches
+
+from typing import IO
+from core.opc.pkgurl import PackURI
 
 if TYPE_CHECKING:
-    from docx.opc.package import OpcPackage
-    from docx.opc.packuri import PackURI
+    from core.opc.package import OpcPackage
 
 
 class ImagePart(Part):
@@ -21,7 +23,8 @@ class ImagePart(Part):
     """
 
     def __init__(
-        self, partname: PackURI, content_type: str, blob: bytes, image: Image | None = None
+            self, partname: PackURI, content_type: str, blob: bytes,
+            image: Image | None = None
     ):
         super(ImagePart, self).__init__(partname, content_type, blob)
         self._image = image
@@ -69,7 +72,8 @@ class ImagePart(Part):
         return self._image
 
     @classmethod
-    def load(cls, partname: PackURI, content_type: str, blob: bytes, package: OpcPackage):
+    def load(cls, partname: PackURI, content_type: str, blob: bytes,
+             package: OpcPackage):
         """Called by ``ui_objects.opc.package.PartFactory`` to load an image part from a
         package being opened by ``Document(...)`` call."""
         return cls(partname, content_type, blob)
@@ -78,3 +82,70 @@ class ImagePart(Part):
     def sha1(self):
         """SHA1 hash digest of the blob of this image part."""
         return hashlib.sha1(self.blob).hexdigest()
+
+
+"""WordprocessingML Package class and related objects."""
+
+
+class ImageParts:
+    """Collection of |ImagePart| objects corresponding to images in the package."""
+
+    def __init__(self):
+        self._image_parts: list[ImagePart] = []
+
+    def __contains__(self, item: object):
+        return self._image_parts.__contains__(item)
+
+    def __iter__(self):
+        return self._image_parts.__iter__()
+
+    def __len__(self):
+        return self._image_parts.__len__()
+
+    def append(self, item: ImagePart):
+        self._image_parts.append(item)
+
+    def get_or_add_image_part(self,
+                              image_descriptor: str | IO[bytes]) -> ImagePart:
+        """Return |ImagePart| object containing image identified by `image_descriptor`.
+
+        The image-part is newly created if a matching one is not present in the
+        collection.
+        """
+        image = Image.from_file(image_descriptor)
+        matching_image_part = self._get_by_sha1(image.sha1)
+        if matching_image_part is not None:
+            return matching_image_part
+        return self._add_image_part(image)
+
+    def _add_image_part(self, image: Image):
+        """Return |ImagePart| instance newly created from `image` and appended to the collection."""
+        partname = self._next_image_partname(image.ext)
+        image_part = ImagePart.from_image(image, partname)
+        self.append(image_part)
+        return image_part
+
+    def _get_by_sha1(self, sha1: str) -> ImagePart | None:
+        """Return the image part in this collection having a SHA1 hash matching `sha1`,
+        or |None| if not found."""
+        for image_part in self._image_parts:
+            if image_part.sha1 == sha1:
+                return image_part
+        return None
+
+    def _next_image_partname(self, ext: str) -> PackURI:
+        """The next available image partname, starting from ``/word/media/image1.{ext}``
+        where unused numbers are reused.
+
+        The partname is unique by number, without regard to the extension. `ext` does
+        not include the leading period.
+        """
+
+        def image_partname(n: int) -> PackURI:
+            return PackURI("/word/media/image%d.%s" % (n, ext))
+
+        used_numbers = [image_part.partname.idx for image_part in self]
+        for n in range(1, len(self) + 1):
+            if n not in used_numbers:
+                return image_partname(n)
+        return image_partname(len(self) + 1)

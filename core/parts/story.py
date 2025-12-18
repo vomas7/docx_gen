@@ -4,16 +4,13 @@ from __future__ import annotations
 
 from typing import IO, TYPE_CHECKING, Tuple, cast
 
-from docx.opc.constants import RELATIONSHIP_TYPE as RT
-from docx.opc.part import XmlPart
-from docx.oxml.shape import CT_Inline
-from docx.shared import Length, lazyproperty
+from core.opc.constants import RELATIONSHIP_TYPE as RT
+from core.opc.part import XmlPart
+from core.opc.utils import lazyproperty
 
 if TYPE_CHECKING:
-    from docx.enum.style import WD_STYLE_TYPE
-    from docx.image.image import Image
-    from docx.parts.document import DocumentPart
-    from docx.styles.style import BaseStyle
+    from core.image.image import Image
+    from core.parts.document import DocumentPart
 
 
 class StoryPart(XmlPart):
@@ -37,41 +34,6 @@ class StoryPart(XmlPart):
         image_part = package.get_or_add_image_part(image_descriptor)
         rId = self.relate_to(image_part, RT.IMAGE)
         return rId, image_part.image
-
-    def get_style(self, style_id: str | None, style_type: WD_STYLE_TYPE) -> BaseStyle:
-        """Return the style in this document matching `style_id`.
-
-        Returns the default style for `style_type` if `style_id` is |None| or does not
-        match a defined style of `style_type`.
-        """
-        return self._document_part.get_style(style_id, style_type)
-
-    def get_style_id(
-        self, style_or_name: BaseStyle | str | None, style_type: WD_STYLE_TYPE
-    ) -> str | None:
-        """Return str style_id for `style_or_name` of `style_type`.
-
-        Returns |None| if the style resolves to the default style for `style_type` or if
-        `style_or_name` is itself |None|. Raises if `style_or_name` is a style of the
-        wrong type or names a style not present in the document.
-        """
-        return self._document_part.get_style_id(style_or_name, style_type)
-
-    def new_pic_inline(
-        self,
-        image_descriptor: str | IO[bytes],
-        width: int | Length | None = None,
-        height: int | Length | None = None,
-    ) -> CT_Inline:
-        """Return a newly-created `w:inline` element.
-
-        The element contains the image specified by `image_descriptor` and is scaled
-        based on the values of `width` and `height`.
-        """
-        rId, image = self.get_or_add_image(image_descriptor)
-        cx, cy = image.scaled_dimensions(width, height)
-        shape_id, filename = self.next_id, image.filename
-        return CT_Inline.new_pic_inline(shape_id, rId, filename, cx, cy)
 
     @property
     def next_id(self) -> int:

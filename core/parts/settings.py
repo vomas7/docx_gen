@@ -3,24 +3,23 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
-from docx.opc.constants import CONTENT_TYPE as CT
-from docx.opc.packuri import PackURI
-from docx.opc.part import XmlPart
-from docx.oxml.parser import parse_xml
-from docx.settings import Settings
+from core.opc.constants import CONTENT_TYPE as CT
+from core.opc.pkgurl import PackURI
+from core.opc.part import XmlPart
+from core.opc.oxml import parse_xml
+from lxml import etree
 
 if TYPE_CHECKING:
-    from docx.oxml.settings import CT_Settings
-    from docx.package import Package
+    from core.opc.package import Package
 
 
 class SettingsPart(XmlPart):
     """Document-level settings part of a WordprocessingML (WML) package."""
 
     def __init__(
-        self, partname: PackURI, content_type: str, element: CT_Settings, package: Package
+        self, partname: PackURI, content_type: str, element: etree._Element, package: Package
     ):
         super().__init__(partname, content_type, element, package)
         self._settings = element
@@ -31,16 +30,16 @@ class SettingsPart(XmlPart):
         element tree."""
         partname = PackURI("/word/settings.xml")
         content_type = CT.WML_SETTINGS
-        element = cast("CT_Settings", parse_xml(cls._default_settings_xml()))
+        element = parse_xml(cls._default_settings_xml())
         return cls(partname, content_type, element, package)
 
     @property
-    def settings(self) -> Settings:
+    def settings(self):
         """A |Settings| proxy object for the `w:settings` element in this part.
 
         Contains the document-level settings for this document.
         """
-        return Settings(self._settings)
+        return self._settings
 
     @classmethod
     def _default_settings_xml(cls):

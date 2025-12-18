@@ -4,17 +4,19 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Type, cast
+from typing import TYPE_CHECKING, Type, cast
 
 from core.opc.oxml import serialize_part_xml
 from core.opc.pkgurl import PackURI
 from core.opc.rel import Relationships
-from docx.oxml.parser import parse_xml
-from docx.shared import lazyproperty
+from core.opc.oxml import parse_xml
+from core.opc.utils import lazyproperty
+from lxml import etree
+
+
 
 if TYPE_CHECKING:
-    from docx.oxml.xmlchemy import BaseOxmlElement
-    from docx.package import Package
+    from core.opc.package import Package
 
 
 class Part:
@@ -25,11 +27,11 @@ class Part:
     """
 
     def __init__(
-        self,
-        partname: PackURI,
-        content_type: str,
-        blob: bytes | None = None,
-        package: Package | None = None,
+            self,
+            partname: PackURI,
+            content_type: str,
+            blob: bytes | None = None,
+            package: Package | None = None,
     ):
         super(Part, self).__init__()
         self._partname = partname
@@ -81,10 +83,12 @@ class Part:
             del self.rels[rId]
 
     @classmethod
-    def load(cls, partname: PackURI, content_type: str, blob: bytes, package: Package):
+    def load(cls, partname: PackURI, content_type: str, blob: bytes,
+             package: Package):
         return cls(partname, content_type, blob, package)
 
-    def load_rel(self, reltype: str, target: Part | str, rId: str, is_external: bool = False):
+    def load_rel(self, reltype: str, target: Part | str, rId: str,
+                 is_external: bool = False):
         """Return newly added |_Relationship| instance of `reltype`.
 
         The new relationship relates the `target` part to this part with key `rId`.
@@ -122,7 +126,8 @@ class Part:
         """
         return self.rels.part_with_reltype(reltype)
 
-    def relate_to(self, target: Part | str, reltype: str, is_external: bool = False) -> str:
+    def relate_to(self, target: Part | str, reltype: str,
+                  is_external: bool = False) -> str:
         """Return rId key of relationship of `reltype` to `target`.
 
         The returned `rId` is from an existing relationship if there is one, otherwise a
@@ -160,50 +165,6 @@ class Part:
         """
         return 0
 
-
-class PartFactory:
-    """Provides a way for client code to specify a subclass of |Part| to be constructed
-    by |Unmarshaller| based on its content type and/or a custom callable.
-
-    Setting ``PartFactory.part_class_selector`` to a callable object will cause that
-    object to be called with the parameters ``content_type, reltype``, once for each
-    part in the package. If the callable returns an object, it is used as the class for
-    that part. If it returns |None|, part class selection falls back to the content type
-    map defined in ``PartFactory.part_type_for``. If no class is returned from either of
-    these, the class contained in ``PartFactory.default_part_type`` is used to construct
-    the part, which is by default ``opc.package.Part``.
-    """
-
-    part_class_selector: Callable[[str, str], Type[Part] | None] | None
-    part_type_for: dict[str, Type[Part]] = {}
-    default_part_type = Part
-
-    def __new__(
-        cls,
-        partname: PackURI,
-        content_type: str,
-        reltype: str,
-        blob: bytes,
-        package: Package,
-    ):
-        PartClass: Type[Part] | None = None
-        if cls.part_class_selector is not None:
-            part_class_selector = getattr(cls, "part_class_selector")
-            PartClass = part_class_selector(content_type, reltype)
-        if PartClass is None:
-            PartClass = cls._part_cls_for(content_type)
-
-        return PartClass.load(partname, content_type, blob, package)
-
-    @classmethod
-    def _part_cls_for(cls, content_type: str):
-        """Return the custom part class registered for `content_type`, or the default
-        part class if no custom class is registered for `content_type`."""
-        if content_type in cls.part_type_for:
-            return cls.part_type_for[content_type]
-        return cls.default_part_type
-
-
 class XmlPart(Part):
     """Base class for package parts containing an XML payload, which is most of them.
 
@@ -212,7 +173,8 @@ class XmlPart(Part):
     """
 
     def __init__(
-        self, partname: PackURI, content_type: str, element: BaseOxmlElement, package: Package
+            self, partname: PackURI, content_type: str,
+            element: etree._Element, package: Package
     ):
         super(XmlPart, self).__init__(partname, content_type, package=package)
         self._element = element
@@ -227,8 +189,9 @@ class XmlPart(Part):
         return self._element
 
     @classmethod
-    def load(cls, partname: PackURI, content_type: str, blob: bytes, package: Package):
-        element = parse_xml(blob) # TODO жидкий моментик!
+    def load(cls, partname: PackURI, content_type: str, blob: bytes,
+             package: Package):
+        element = parse_xml(blob)
         return cls(partname, content_type, element, package)
 
     @property
@@ -245,3 +208,71 @@ class XmlPart(Part):
         identified by `rId`."""
         rIds = cast("list[str]", self._element.xpath("//@r:id"))
         return len([_rId for _rId in rIds if _rId == rId])
+
+
+from core.parts.document import DocumentPart
+from core.parts.styles import StylesPart
+from core.parts.image import ImagePart
+from core.parts.hdrftr import FooterPart, HeaderPart
+from core.parts.settings import SettingsPart
+from core.parts.numbering import NumberingPart
+from core.opc.constants import CONTENT_TYPE as CT
+from core.opc.constants import RELATIONSHIP_TYPE as RT
+from core.parts.coreprops import CorePropertiesPart
+
+class PartFactory:
+    """Provides a way for client code to specify a subclass of |Part| to be constructed
+    by |Unmarshaller| based on its content type and/or a custom callable.
+
+    Setting ``PartFactory.part_class_selector`` to a callable object will cause that
+    object to be called with the parameters ``content_type, reltype``, once for each
+    part in the package. If the callable returns an object, it is used as the class for
+    that part. If it returns |None|, part class selection falls back to the content type
+    map defined in ``PartFactory.part_type_for``. If no class is returned from either of
+    these, the class contained in ``PartFactory.default_part_type`` is used to construct
+    the part, which is by default ``opc.package.Part``.
+    """
+
+    def part_class_selector(content_type: str, reltype: str) -> Type[Part] | None:
+
+        if reltype == RT.IMAGE:
+            return ImagePart
+        return None
+
+    # assign parts with content types
+    part_type_for: dict[str, Type[Part]] = {
+        CT.OPC_CORE_PROPERTIES: CorePropertiesPart,
+        CT.WML_DOCUMENT_MAIN: DocumentPart,
+        CT.WML_FOOTER: FooterPart,
+        CT.WML_HEADER: HeaderPart,
+        CT.WML_NUMBERING: NumberingPart,
+        CT.WML_SETTINGS: SettingsPart,
+        CT.WML_STYLES: StylesPart,
+    }
+    default_part_type = Part
+
+    def __new__(
+            cls,
+            partname: PackURI,
+            content_type: str,
+            reltype: str,
+            blob: bytes,
+            package: Package,
+    ):
+        PartClass: Type[Part] | None = cls.part_class_selector(content_type,
+                                                               reltype)
+        if PartClass is None:
+            PartClass = cls._part_cls_for(content_type)
+
+        return PartClass.load(partname, content_type, blob, package)
+
+    @classmethod
+    def _part_cls_for(cls, content_type: str):
+        """Return the custom part class registered for `content_type`, or the default
+        part class if no custom class is registered for `content_type`."""
+        if content_type in cls.part_type_for:
+            return cls.part_type_for[content_type]
+        return cls.default_part_type
+
+
+
