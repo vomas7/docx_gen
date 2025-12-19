@@ -38,8 +38,6 @@ class Section(BaseContainerTag):
     __slots__ = ("some",)
 
     def __init__(self, linked_objects: LinkedObjects | list = None):
-        linked_objects = linked_objects or LinkedObjects(linked_parent=self)
-        # linked_objects += [PageMargin(), Cols(), DocGrid(), PageSize()]
         super().__init__(linked_objects)
 
     @property

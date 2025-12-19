@@ -30,6 +30,7 @@ class BaseContainerTag(BaseTag):
 
     @linked_objects.setter
     def linked_objects(self, new: LinkedObjects):
+        new = copy.deepcopy(new)
         if new is None:
             self._linked_objects = LinkedObjects(self, [])
         elif isinstance(new, LinkedObjects):
