@@ -3,8 +3,8 @@
 import os
 from zipfile import ZIP_DEFLATED, ZipFile, is_zipfile
 
-from core.opc.exceptions import PackageNotFoundError
-from core.opc.pkgurl import CONTENT_TYPES_URI
+from core.io.exceptions import PackageNotFoundError
+from core.io.pkgurl import CONTENT_TYPES_URI
 
 
 class PhysPkgReader:

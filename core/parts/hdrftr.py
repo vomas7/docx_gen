@@ -5,8 +5,8 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 
-from core.opc.constants import CONTENT_TYPE as CT
-from core.opc.oxml import parse_xml
+from core.io.constants import CONTENT_TYPE as CT
+from core.io.oxml import parse_xml
 from core.parts.story import StoryPart
 
 if TYPE_CHECKING:

@@ -5,13 +5,13 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 
-from core.opc.constants import CONTENT_TYPE as CT
-from core.opc.pkgurl import PackURI
-from core.opc.part import XmlPart
-from core.opc.oxml import parse_xml
+from core.io.constants import CONTENT_TYPE as CT
+from core.io.pkgurl import PackURI
+from core.io.part import XmlPart
+from core.io.oxml import parse_xml
 
 if TYPE_CHECKING:
-    from core.opc.package import OpcPackage
+    from core.io.package import IOPackage
 
 
 class StylesPart(XmlPart):
@@ -19,7 +19,7 @@ class StylesPart(XmlPart):
     glossary."""
 
     @classmethod
-    def default(cls, package: OpcPackage) -> StylesPart:
+    def default(cls, package: IOPackage) -> StylesPart:
         """Return a newly created styles part, containing a default set of elements."""
         partname = PackURI("/word/styles.xml")
         content_type = CT.WML_STYLES

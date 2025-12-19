@@ -5,14 +5,14 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 
-from core.opc.constants import CONTENT_TYPE as CT
-from core.opc.pkgurl import PackURI
-from core.opc.part import XmlPart
-from core.opc.oxml import parse_xml
+from core.io.constants import CONTENT_TYPE as CT
+from core.io.pkgurl import PackURI
+from core.io.part import XmlPart
+from core.io.oxml import parse_xml
 from lxml import etree
 
 if TYPE_CHECKING:
-    from core.opc.package import Package
+    from core.io.package import Package
 
 
 class SettingsPart(XmlPart):

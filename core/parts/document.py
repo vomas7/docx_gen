@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from typing import IO
 
-from core.opc.constants import RELATIONSHIP_TYPE as RT
+from core.io.constants import RELATIONSHIP_TYPE as RT
 from core.parts.hdrftr import FooterPart, HeaderPart
 from core.parts.numbering import NumberingPart
 from core.parts.story import StoryPart
-from core.opc.utils import lazyproperty
+from core.io.utils import lazyproperty
 
 
 

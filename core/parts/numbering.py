@@ -1,7 +1,7 @@
 """|NumberingPart| and closely related objects."""
 
-from core.opc.part import XmlPart
-from core.opc.utils import lazyproperty
+from core.io.part import XmlPart
+from core.io.utils import lazyproperty
 
 class NumberingPart(XmlPart):
     """Proxy for the numbering.xml part containing numbering definitions for a document

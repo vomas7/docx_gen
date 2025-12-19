@@ -6,17 +6,17 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Type, cast
 
-from core.opc.oxml import serialize_part_xml
-from core.opc.pkgurl import PackURI
-from core.opc.rel import Relationships
-from core.opc.oxml import parse_xml
-from core.opc.utils import lazyproperty
+from core.io.oxml import serialize_part_xml
+from core.io.pkgurl import PackURI
+from core.io.rel import Relationships
+from core.io.oxml import parse_xml
+from core.io.utils import lazyproperty
 from lxml import etree
 
 
 
 if TYPE_CHECKING:
-    from core.opc.package import Package
+    from core.io.package import Package
 
 
 class Part:
@@ -216,8 +216,8 @@ from core.parts.image import ImagePart
 from core.parts.hdrftr import FooterPart, HeaderPart
 from core.parts.settings import SettingsPart
 from core.parts.numbering import NumberingPart
-from core.opc.constants import CONTENT_TYPE as CT
-from core.opc.constants import RELATIONSHIP_TYPE as RT
+from core.io.constants import CONTENT_TYPE as CT
+from core.io.constants import RELATIONSHIP_TYPE as RT
 from core.parts.coreprops import CorePropertiesPart
 
 class PartFactory:
@@ -230,7 +230,7 @@ class PartFactory:
     that part. If it returns |None|, part class selection falls back to the content type
     map defined in ``PartFactory.part_type_for``. If no class is returned from either of
     these, the class contained in ``PartFactory.default_part_type`` is used to construct
-    the part, which is by default ``opc.package.Part``.
+    the part, which is by default ``io.package.Part``.
     """
 
     def part_class_selector(content_type: str, reltype: str) -> Type[Part] | None:

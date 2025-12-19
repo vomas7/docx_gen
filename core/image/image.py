@@ -13,7 +13,7 @@ from typing import IO, Tuple
 
 from core.image.exceptions import UnrecognizedImageError
 from core.utils.metrics import Emu, Inches, Length
-from core.opc.utils import lazyproperty
+from core.io.utils import lazyproperty
 
 
 class Image:

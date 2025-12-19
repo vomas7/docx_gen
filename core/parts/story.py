@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import IO, TYPE_CHECKING, Tuple, cast
 
-from core.opc.constants import RELATIONSHIP_TYPE as RT
-from core.opc.part import XmlPart
-from core.opc.utils import lazyproperty
+from core.io.constants import RELATIONSHIP_TYPE as RT
+from core.io.part import XmlPart
+from core.io.utils import lazyproperty
 
 if TYPE_CHECKING:
     from core.image.image import Image

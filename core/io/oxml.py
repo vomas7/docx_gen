@@ -13,8 +13,8 @@ from typing import cast
 
 from lxml import etree
 
-from core.opc.constants import NAMESPACE as NS
-from core.opc.constants import RELATIONSHIP_TARGET_MODE as RTM
+from core.io.constants import NAMESPACE as NS
+from core.io.constants import RELATIONSHIP_TARGET_MODE as RTM
 
 # configure XML parser
 element_class_lookup = etree.ElementNamespaceClassLookup()

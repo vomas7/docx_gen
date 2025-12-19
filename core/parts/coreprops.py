@@ -3,14 +3,14 @@ from __future__ import annotations
 import datetime as dt
 from typing import TYPE_CHECKING
 
-from core.opc.constants import CONTENT_TYPE as CT
-from core.opc.pkgurl import PackURI
-from core.opc.part import XmlPart
+from core.io.constants import CONTENT_TYPE as CT
+from core.io.pkgurl import PackURI
+from core.io.part import XmlPart
 from core.oxml_magic.ns import nsdecls
-from core.opc.oxml import parse_xml
+from core.io.oxml import parse_xml
 
 if TYPE_CHECKING:
-    from core.opc.package import OpcPackage
+    from core.io.package import IOPackage
 
 
 class CorePropertiesPart(XmlPart):
@@ -21,7 +21,7 @@ class CorePropertiesPart(XmlPart):
     """
 
     @classmethod
-    def default(cls, package: OpcPackage):
+    def default(cls, package: IOPackage):
         """Return a new |CorePropertiesPart| object initialized with default values for
         its base properties."""
         core_properties_part = cls.new(package)
@@ -49,7 +49,7 @@ class CorePropertiesPart(XmlPart):
         return coreProperties
 
     @classmethod
-    def new(cls, package: OpcPackage) -> CorePropertiesPart:
+    def new(cls, package: IOPackage) -> CorePropertiesPart:
         partname = PackURI("/docProps/core.xml")
         content_type = CT.OPC_CORE_PROPERTIES
         coreProperties = cls._new()

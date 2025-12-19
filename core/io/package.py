@@ -4,27 +4,27 @@ from __future__ import annotations
 
 from typing import IO, TYPE_CHECKING, Iterator, cast
 
-from core.opc.constants import RELATIONSHIP_TYPE as RT
-from core.opc.part import PartFactory
-from core.opc.pkgreader import PackageReader
-from core.opc.utils import lazyproperty
+from core.io.constants import RELATIONSHIP_TYPE as RT
+from core.io.part import PartFactory
+from core.io.pkgreader import PackageReader
+from core.io.utils import lazyproperty
 
-from core.opc.rel import Relationships
-from core.opc.pkgurl import PACKAGE_URI
+from core.io.rel import Relationships
+from core.io.pkgurl import PACKAGE_URI
 
 from core.parts.image import ImageParts
-from core.opc.pkgwriter import PackageWriter
+from core.io.pkgwriter import PackageWriter
 
 if TYPE_CHECKING:
-    from core.opc.part import Part
-    from core.opc.rel import _Relationship
+    from core.io.part import Part
+    from core.io.rel import _Relationship
     from core.parts.image import ImagePart
 
 
-class OpcPackage:
+class IOPackage:
 
     def __init__(self):
-        super(OpcPackage, self).__init__()
+        super(IOPackage, self).__init__()
 
     def after_unmarshal(self):
         pass
@@ -59,7 +59,7 @@ class OpcPackage:
         performing a depth-first traversal of the rels graph."""
 
         def walk_rels(
-                source: OpcPackage | Part, visited: list[Part] | None = None
+                source: IOPackage | Part, visited: list[Part] | None = None
         ) -> Iterator[_Relationship]:
             visited = [] if visited is None else visited
             for rel in source.rels.values():
@@ -114,7 +114,7 @@ class OpcPackage:
         return self.part_related_by(RT.OFFICE_DOCUMENT)
 
     @classmethod
-    def open(cls, pkg_file: str | IO[bytes]) -> OpcPackage:
+    def open(cls, pkg_file: str | IO[bytes]) -> IOPackage:
         """Return an |OpcPackage| instance loaded with the contents of `pkg_file`."""
         pkg_reader = PackageReader.from_file(pkg_file)
 
@@ -132,7 +132,7 @@ class OpcPackage:
         PackageWriter.write(pkg_file, self.rels, self.parts)
 
 
-class Package(OpcPackage):
+class Package(IOPackage):
     """Customizations specific to a WordprocessingML package."""
 
     def after_unmarshal(self):

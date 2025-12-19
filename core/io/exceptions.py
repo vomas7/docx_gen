@@ -1,11 +1,11 @@
-"""Exceptions specific to python-opc.
+"""Exceptions specific to python-io.
 
 The base exception class is OpcError.
 """
 
 
 class OpcError(Exception):
-    """Base error class for python-opc."""
+    """Base error class for python-io."""
 
 
 class PackageNotFoundError(OpcError):

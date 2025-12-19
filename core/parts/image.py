@@ -6,14 +6,14 @@ import hashlib
 from typing import TYPE_CHECKING
 
 from core.image.image import Image
-from core.opc.part import Part
+from core.io.part import Part
 from core.utils.metrics import Emu, Inches
 
 from typing import IO
-from core.opc.pkgurl import PackURI
+from core.io.pkgurl import PackURI
 
 if TYPE_CHECKING:
-    from core.opc.package import OpcPackage
+    from core.io.package import IOPackage
 
 
 class ImagePart(Part):
@@ -73,8 +73,8 @@ class ImagePart(Part):
 
     @classmethod
     def load(cls, partname: PackURI, content_type: str, blob: bytes,
-             package: OpcPackage):
-        """Called by ``ui_objects.opc.package.PartFactory`` to load an image part from a
+             package: IOPackage):
+        """Called by ``ui_objects.io.package.PartFactory`` to load an image part from a
         package being opened by ``Document(...)`` call."""
         return cls(partname, content_type, blob)
 

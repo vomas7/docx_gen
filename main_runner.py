@@ -56,10 +56,10 @@
 
 
 
-from core.opc.package import PackageReader
-from core.opc.package import OpcPackage
+from core.io.package import PackageReader
+from core.io.package import IOPackage
 from core.oxml_magic.parser import convert_xml_to_cls
 
-ppkg = OpcPackage.open("aaaaaaaaaa.docx")
+ppkg = IOPackage.open("aaaaaaaaaa.docx")
 
 ppkg.save("sosi.docx")

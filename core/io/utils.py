@@ -7,7 +7,7 @@ class CaseInsensitiveDict(Dict[str, Any]):
     case of the key.
 
     E.g. cid['A'] == cid['a']. Note this is not general-purpose, just complete enough to
-    satisfy opc package needs. It assumes str keys, and that it is created empty; keys
+    satisfy io package needs. It assumes str keys, and that it is created empty; keys
     passed in constructor are not accounted for
     """
 
