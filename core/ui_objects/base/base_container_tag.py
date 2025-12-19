@@ -26,7 +26,7 @@ class BaseContainerTag(BaseTag):
 
     @property
     def linked_objects(self) -> LinkedObjects:
-        return copy.deepcopy(self._linked_objects)
+        return self._linked_objects
 
     @linked_objects.setter
     def linked_objects(self, new: LinkedObjects):

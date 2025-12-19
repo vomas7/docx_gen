@@ -9,8 +9,12 @@ from core.ui_objects.base.linked_objects import LinkedObjects
 from core.ui_objects.break_ import Break
 from core.ui_objects.run import Run
 from core.ui_objects.text import Text
+from core.ui_objects.section import Section, PageSize, PageMargin, Cols, DocGrid
+from core.ui_objects.document import Document, Body
+
 
 CLASS_REGISTRY = {}
+# We loop through all the modules in this package and then hook the classes that correspond to the BaseContentTag and BaseContainerTag classes.
 for _, module_name, _ in pkgutil.iter_modules(__path__):
     if module_name not in ["__main__", "__init__"]:
         try:
