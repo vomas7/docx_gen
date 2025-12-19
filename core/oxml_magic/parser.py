@@ -11,6 +11,7 @@ def get_cls_by_tag(tag: str):
 
 
 def make_xml_tree(cls_element: BaseTag) -> etree.Element:
+    print(cls_element)
     xml_tree = etree.Element(qn(cls_element.tag), attrib=cls_element.attrs, nsmap=nsmap)
     if isinstance(cls_element, BaseContainerTag):
         for ch in cls_element.linked_objects:

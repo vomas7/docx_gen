@@ -11,7 +11,7 @@ from core.ui_objects.run import Run
 from core.ui_objects.text import Text
 from core.ui_objects.section import Section, PageSize, PageMargin, Cols, DocGrid
 from core.ui_objects.document import Document, Body
-
+from core.ui_objects.bookmarks import BookmarkEnd, BookmarkStart
 
 CLASS_REGISTRY = {}
 # We loop through all the modules in this package and then hook the classes that correspond to the BaseContentTag and BaseContainerTag classes.

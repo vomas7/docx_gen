@@ -55,33 +55,40 @@
 
 from core.io.package import PackageReader
 from core.io.package import IOPackage
-from core.oxml_magic.parser import convert_xml_to_cls, make_xml_tree, to_xml_str
+# from core.oxml_magic.parser import convert_xml_to_cls, make_xml_tree, to_xml_str
 
 # ppkg = IOPackage.open("aaaaaaaaaa.docx")
 #
 # ppkg.save("sosi.docx")
 
 from core.ui_objects import Section, Body, Document, CLASS_REGISTRY
-from core.oxml_magic.parser import convert_xml_to_cls, make_xml_tree, to_xml_str
-from core.io.package import Package
-ppkg = Package.open(r"C:\Users\AkentevDV\Desktop\localProjects\docx_gen\.venv\Lib\site-packages\docx\templates\default.docx")
-xml_doc = ppkg.main_document_part._element
-c = convert_xml_to_cls(xml_doc)
-m = make_xml_tree(c)
-
-print(to_xml_str(m))
+# from core.oxml_magic.parser import convert_xml_to_cls, make_xml_tree, to_xml_str
+# from core.io.package import Package
+# ppkg = Package.open(r"C:\Users\AkentevDV\Desktop\localProjects\docx_gen\.venv\Lib\site-packages\docx\templates\default.docx")
+# xml_doc = ppkg.main_document_part._element
+# c = convert_xml_to_cls(xml_doc)
+# m = make_xml_tree(c)
+#
+# print(to_xml_str(m))
 
 
 # ppkg.save("sosi.docx")
 
 
-
+from core.oxml_magic.parser import make_xml_tree, to_xml_str
 
 
 
 
 
 from core.ui_objects import Section, Body, Document, CLASS_REGISTRY
+
+document = Document()
+document.open("sosi.docx")
+print(document)
+print(document.linked_objects)
+
+
 # document = Document(linked_objects=[])
 # body = Body()
 # document.add(body)
