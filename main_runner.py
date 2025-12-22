@@ -82,22 +82,20 @@ from core.io.package import IOPackage
 
 
 from core.ui_objects import Section, Body, Document
+from core.oxml_magic.parser import make_xml_tree, to_xml_str
 
 document = Document()
 document.open(r"C:\Users\AkentevDV\Desktop\localProjects\docx_gen\.venv\Lib\site-packages\docx\templates\default.docx")
-# body = document.linked_objects[0]
-# body.add(Section())
-# # print(document)
-# # print(document.linked_objects)
-#
-# c = make_xml_tree(document)
-# # print(to_xml_str(c))
+body = document.linked_objects[0]
+body.add(Section())
+# print(document)
+# print(document.linked_objects)
+se = body.linked_objects[-1].linked_objects[0]
+for i in se.__slots__:
+    f= getattr( body.linked_objects[-1].linked_objects[0], i)
+    print(f)
+
 # document.save("sosi.docx")
-# # document = Document(linked_objects=[])
-# body = Body()
-# document.add(body)
-# section = Section()
-# body.add(section)
 
 
 

@@ -14,6 +14,7 @@ from core.ui_objects.base.base_content_tag import BaseContentTag
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.section import Section
 from core.ui_objects.document import Body, Document
+from core.ui_objects.bookmarks import BookmarkEnd, BookmarkStart
 
 
 
