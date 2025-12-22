@@ -26,9 +26,6 @@ class Document(BaseContainerTag):
     def tag(self):
         return "w:document"
 
-    @property
-    def part(self):
-        return
 
     @property
     def access_children(self):
@@ -38,8 +35,7 @@ class Document(BaseContainerTag):
         from core.io.api import parse_document_part
         from core.oxml_magic.parser import convert_xml_to_cls
 
-        #todo проблема с part который нужен для записи и чтения, а метп-класс не даёт определить не атрибут xml/ проблемс в slots
-        self._part = parse_document_part(file)
+        setattr(self.__class__, "_part", parse_document_part(file))
         [_body] = self._part._element.getchildren()
         self.add(convert_xml_to_cls(_body))
 

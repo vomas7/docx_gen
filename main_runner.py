@@ -85,18 +85,20 @@ from core.ui_objects import Section, Body, Document, CLASS_REGISTRY
 
 document = Document()
 document.open("sosi.docx")
+body = document.linked_objects[0]
+body.add(Section())
 print(document)
 print(document.linked_objects)
 
-
+c = make_xml_tree(document)
+print(to_xml_str(c))
+document.save("sosi.docx")
 # document = Document(linked_objects=[])
 # body = Body()
 # document.add(body)
 # section = Section()
 # body.add(section)
-# c = make_xml_tree(document)
 
-# print(to_xml_str(c))
 
 
 
