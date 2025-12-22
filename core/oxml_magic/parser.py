@@ -1,18 +1,19 @@
 from lxml import etree
 
-from core.oxml_magic.ns import NamespacePrefixedTag, nsmap, qn
+from core.oxml_magic.ns import NamespacePrefixedTag, nsmap, qn, find_qn
 from core.ui_objects import BaseContainerTag, BaseTag, Text
 
 
 def get_cls_by_tag(tag: str):
     from core.ui_objects import CLASS_REGISTRY
-
+    print(tag, "11111111111")
     return CLASS_REGISTRY.get(tag)
 
 
 def make_xml_tree(cls_element: BaseTag) -> etree.Element:
-    print(cls_element)
     xml_tree = etree.Element(qn(cls_element.tag), attrib=cls_element.attrs, nsmap=nsmap)
+    print(xml_tree.attrib, "mmmmmmmmm")
+    find_qn(xml_tree.attrib) #todo пока хз
     if isinstance(cls_element, BaseContainerTag):
         for ch in cls_element.linked_objects:
             tp_elem = make_xml_tree(ch)
@@ -23,11 +24,30 @@ def make_xml_tree(cls_element: BaseTag) -> etree.Element:
     return xml_tree
 
 
+def declare_attrib(xml_elem : etree._Element, cls_obj: BaseTag):
+    slots_element = []
+    print(cls_obj, "cccccc")
+    for attr, val in xml_elem.attrib.items():
+        full_name = NamespacePrefixedTag.from_clark_name(attr)
+        slots_element.append(full_name.split(":")[1])
+        setattr(cls_obj, full_name.split(":")[1], val)
+        print(full_name, val)
+    print(slots_element)
+    cls_obj.__slots__ = cls_obj.__slots__ + tuple(slots_element)
+    print(slots_element, cls_obj.__slots__)
+
+
 def convert_xml_to_cls(xml_tree: etree.ElementBase):
-    cls = get_cls_by_tag(NamespacePrefixedTag.from_clark_name(xml_tree.tag))
+    print(
+    NamespacePrefixedTag.from_clark_name(xml_tree.tag), "222222222222"
+    )
+    tag = get_cls_by_tag(NamespacePrefixedTag.from_clark_name(xml_tree.tag))
+    cls = tag["class_tag"]
     if cls is None:
         raise TypeError(f"{xml_tree} object is not readable")
     obj = cls()
+    declare_attrib(xml_tree, cls)
+    print(obj.__slots__)
     for child in xml_tree:
         obj.linked_objects.append(convert_xml_to_cls(child))
     return obj

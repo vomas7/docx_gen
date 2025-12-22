@@ -61,7 +61,7 @@ from core.io.package import IOPackage
 #
 # ppkg.save("sosi.docx")
 
-from core.ui_objects import Section, Body, Document, CLASS_REGISTRY
+# from core.ui_objects import Section, Body, Document, CLASS_REGISTRY
 # from core.oxml_magic.parser import convert_xml_to_cls, make_xml_tree, to_xml_str
 # from core.io.package import Package
 # ppkg = Package.open(r"C:\Users\AkentevDV\Desktop\localProjects\docx_gen\.venv\Lib\site-packages\docx\templates\default.docx")
@@ -75,25 +75,25 @@ from core.ui_objects import Section, Body, Document, CLASS_REGISTRY
 # ppkg.save("sosi.docx")
 
 
-from core.oxml_magic.parser import make_xml_tree, to_xml_str
+# from core.oxml_magic.parser import make_xml_tree, to_xml_str
 
 
 
 
 
-from core.ui_objects import Section, Body, Document, CLASS_REGISTRY
+from core.ui_objects import Section, Body, Document
 
 document = Document()
-document.open("sosi.docx")
-body = document.linked_objects[0]
-body.add(Section())
-print(document)
-print(document.linked_objects)
-
-c = make_xml_tree(document)
-print(to_xml_str(c))
-document.save("sosi.docx")
-# document = Document(linked_objects=[])
+document.open(r"C:\Users\AkentevDV\Desktop\localProjects\docx_gen\.venv\Lib\site-packages\docx\templates\default.docx")
+# body = document.linked_objects[0]
+# body.add(Section())
+# # print(document)
+# # print(document.linked_objects)
+#
+# c = make_xml_tree(document)
+# # print(to_xml_str(c))
+# document.save("sosi.docx")
+# # document = Document(linked_objects=[])
 # body = Body()
 # document.add(body)
 # section = Section()

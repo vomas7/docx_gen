@@ -4,6 +4,7 @@ from abc import abstractmethod
 
 from core.ui_objects.base.base_tag import BaseTag
 from core.ui_objects.base.linked_objects import LinkedObjects
+from typing import Type
 
 
 class BaseContainerTag(BaseTag):
@@ -41,5 +42,19 @@ class BaseContainerTag(BaseTag):
         else:
             raise TypeError(f"{new} has not BaseTag objects")
 
-    def add(self, item: BaseTag):
-        self._linked_objects.append(item)
+    def add(self, item: BaseTag, index=-1):
+        self._linked_objects.insert(index, item)
+
+    def remove(self, item: BaseTag):
+        self._linked_objects.remove(item)
+
+    def pop(self, index: int = -1):
+        return self._linked_objects.pop(index)
+
+    def find(self, item: Type[BaseTag]) -> list:
+        return [obj for obj in self.linked_objects if isinstance(obj, item)]
+
+    def remove_child(self, child: BaseTag):
+        children = self.find(type(child))
+        for child in children:
+            self.remove(child)
