@@ -1,16 +1,15 @@
 # docx_gen
-Facade add-on over the python-docx lib
+Very cool lib for making word documents
 ### Как работать с ruff 
-``ruff check . `` - линтинг  
-``ruff format `` - автоисправление  
+``ruff check .`` - линтинг  
 Если добавлять `--fix` будет сразу форматировать код
+``ruff format .`` - автоисправление  
 
 
 
 ### Философия и правила
-- Объекты обязаны запонминать linked object своих объектов и записывать в свой linked object
+- Объекты обязаны запоминать linked object своих объектов и записывать в свой linked object
 - Объекты обязаны заполнять linked object своими объектами, а не объектами python-docx
-  ( Например у paragraph есть свои ran элементы, котрые должны быть трансформированы а Text и записаны в linked obj DOCParagraph 
+  (Например у paragraph есть свои ran элементы, котрые должны быть трансформированы а Text и записаны в linked obj DOCParagraph 
 и это касается и элементов строк и т.п)
 - Также нет прямой записи элементов в xml, мы просто создаём xml элементы и записывает в конце выполнения программы
-
