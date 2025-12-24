@@ -50,9 +50,7 @@ def test_init_with_list_of_base_tags():
 
     assert isinstance(container._linked_objects, LinkedObjects)
     assert len(container._linked_objects) == 2
-    assert container._linked_objects[0] is tag1
-    assert container._linked_objects[1] is tag2
-    assert container._linked_objects.linked_parent is container
+    assert container.linked_objects.linked_parent is container
 
 
 def test_init_with_empty_list():
@@ -60,8 +58,8 @@ def test_init_with_empty_list():
     container = ConcreteContainer([])
 
     assert isinstance(container._linked_objects, LinkedObjects)
-    assert len(container._linked_objects) == 0
-    assert container._linked_objects.linked_parent is container
+    assert len(container.linked_objects) == 0
+    assert container.linked_objects.linked_parent is container
 
 
 def test_init_with_none():
@@ -81,23 +79,6 @@ def test_init_with_invalid_type():
     assert "is not an instance of BaseTag" in str(exc_info.value)
 
 
-def test_linked_objects_property_getter_returns_deepcopy():
-    """Test that linked_objects getter returns deep copy"""
-    tag1 = ConcreteTag("Tag1")
-    tag2 = ConcreteTag("Tag2")
-
-    container = ConcreteContainer([tag1, tag2])
-
-    lo_copy = container.linked_objects
-
-    assert lo_copy is not container._linked_objects
-    assert isinstance(lo_copy, LinkedObjects)
-
-    lo_copy.append(ConcreteTag("Tag3"))
-    assert len(container._linked_objects) == 2
-    assert len(lo_copy) == 3
-
-
 def test_linked_objects_setter_with_linked_objects_instance():
     """Test linked_objects setter with LinkedObjects instance"""
     container = ConcreteContainer()
@@ -105,8 +86,7 @@ def test_linked_objects_setter_with_linked_objects_instance():
     lo = LinkedObjects(container, [ConcreteTag("Tag1")])
     container.linked_objects = lo
 
-    assert container._linked_objects is lo
-    assert container._linked_objects.linked_parent is container
+    assert container.linked_objects.linked_parent is container
 
 
 def test_linked_objects_setter_with_list():
@@ -144,9 +124,7 @@ def test_linked_objects_setter_replaces_existing():
     container.linked_objects = [tag2, tag3]
 
     assert container._linked_objects is not original_lo
-    assert len(container._linked_objects) == 2
-    assert container._linked_objects[0] is tag2
-    assert container._linked_objects[1] is tag3
+    assert len(container.linked_objects) == 2
 
 
 def test_linked_objects_setter_with_invalid_type():
@@ -281,30 +259,6 @@ def test_slots_contains_linked_objects():
     assert "_linked_objects" in BaseContainerTag.__slots__
 
 
-def test_deepcopy_with_nested_structure():
-    """Test deepcopy with nested structure"""
-    inner_tag1 = ConcreteTag("Inner1")
-    inner_tag2 = ConcreteTag("Inner2")
-
-    inner_container = ConcreteContainer([inner_tag1, inner_tag2])
-
-    outer_tag = ConcreteTag("Outer")
-    outer_container = ConcreteContainer([inner_container, outer_tag])
-
-    copied_linked_objects = outer_container.linked_objects
-
-    assert copied_linked_objects is not outer_container._linked_objects
-
-    assert copied_linked_objects[0] is not inner_container
-    assert isinstance(copied_linked_objects[0], ConcreteContainer)
-
-    new_tag = ConcreteTag("NewTag")
-    outer_container._linked_objects.append(new_tag)
-
-    assert len(outer_container._linked_objects) == 3
-    assert len(copied_linked_objects) == 2
-
-
 def test_circular_reference_handling():
     """Test handling of circular references"""
     container1 = ConcreteContainer()
@@ -405,4 +359,4 @@ def test_chaining_operations():
 
     copied = container.linked_objects
     assert len(copied) == 3
-    assert copied is not container._linked_objects
+    assert copied is container.linked_objects

@@ -26,10 +26,11 @@ class BaseContainerTag(BaseTag):
 
     @property
     def linked_objects(self) -> LinkedObjects:
-        return copy.deepcopy(self._linked_objects)
+        return self._linked_objects
 
     @linked_objects.setter
     def linked_objects(self, new: LinkedObjects):
+        new = copy.deepcopy(new)
         if new is None:
             self._linked_objects = LinkedObjects(self, [])
         elif isinstance(new, LinkedObjects):
@@ -40,5 +41,22 @@ class BaseContainerTag(BaseTag):
         else:
             raise TypeError(f"{new} is not an instance of BaseTag")
 
-    def add(self, item: BaseTag):
-        self._linked_objects.append(item)
+    def add(self, item: BaseTag, index=-1):
+        if index < 0:
+            self.linked_objects.append(item)
+        else:
+            self.linked_objects.insert(index, item)
+
+    def remove(self, item: BaseTag):
+        self.linked_objects.remove(item)
+
+    def pop(self, index: int = -1):
+        return self.linked_objects.pop(index)
+
+    def find(self, item: type[BaseTag]) -> list:
+        return [obj for obj in self.linked_objects if isinstance(obj, item)]
+
+    def remove_child(self, child: BaseTag | type[BaseTag]):
+        children = self.find(child)
+        for child in children:
+            self.remove(child)

@@ -5,17 +5,11 @@ from lxml import etree
 
 
 r = Run()
-r.add_page_break()
 
-r.add(Text("AAAAAAAAAAAAAAAAAAAAA"))
-r.add_column_break()
-
-run_element = make_xml_tree(r)
-
-
-run_xml_str = to_xml_str(run_element)
-print(run_xml_str)
-
+r.add_text("text1")
+r.font = "Times New Roman"
+print(r.font)
+run_xml_str_tab = to_xml_str(make_xml_tree(r))
 s = """
   <w:body xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
     <w:p>
@@ -30,7 +24,7 @@ s = """
     </w:sectPr>
   </w:body>
 """
-s = s.format(run=run_xml_str)
+s = s.format(run=run_xml_str_tab)
 
 
 namespaces = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
