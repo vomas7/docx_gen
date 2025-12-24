@@ -21,6 +21,7 @@ repos:
         entry: pytest
         language: system
         types: [python]
+        files: \.py$
         pass_filenames: false
         always_run: true
         args: [-v, --tb=short]
