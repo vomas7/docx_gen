@@ -145,6 +145,7 @@ class Run(BaseContainerTag):
 
     @property
     def bold(self):
+        """Bold of text - True | False"""
         return self.run_property.bold
 
     @bold.setter
