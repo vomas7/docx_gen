@@ -39,7 +39,7 @@ class RunProperty(BaseContainerTag):
             self._bold = True
             self.add(Bold(), 0)
         elif not value:
-            self.remove_child(Bold)
+            self.remove_children(Bold)
             self._bold = False
         else:
             TypeError(f"value must be bool not {type(value)}")
@@ -56,7 +56,7 @@ class RunProperty(BaseContainerTag):
             self._italic = True
             self.add(Italic(), 0)
         elif not value:
-            self.remove_child(Italic)
+            self.remove_children(Italic)
             self._italic = False
         else:
             TypeError(f"value must be bool not {type(value)}")
@@ -69,7 +69,7 @@ class RunProperty(BaseContainerTag):
     @font.setter
     def font(self, value: str):
         if not value:
-            self.remove_child(Font)
+            self.remove_children(Font)
             self._font = None
         elif isinstance(value, str):
             self._font = Font(value)
@@ -131,7 +131,7 @@ class Run(BaseContainerTag):
         if self._has_any_property() and not self._has_property_in_linked_objects():
             self.add(self.run_property, 0)
         elif not self._has_any_property() and self._has_property_in_linked_objects():
-            self.remove_child(RunProperty)
+            self.remove_children(RunProperty)
 
     def _has_property_in_linked_objects(self) -> bool:
         return bool(self.find(RunProperty))
