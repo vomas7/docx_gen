@@ -88,12 +88,15 @@ document = Document()
 document.open(r"C:\Users\AkentevDV\Desktop\localProjects\docx_gen\.venv\Lib\site-packages\docx\templates\default.docx")
 body = document.linked_objects[0]
 body.add(Section())
+f =make_xml_tree(body)
+print(to_xml_str(f))
 # print(document)
 # print(document.linked_objects)
-se = body.linked_objects[-1].linked_objects[0]
-for i in se.__slots__:
-    f= getattr( body.linked_objects[-1].linked_objects[0], i)
-    print(f)
+# se = body.linked_objects[-1].linked_objects[0]
+# for i in se.__slots__:
+#     f= getattr( body.linked_objects[-1].linked_objects[0], i)
+#     print(f)
+
 
 # document.save("sosi.docx")
 

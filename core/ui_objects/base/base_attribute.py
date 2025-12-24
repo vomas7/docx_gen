@@ -132,7 +132,7 @@ class SimpleAttribute(BaseAttribute):
 
     @property
     def value(self):
-        return self.value
+        return self._value
 
     @value.setter
     def value(self, another):
