@@ -7,7 +7,7 @@ Very cool lib for making word documents
 
 
 
-### Философия и правила
+### Философия и правила 
 - Объекты обязаны запоминать linked object своих объектов и записывать в свой linked object
 - Объекты обязаны заполнять linked object своими объектами, а не объектами python-docx
   (Например у paragraph есть свои ran элементы, котрые должны быть трансформированы а Text и записаны в linked obj DOCParagraph 
