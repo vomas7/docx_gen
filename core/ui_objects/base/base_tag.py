@@ -32,7 +32,9 @@ class BaseTag(ABC):
         #                      f"must define non-empty __slots__")
         for slot in slots:
             attribute = self.get_attribute(slot)
-            if attribute and attribute.value is not None:
+            if (attribute and
+                    isinstance(attribute, BaseAttribute) and
+                    attribute.value is not None):
                 attrs[qn(attribute.xml_name)] = attribute.value
         return attrs
 
@@ -41,5 +43,6 @@ class BaseTag(ABC):
 
     def __str__(self):
         attrs = self.attrs
-        attrs_str = " ".join(f'{key}="{value}"' for key, value in attrs.items())
+        attrs_str = " ".join(
+            f'{key}="{value}"' for key, value in attrs.items())
         return f"{self.__class__.__name__}: <{self.tag} {attrs_str}/>"

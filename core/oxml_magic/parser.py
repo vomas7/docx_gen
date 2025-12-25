@@ -1,7 +1,10 @@
 from lxml import etree
 
-from core.oxml_magic.ns import NamespacePrefixedTag, nsmap, qn, find_qn
-from core.ui_objects import BaseContainerTag, BaseTag, Text
+from core.oxml_magic.ns import NamespacePrefixedTag, nsmap, qn
+from core.ui_objects.base.base_tag import BaseTag
+from core.ui_objects.text import Text
+
+from core.ui_objects.base.base_container_tag import BaseContainerTag
 
 
 def get_cls_by_tag(tag: str):
@@ -10,7 +13,8 @@ def get_cls_by_tag(tag: str):
 
 
 def make_xml_tree(cls_element: BaseTag) -> etree.Element:
-    xml_tree = etree.Element(qn(cls_element.tag), attrib=cls_element.attrs, nsmap=nsmap)
+    xml_tree = etree.Element(qn(cls_element.tag), attrib=cls_element.attrs,
+                             nsmap=nsmap)
     if isinstance(cls_element, BaseContainerTag):
         for ch in cls_element.linked_objects:
             tp_elem = make_xml_tree(ch)
@@ -21,7 +25,7 @@ def make_xml_tree(cls_element: BaseTag) -> etree.Element:
     return xml_tree
 
 
-def declare_attrib(xml_elem : etree._Element, cls_obj: BaseTag):
+def declare_attrib(xml_elem: etree._Element, cls_obj: BaseTag):
     for attr, val in xml_elem.attrib.items():
         attr_name = NamespacePrefixedTag.from_clark_name(attr).split(":")[1]
         if hasattr(cls_obj, attr_name):
@@ -42,4 +46,5 @@ def convert_xml_to_cls(xml_tree: etree.ElementBase):
 
 
 def to_xml_str(xml_tree: etree.Element) -> str:
-    return etree.tostring(xml_tree, pretty_print=True, encoding="utf-8").decode()
+    return etree.tostring(xml_tree, pretty_print=True,
+                          encoding="utf-8").decode()

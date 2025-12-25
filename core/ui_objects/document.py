@@ -1,6 +1,8 @@
-from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.linked_objects import LinkedObjects
+from core.ui_objects.base.base_container_tag import BaseContainerTag
 from typing import IO
+from core.oxml_magic.parser import make_xml_tree
+
 
 class Body(BaseContainerTag):
     __slots__ = ("some",)
@@ -41,4 +43,5 @@ class Document(BaseContainerTag):
         self.add(convert_xml_to_cls(_body))
 
     def save(self, filename: str):
+        self._part._element = make_xml_tree(self)
         self._part.save(filename)
