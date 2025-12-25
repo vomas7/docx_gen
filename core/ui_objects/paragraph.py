@@ -1,10 +1,9 @@
 from core.ui_objects import LinkedObjects
-from core.ui_objects.run import Run, RunProperty
 from core.ui_objects.base.base_container_tag import BaseContainerTag
+from core.ui_objects.run import Run, RunProperty
 
 
 class ParagraphProperty(BaseContainerTag):
-
     def __init__(self, linked_objects: LinkedObjects | list = None):
         super().__init__(linked_objects)
 
@@ -23,7 +22,6 @@ class Paragraph(BaseContainerTag):
     def __init__(self, linked_objects: LinkedObjects | list = None):
         super().__init__(linked_objects)
         self.paragraph_property = ParagraphProperty()
-
 
     @property
     def tag(self) -> str:
