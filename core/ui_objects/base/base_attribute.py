@@ -122,3 +122,26 @@ class BooleanAttribute(BaseAttribute):
             raise TypeError(
                 f"Attribute {self.name} has two states True|False not {type(another)}!"
             )
+
+
+class SimpleAttribute(BaseAttribute):
+    def __init__(self, xml_name: str, value: str):
+        self._value = value
+        super().__init__(xml_name)
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, another: str | int):
+        if isinstance(another, str) and another.isdecimal():
+            self._value = another
+        elif isinstance(another, int):
+            self._value = str(another)
+        else:
+            TypeError(f"another must be str or int not {type(another)}")
+
+    @property
+    def xml_name(self):
+        return self._xml_name

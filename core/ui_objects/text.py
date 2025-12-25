@@ -20,6 +20,10 @@ class Text(BaseContentTag):
     def text(self):
         return self._text
 
+    @text.setter
+    def text(self, new_text: str):
+        self._text = str(new_text)
+
     @property
     def tag(self) -> str:
         return "w:t"
@@ -54,7 +58,8 @@ class Ascii(BaseAttribute):
 
     @value.setter
     def value(self, another: str):
-        self._ascii = str(another)
+        if isinstance(another, str) and another.isalpha():
+            self._ascii = str(another)
 
 
 class HAnsi(BaseAttribute):
@@ -68,7 +73,8 @@ class HAnsi(BaseAttribute):
 
     @value.setter
     def value(self, another: str):
-        self._hAnsi = str(another)
+        if isinstance(another, str) and another.isalpha():
+            self._hAnsi = str(another)
 
 
 class Font(BaseContentTag):
@@ -102,8 +108,8 @@ class Font(BaseContentTag):
     def hansi(self, value: str):
         self._hansi = value
 
-    def __str__(self):
-        return f"Font({str(self.ascii)})"
-
-    def __repr__(self):
-        return self.__str__()
+    # def __str__(self):
+    #     return f"Font({str(self.ascii)})"
+    #
+    # def __repr__(self):
+    #     return self.__str__()
