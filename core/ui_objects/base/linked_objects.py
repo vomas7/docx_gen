@@ -1,24 +1,19 @@
 from collections import UserList
-from collections.abc import Collection
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from core.ui_objects.base.base_container_tag import BaseContainerTag
 
 
 class LinkedObjects(UserList):
     def __init__(self, linked_parent, initlist=None):
         self.linked_parent = linked_parent
-        self.validate_access_children(initlist)
         super().__init__(initlist)
+        self.validate_access_children(initlist)
 
     def append(self, item):
-        self.validate_access_child(item)
+        self.validate_access_child(item, self.__len__())
         super().append(item)
 
-    def insert(self, i, item):
-        self.validate_access_child(item)
-        super().insert(i, item)
+    def insert(self, index: int, item):
+        self.validate_access_child(item, index)
+        super().insert(index, item)
 
     def extend(self, other):
         if isinstance(other, list):
@@ -27,22 +22,35 @@ class LinkedObjects(UserList):
         elif isinstance(other, LinkedObjects):
             super().extend(other)
 
-    def __setitem__(self, key, value):
-        self.validate_access_child(value)
-        super().__setitem__(key, value)
+    def __setitem__(self, index: int, value):
+        self.validate_access_child(value, index)
+        super().__setitem__(index, value)
 
-    def validate_access_child(self, item: "BaseContainerTag"):
-        allowed = self.linked_parent.access_children
+    def validate_access_child(self, item, position: int):
+        allowed = (child["class"] for child in self.linked_parent.access_children)
         if not item or not allowed:
-            return
+            return None
         if isinstance(item, tuple(allowed)):
+            matching = [
+                child
+                for child in self.linked_parent.access_children
+                if child["class"] is type(item)
+            ]
+            access = matching[0] if matching else None
+            if access and "required_position" in access:
+                required_position = access.get("required_position")
+                if required_position != position:
+                    raise IndexError(
+                        f"Object {item} must be on position {required_position} "
+                        f"not {position}"
+                    )
             return True
         raise TypeError(
             f"It is prohibited to add {item.__class__.__name__} to "
             f"linked_objects of {self.linked_parent.__class__.__name__}"
         )
 
-    def validate_access_children(self, items: Collection["BaseContainerTag"]):
+    def validate_access_children(self, items):
         if items:
-            for item in items:
-                self.validate_access_child(item)
+            for index, item in enumerate(items):
+                self.validate_access_child(item, index)
