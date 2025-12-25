@@ -124,7 +124,6 @@ class BooleanAttribute(BaseAttribute):
             )
 
 
-
 class SimpleAttribute(BaseAttribute):
     def __init__(self, xml_name: str, value: str):
         self._value = value
@@ -135,8 +134,13 @@ class SimpleAttribute(BaseAttribute):
         return self._value
 
     @value.setter
-    def value(self, another):
-        self._value = another
+    def value(self, another: str | int):
+        if isinstance(another, str) and another.isdecimal():
+            self._value = another
+        elif isinstance(another, int):
+            self._value = str(another)
+        else:
+            TypeError(f"another must be str or int not {type(another)}")
 
     @property
     def xml_name(self):

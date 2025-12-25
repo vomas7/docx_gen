@@ -1,4 +1,4 @@
-from core.ui_objects import LinkedObjects, Text
+from core.ui_objects import LinkedObjects
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.bookmarks import BookmarkEnd, BookmarkStart
 from core.ui_objects.run import Run, RunProperty
@@ -36,5 +36,5 @@ class Paragraph(BaseContainerTag):
     def add_run(self, run: Run, index: int = -1):
         self.add(run, index)
 
-    def add_text(self, text: str | Text):
-        self.add(Run(linked_objects=[Text(text=text)]))
+    def add_text(self, text: str):
+        self.add(Run().add_text(text))

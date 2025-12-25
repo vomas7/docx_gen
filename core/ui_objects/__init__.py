@@ -12,9 +12,10 @@ from core.ui_objects.base.base_tag import BaseTag
 from core.ui_objects.base.linked_objects import LinkedObjects
 from core.ui_objects.break_ import Break
 from core.ui_objects.document import Body, Document
-from core.ui_objects.run import Run
+from core.ui_objects.paragraph import Paragraph, ParagraphProperty
+from core.ui_objects.run import Run, RunProperty
 from core.ui_objects.section import Section
-from core.ui_objects.text import Text
+from core.ui_objects.text import Bold, Font, Italic, Tab, Text
 
 CLASS_REGISTRY: dict[str, dict[str, Any]] = {}
 
@@ -89,4 +90,11 @@ __all__ = [
     "Document",
     "Body",
     "Section",
+    "Paragraph",
+    "ParagraphProperty",
+    "RunProperty",
+    "Bold",
+    "Italic",
+    "Tab",
+    "Font",
 ]

@@ -1,6 +1,7 @@
 from core.ui_objects.base.base_attribute import SimpleAttribute
 
-#here are the attributes that responsible for the reference
+# here are the attributes that responsible for the reference
+
 
 class Header(SimpleAttribute):
     def __init__(self, value: str):
