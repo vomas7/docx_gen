@@ -122,3 +122,22 @@ class BooleanAttribute(BaseAttribute):
             raise TypeError(
                 f"Attribute {self.name} has two states True|False not {type(another)}!"
             )
+
+
+
+class SimpleAttribute(BaseAttribute):
+    def __init__(self, xml_name: str, value: str):
+        self._value = value
+        super().__init__(xml_name)
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, another):
+        self._value = another
+
+    @property
+    def xml_name(self):
+        return self._xml_name
