@@ -1,4 +1,5 @@
-from core.ui_objects import LinkedObjects, BaseContainerTag
+from core.ui_objects.base.base_container_tag import BaseContainerTag
+from core.ui_objects.base.linked_objects import LinkedObjects
 from typing import IO
 
 class Body(BaseContainerTag):
@@ -17,15 +18,15 @@ class Body(BaseContainerTag):
 
 
 class Document(BaseContainerTag):
-    __slots__ = ("some",)
+    __slots__ = ("some", "_part")
 
     def __init__(self, linked_objects: LinkedObjects | list = None):
+        self._part = None
         super().__init__(linked_objects)
 
     @property
     def tag(self):
         return "w:document"
-
 
     @property
     def access_children(self):
@@ -35,7 +36,7 @@ class Document(BaseContainerTag):
         from core.io.api import parse_document_part
         from core.oxml_magic.parser import convert_xml_to_cls
 
-        setattr(self.__class__, "_part", parse_document_part(file))
+        self._part = parse_document_part(file)
         [_body] = self._part._element.getchildren()
         self.add(convert_xml_to_cls(_body))
 

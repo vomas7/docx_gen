@@ -7,15 +7,13 @@ from typing import Dict, Any, Type
 from core.ui_objects.run import Run
 from core.ui_objects.text import Text
 from core.ui_objects.break_ import Break
+from core.ui_objects.section import Section
+from core.ui_objects.document import Body, Document
 from core.ui_objects.base.base_tag import BaseTag
 from core.ui_objects.base.linked_objects import LinkedObjects
 from core.ui_objects.base.base_attribute import BaseAttribute
 from core.ui_objects.base.base_content_tag import BaseContentTag
 from core.ui_objects.base.base_container_tag import BaseContainerTag
-from core.ui_objects.section import Section
-from core.ui_objects.document import Body, Document
-from core.ui_objects.bookmarks import BookmarkEnd, BookmarkStart
-
 
 
 CLASS_REGISTRY: Dict[str, Dict[str, Any]] = {}
@@ -90,5 +88,3 @@ __all__ = [
     "BaseContainerTag",
     "CLASS_REGISTRY",
 ]
-
-print(CLASS_REGISTRY)

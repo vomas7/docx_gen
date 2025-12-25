@@ -1,4 +1,4 @@
-from core.ui_objects import BaseContentTag
+from core.ui_objects.base.base_content_tag import BaseContentTag
 
 class BookmarkStart(BaseContentTag):
 

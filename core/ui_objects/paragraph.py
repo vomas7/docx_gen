@@ -1,4 +1,6 @@
-from core.ui_objects import BaseContainerTag, LinkedObjects, Run, Text, BookmarkEnd, BookmarkStart
+from core.ui_objects import BaseContainerTag, LinkedObjects, Run, Text
+
+from core.ui_objects.bookmarks import BookmarkEnd, BookmarkStart
 
 class ParagraphPr(BaseContainerTag):
     __slots__ = ("_bold",)

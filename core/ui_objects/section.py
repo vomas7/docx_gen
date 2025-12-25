@@ -1,11 +1,12 @@
-from core.ui_objects import BaseContainerTag, BaseContentTag, LinkedObjects, \
-    Break, Text
+from core.ui_objects.base.base_content_tag import BaseContentTag
+from core.ui_objects.base.base_container_tag import BaseContainerTag
+from core.ui_objects.base.linked_objects import LinkedObjects
+
 
 
 from core.ui_objects.atrib.size import Height, Width
 from core.ui_objects.atrib.margins import Left, Top, Right, Bottom, Space, LinePitch
 from core.ui_objects.atrib.ref import Header, Footer, Gutter
-
 
 
 class PageSize(BaseContentTag):

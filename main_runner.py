@@ -85,11 +85,20 @@ from core.ui_objects import Section, Body, Document
 from core.oxml_magic.parser import make_xml_tree, to_xml_str
 
 document = Document()
-document.open(r"C:\Users\AkentevDV\Desktop\localProjects\docx_gen\.venv\Lib\site-packages\docx\templates\default.docx")
+document.open(r"D:\projects\docx_gen\venv\Lib\site-packages\docx\templates\default.docx")
 body = document.linked_objects[0]
-body.add(Section())
-f =make_xml_tree(body)
+s = Section()
+from core.ui_objects.paragraph import Paragraph
+from core.ui_objects.run import Run
+from core.ui_objects.text import Text
+p = Paragraph()
+p.add(Run([Text('refe')]))
+# s.add(p)
+body.add(p)
+f = make_xml_tree(body)
 print(to_xml_str(f))
+print(document.linked_objects[0].linked_objects)
+document.save('loh.docx')
 # print(document)
 # print(document.linked_objects)
 # se = body.linked_objects[-1].linked_objects[0]

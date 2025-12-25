@@ -32,7 +32,6 @@ class BaseTag(ABC):
         #                      f"must define non-empty __slots__")
         for slot in slots:
             attribute = self.get_attribute(slot)
-            print(slot, attribute)
             if attribute and attribute.value is not None:
                 attrs[qn(attribute.xml_name)] = attribute.value
         return attrs
