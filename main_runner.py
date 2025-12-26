@@ -1,21 +1,13 @@
 from core.ui_objects.document import Document
-from core.ui_objects import Run, Paragraph, Text
+from core.ui_objects import Run, Paragraph, Text, RunProperty
 from core.oxml_magic.parser import to_xml_str, make_xml_tree
 
 
 r = Run()
 
 r.add_text("text1")
-r.font = "Times New Roman"
-# r.linked_objects.reverse()
-p = Paragraph()
-p.add(r)
-doc = Document()
-doc.open("test.docx")
+r.add_break("page")
 
-body = doc.linked_objects[0]
+r.bold = True
 
-body.add(p)
-print(to_xml_str(make_xml_tree(body)))
-doc.save("sos.docx")
-# body.linked_objects.extend([Paragraph([Run([Text("aaaaaaaa")])])])
+print(r.linked_objects)
