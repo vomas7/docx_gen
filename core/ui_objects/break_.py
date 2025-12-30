@@ -16,7 +16,9 @@ class Type(EnumAttribute):
         super().__init__(xml_name="w:type", value=value)
 
 
-TypeSpec = Literal["page", "column", "textWrapping", "line"] | Type.Options | None
+TypeSpec = (
+    Literal["page", "column", "textWrapping", "line"] | Type.Options | None | Type
+)
 
 
 class Clear(EnumAttribute):
@@ -30,7 +32,7 @@ class Clear(EnumAttribute):
         super().__init__(xml_name="w:clear", value=value)
 
 
-ClearSpec = Literal["left", "right", "all", "empty"] | Clear.Options | None
+ClearSpec = Literal["left", "right", "all", "empty"] | Clear.Options | None | Clear
 
 
 class Break(BaseContentTag):
@@ -39,8 +41,8 @@ class Break(BaseContentTag):
     __slots__ = ("_type", "_clear")
 
     def __init__(self, type: TypeSpec = None, clear: ClearSpec = None):
-        self.clear = clear if isinstance(clear, Clear) else Clear(clear)
-        self.type = type if isinstance(type, Type) else Type(type)
+        self.clear = clear
+        self.type = type
 
     @property
     def tag(self) -> str:
@@ -59,7 +61,7 @@ class Break(BaseContentTag):
     def type(self, new_type: TypeSpec):
         if not new_type:
             self._type = Type(Type.Options.line)
-        elif isinstance(new_type, str):
+        elif isinstance(new_type, (str, Type.Options)):
             self._type = Type(new_type)
         elif isinstance(new_type, Type):
             self._type = new_type

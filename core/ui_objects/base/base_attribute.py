@@ -63,12 +63,21 @@ class EnumAttribute(BaseAttribute):
         super().__init__(xml_name)
         self.value = value
 
-    def validate(self, value: str) -> bool:
-        value = value.strip().lower() if value else value
-        return any(
-            enum_item.value == value or enum_item.name == value
-            for enum_item in self._enum_class
-        )
+    def validate(self, value) -> bool:
+        if isinstance(value, Enum):
+            if not isinstance(value, self._enum_class):
+                return False
+            return isinstance(value, self._enum_class)
+        elif isinstance(value, str):
+            value = value.strip().lower() if value else value
+            return any(
+                enum_item.value == value or enum_item.name == value
+                for enum_item in self._enum_class
+            )
+        elif value is None:
+            return any(enum_item.value is None for enum_item in self._enum_class)
+
+        return False
 
     def _convert_to_value(self, value) -> str | None:
         if isinstance(value, Enum):
