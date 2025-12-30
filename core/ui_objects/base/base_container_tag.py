@@ -20,7 +20,7 @@ class BaseContainerTag(BaseTag):
 
     @property
     @abstractmethod
-    def access_children(self):
+    def access_children(self) -> list[dict]:
         """Must assign children class that can be in linked_objects"""
         pass
 

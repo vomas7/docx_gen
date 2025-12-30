@@ -26,7 +26,7 @@ class ConcreteContainer(BaseContainerTag):
 
     @property
     def access_children(self):
-        return {ConcreteTag, ConcreteContainer}
+        return [{"class": ConcreteTag}, {"class": ConcreteContainer}]
 
 
 def test_init_with_linked_objects_instance():
@@ -221,7 +221,7 @@ def test_add_with_type_checking():
 
         @property
         def access_children(self):
-            return {ConcreteTag}
+            return [{"class": ConcreteTag}]
 
     class OtherTag(BaseTag):
         @property
@@ -324,7 +324,7 @@ def test_integration_with_linked_objects_validation():
 
         @property
         def access_children(self):
-            return {TextTag}
+            return [{"class": TextTag}]
 
     paragraph = ParagraphContainer()
 

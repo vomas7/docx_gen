@@ -13,7 +13,12 @@ def test_run_tag(run):
 
 
 def test_run_access_children(run):
-    assert run.access_children == {Break, Text, RunProperty, Tab}
+    assert run.access_children == [
+        {"class": RunProperty, "required_position": 0},
+        {"class": Break},
+        {"class": Text},
+        {"class": Tab},
+    ]
 
 
 def test_run_init_with_linked_objects(run):
@@ -168,25 +173,25 @@ def test_run_init_with_font_property():
 def test_run_set_bold_property():
     """Test setting bold property on existing Run"""
     run = Run()
-    assert run.bold is False
+    assert run.bold is None
 
     run.bold = True
     assert run.bold is True
 
     run.bold = False
-    assert run.bold is False
+    assert run.bold is None
 
 
 def test_run_set_italic_property():
     """Test setting italic property on existing Run"""
     run = Run()
-    assert run.italic is False
+    assert run.italic is None
 
     run.italic = True
     assert run.italic is True
 
     run.italic = False
-    assert run.italic is False
+    assert run.italic is None
 
 
 def test_run_set_font_property():

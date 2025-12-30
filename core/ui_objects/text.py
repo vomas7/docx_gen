@@ -108,8 +108,8 @@ class Font(BaseContentTag):
     def hansi(self, value: str):
         self._hansi = value
 
-    # def __str__(self):
-    #     return f"Font({str(self.ascii)})"
-    #
-    # def __repr__(self):
-    #     return self.__str__()
+    def __str__(self):
+        return f"Font({str(self.ascii)})"
+
+    def __repr__(self):
+        return self.__str__()

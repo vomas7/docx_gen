@@ -1,5 +1,5 @@
-from core.ui_objects import LinkedObjects
 from core.ui_objects.base.base_container_tag import BaseContainerTag
+from core.ui_objects.base.linked_objects import LinkedObjects
 from core.ui_objects.bookmarks import BookmarkEnd, BookmarkStart
 from core.ui_objects.run import Run, RunProperty
 
@@ -16,7 +16,7 @@ class ParagraphProperty(BaseContainerTag):
 
     @property
     def access_children(self):
-        return {RunProperty}
+        return [{"class": RunProperty}]
 
 
 class Paragraph(BaseContainerTag):
@@ -31,7 +31,12 @@ class Paragraph(BaseContainerTag):
 
     @property
     def access_children(self):
-        return {ParagraphProperty, Run, BookmarkEnd, BookmarkStart}
+        return [
+            {"class": ParagraphProperty, "required_position": 0},
+            {"class": Run},
+            {"class": BookmarkEnd},
+            {"class": BookmarkStart},
+        ]
 
     def add_run(self, run: Run, index: int = -1):
         self.add(run, index)

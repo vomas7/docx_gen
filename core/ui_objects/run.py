@@ -24,8 +24,8 @@ class RunProperty(BaseContainerTag):
         return "w:rPr"
 
     @property
-    def access_children(self):
-        return {Bold, Italic, Font}
+    def access_children(self) -> list[dict]:
+        return [{"class": Bold}, {"class": Italic}, {"class": Font}]
 
     @property
     def bold(self):
@@ -35,14 +35,14 @@ class RunProperty(BaseContainerTag):
     @bold.setter
     def bold(self, value: bool):
         """Set bold for contain text in rPr"""
-        if value:
+        if isinstance(value, bool) and value:
             self._bold = True
-            self.add(Bold(), 0)
-        elif not value:
+            self.add(Bold())
+        elif isinstance(value, bool) and not value:
             self.remove_children(Bold)
             self._bold = False
         else:
-            TypeError(f"value must be bool not {type(value)}")
+            raise TypeError(f"Bold value must be bool not {type(value)}")
 
     @property
     def italic(self):
@@ -52,34 +52,33 @@ class RunProperty(BaseContainerTag):
     @italic.setter
     def italic(self, value: bool):
         """Set italic for contain text in rPr"""
-        if value:
+        if isinstance(value, bool) and value:
             self._italic = True
-            self.add(Italic(), 0)
-        elif not value:
+            self.add(Italic())
+        elif isinstance(value, bool) and not value:
             self.remove_children(Italic)
             self._italic = False
         else:
-            TypeError(f"value must be bool not {type(value)}")
+            raise TypeError(f"Italic value must be bool not {type(value)}")
 
     @property
     def font(self):
-        if self._font:
-            return self._font.name
+        return self._font
 
     @font.setter
     def font(self, value: str):
-        if not value:
+        if isinstance(value, str):
+            self._font = value
+            self.add(Font(value))
+        elif not value:
             self.remove_children(Font)
             self._font = None
-        elif isinstance(value, str):
-            self._font = Font(value)
-            self.add(self._font)
         else:
-            TypeError("value of font must be name of font!")
+            raise TypeError(f"font value must be str not {type(value)}")
 
 
 class Run(BaseContainerTag):
-    __slots__ = ("run_property", "_bold", "_italic")
+    __slots__ = ("_bold", "_italic", "_font")
 
     def __init__(
         self,
@@ -89,7 +88,6 @@ class Run(BaseContainerTag):
         font: Font | str = None,
     ):
         super().__init__(linked_objects)
-        self.run_property = RunProperty()
         self.bold = bold
         self.italic = italic
         self.font = font
@@ -100,7 +98,12 @@ class Run(BaseContainerTag):
 
     @property
     def access_children(self):
-        return {Break, Text, RunProperty, Tab}
+        return [
+            {"class": RunProperty, "required_position": 0},
+            {"class": Break},
+            {"class": Text},
+            {"class": Tab},
+        ]
 
     def add_break(self, break_: BreakSpec, index: int = -1):
         """Adds a break (page or column) to the Run"""
@@ -127,32 +130,24 @@ class Run(BaseContainerTag):
         """Add tab (\t) to the Run"""
         self.add(Tab(), index)
 
-    def _update_run(self):
-        if self._has_any_property() and not self._has_property_in_linked_objects():
-            self.add(self.run_property, 0)
-        elif not self._has_any_property() and self._has_property_in_linked_objects():
-            self.remove_children(RunProperty)
-
-    def _has_property_in_linked_objects(self) -> bool:
-        return bool(self.find(RunProperty))
-
-    def _has_any_property(self) -> bool:
-        properties = [
-            self.run_property.get_attribute(prop_name)
-            for prop_name in self.run_property.__slots__
-        ]
-        return any(properties)
+    @property
+    def run_property(self):
+        if self.linked_objects:
+            run_property = self.linked_objects[0]
+            if isinstance(run_property, RunProperty):
+                return run_property
+        return None
 
     @property
     def bold(self):
         """Bold of text - True | False"""
-        return self.run_property.bold
+        return self.get_from_run_property("bold")
 
     @bold.setter
     def bold(self, value: bool):
         """Set bold for contain text in Run"""
-        self.run_property.bold = value
-        self._update_run()
+        self.set_run_property("bold", value)
+        self._update_linked_objects()
 
     def clear(self):
         """Clear all objects in linked objects"""
@@ -165,19 +160,47 @@ class Run(BaseContainerTag):
     @property
     def italic(self):
         """italic of text - True | False"""
-        return self.run_property.italic
+        return self.get_from_run_property("italic")
 
     @italic.setter
     def italic(self, value: bool):
         """Set italic for contain text in Run"""
-        self.run_property.italic = value
-        self._update_run()
+        self.set_run_property("italic", value)
+        self._update_linked_objects()
 
     @property
     def font(self):
-        return self.run_property.font
+        return self.get_from_run_property("font")
 
     @font.setter
     def font(self, value: str):
-        self.run_property.font = value
-        self._update_run()
+        self.set_run_property("font", value)
+        self._update_linked_objects()
+
+    def get_from_run_property(self, property_name: str) -> bool | str | None:
+        """Getter of property rPr"""
+        if self.run_property:
+            print(self.run_property.font)
+            return self.run_property.get_attribute(property_name)
+        return None
+
+    def set_run_property(self, property_name: str, value) -> None:
+        """Setter property rPr"""
+        if not self.run_property:
+            run_property = RunProperty()
+            # print("Че нахуй?")
+            setattr(run_property, property_name, value)
+            self.add(run_property, 0)
+        else:
+            setattr(self.run_property, property_name, value)
+
+    def _update_linked_objects(self):
+        if self.run_property and not self._has_any_property():
+            self.remove(self.run_property)
+
+    def _has_any_property(self) -> bool:
+        properties = [
+            self.run_property.get_attribute(prop_name)
+            for prop_name in self.run_property.__slots__
+        ]
+        return any(properties)
