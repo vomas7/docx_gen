@@ -51,7 +51,6 @@ def convert_xml_to_cls(
         obj.text = xml_tree.text
     declare_attrib(xml_tree, obj)
     for child in xml_tree:
-        print(child, xml_tree)
         cls_object = convert_xml_to_cls(child)
         if cls_object:
             obj.linked_objects.append(cls_object)

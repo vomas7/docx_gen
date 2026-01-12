@@ -1,9 +1,11 @@
-from core.ui_objects.atrib.margins import Bottom, Left, LinePitch, Right, Space, Top
+from core.ui_objects.atrib.margins import Bottom, Left, LinePitch, Right, \
+    Space, Top
 from core.ui_objects.atrib.ref import Footer, Gutter, Header
 from core.ui_objects.atrib.size import Height, Width
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.base_content_tag import BaseContentTag
 from core.ui_objects.base.linked_objects import LinkedObjects
+from core.ui_objects.base.linked_objects import HiddenElements
 
 
 class PageSize(BaseContentTag):
@@ -35,17 +37,18 @@ class PageSize(BaseContentTag):
 
 
 class PageMargin(BaseContentTag):
-    __slots__ = ("_top", "_right", "_bottom", "_left", "_header", "_footer", "_gutter")
+    __slots__ = ("_top", "_right", "_bottom", "_left", "_header", "_footer",
+                 "_gutter")
 
     def __init__(
-        self,
-        top: str = None,
-        right: str = None,
-        bottom: str = None,
-        left: str = None,
-        header: str = None,
-        footer: str = None,
-        gutter: str = None,
+            self,
+            top: str = None,
+            right: str = None,
+            bottom: str = None,
+            left: str = None,
+            header: str = None,
+            footer: str = None,
+            gutter: str = None,
     ):
         self._top = Top(top)
         self._right = Right(right)
@@ -162,11 +165,11 @@ class DocGrid(BaseContentTag):
 
 
 class Section(BaseContainerTag):
-    __slots__ = ("_pgSz",)
+    __slots__ = ("_pgSz", "_xml_children")
 
     def __init__(self, linked_objects: LinkedObjects | list = None):
         super().__init__(linked_objects)
-        self._pgSz = PageSize()
+        self._xml_children = HiddenElements(linked_parent=self, initlist=[PageSize()])
 
     @property
     def tag(self):
