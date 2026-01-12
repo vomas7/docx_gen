@@ -174,4 +174,9 @@ class Section(BaseContainerTag):
 
     @property
     def access_children(self):
-        return {PageSize, PageMargin, Cols, DocGrid}
+        return [
+            {"class": PageSize, "required_position": 0},
+            {"class": PageMargin, "required_position": 1},
+            {"class": Cols, "required_position": 2},
+            {"class": DocGrid, "required_position": 3},
+        ]

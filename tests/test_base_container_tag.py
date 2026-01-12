@@ -26,7 +26,7 @@ class ConcreteContainer(BaseContainerTag):
 
     @property
     def access_children(self):
-        return {ConcreteTag, ConcreteContainer}
+        return [{"class": ConcreteTag}, {"class": ConcreteContainer}]
 
 
 def test_init_with_linked_objects_instance():
@@ -221,7 +221,7 @@ def test_add_with_type_checking():
 
         @property
         def access_children(self):
-            return {ConcreteTag}
+            return [{"class": ConcreteTag}]
 
     class OtherTag(BaseTag):
         @property
@@ -324,7 +324,7 @@ def test_integration_with_linked_objects_validation():
 
         @property
         def access_children(self):
-            return {TextTag}
+            return [{"class": TextTag}]
 
     paragraph = ParagraphContainer()
 
@@ -360,3 +360,93 @@ def test_chaining_operations():
     copied = container.linked_objects
     assert len(copied) == 3
     assert copied is container.linked_objects
+
+
+def test_remove_method():
+    """Test remove method"""
+    container = ConcreteContainer()
+    tag1 = ConcreteTag("Tag1")
+    tag2 = ConcreteTag("Tag2")
+
+    container.linked_objects = [tag1, tag2]
+    container.remove(tag1)
+
+    assert len(container.linked_objects) == 1
+    assert container.linked_objects[0] is tag2
+
+
+def test_remove_nonexistent():
+    """Test removing non-existent tag"""
+    container = ConcreteContainer()
+    tag = ConcreteTag("Tag")
+
+    with pytest.raises(ValueError):
+        container.remove(tag)  # Should raise ValueError
+
+
+def test_pop_method():
+    """Test pop method"""
+    tag1 = ConcreteTag("Tag1")
+    tag2 = ConcreteTag("Tag2")
+    tag3 = ConcreteTag("Tag3")
+    container = ConcreteContainer([tag1, tag2, tag3])
+
+    popped = container.pop(1)
+    assert popped is tag2
+    assert len(container.linked_objects) == 2
+    assert container.linked_objects[0] is tag1
+    assert container.linked_objects[1] is tag3
+
+
+def test_pop_default():
+    """Test pop with default index"""
+    tag1 = ConcreteTag("Tag1")
+    tag2 = ConcreteTag("Tag2")
+    container = ConcreteContainer([tag1, tag2])
+
+    popped = container.pop()
+    assert popped is tag2
+    assert len(container.linked_objects) == 1
+
+
+def test_pop_empty():
+    """Test pop from empty container"""
+    container = ConcreteContainer()
+
+    with pytest.raises(IndexError):
+        container.pop()
+
+
+def test_find_method():
+    """Test find method"""
+    container = ConcreteContainer()
+    tag1 = ConcreteTag("Tag1")
+    tag2 = ConcreteTag("Tag2")
+    subtag = ConcreteContainer()
+
+    container.linked_objects = [tag1, subtag, tag2]
+
+    tags = container.find(ConcreteTag)
+    assert len(tags) == 2
+    assert tag1 in tags
+    assert tag2 in tags
+    assert subtag not in tags
+
+    containers = container.find(ConcreteContainer)
+    assert len(containers) == 1
+    assert containers[0] is subtag
+
+
+def test_remove_children():
+    """Test remove_children method"""
+    container = ConcreteContainer()
+    tag1 = ConcreteTag("Tag1")
+    tag2 = ConcreteTag("Tag2")
+    subtag = ConcreteContainer()
+    tag3 = ConcreteTag("Tag3")
+
+    container.linked_objects = [tag1, subtag, tag2, tag3]
+    container.remove_children(ConcreteTag)
+
+    assert len(container.linked_objects) == 1
+    assert container.linked_objects[0] is subtag

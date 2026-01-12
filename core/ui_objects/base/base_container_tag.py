@@ -20,7 +20,7 @@ class BaseContainerTag(BaseTag):
 
     @property
     @abstractmethod
-    def access_children(self):
+    def access_children(self) -> list[dict]:
         """Must assign children class that can be in linked_objects"""
         pass
 
@@ -30,10 +30,10 @@ class BaseContainerTag(BaseTag):
 
     @linked_objects.setter
     def linked_objects(self, new: LinkedObjects):
-        new = copy.deepcopy(new)
         if new is None:
             self._linked_objects = LinkedObjects(self, [])
         elif isinstance(new, LinkedObjects):
+            new = copy.deepcopy(new)
             new.linked_parent = self
             self._linked_objects = new
         elif isinstance(new, list):

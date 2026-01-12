@@ -1,7 +1,10 @@
-from core.ui_objects.base.linked_objects import LinkedObjects
-from core.ui_objects.base.base_container_tag import BaseContainerTag
 from typing import IO
+
 from core.oxml_magic.parser import make_xml_tree
+from core.ui_objects.base.base_container_tag import BaseContainerTag
+from core.ui_objects.base.linked_objects import LinkedObjects
+from core.ui_objects.paragraph import Paragraph
+from core.ui_objects.section import Section
 
 
 class Body(BaseContainerTag):
@@ -16,7 +19,7 @@ class Body(BaseContainerTag):
 
     @property
     def access_children(self):
-        return {}
+        return [{"class": Section}, {"class": Paragraph}]
 
 
 class Document(BaseContainerTag):
@@ -32,7 +35,7 @@ class Document(BaseContainerTag):
 
     @property
     def access_children(self):
-        return {Body}
+        return [{"class": Body}]
 
     def open(self, file: str | IO[bytes]):
         from core.io.api import parse_document_part

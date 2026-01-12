@@ -13,7 +13,12 @@ def test_run_tag(run):
 
 
 def test_run_access_children(run):
-    assert run.access_children == {Break, Text, RunProperty, Tab}
+    assert run.access_children == [
+        {"class": RunProperty, "required_position": 0},
+        {"class": Break},
+        {"class": Text},
+        {"class": Tab},
+    ]
 
 
 def test_run_init_with_linked_objects(run):
@@ -168,25 +173,25 @@ def test_run_init_with_font_property():
 def test_run_set_bold_property():
     """Test setting bold property on existing Run"""
     run = Run()
-    assert run.bold is False
+    assert run.bold is None
 
     run.bold = True
     assert run.bold is True
 
     run.bold = False
-    assert run.bold is False
+    assert run.bold is None
 
 
 def test_run_set_italic_property():
     """Test setting italic property on existing Run"""
     run = Run()
-    assert run.italic is False
+    assert run.italic is None
 
     run.italic = True
     assert run.italic is True
 
     run.italic = False
-    assert run.italic is False
+    assert run.italic is None
 
 
 def test_run_set_font_property():
@@ -292,3 +297,154 @@ def test_run_property_persistence():
     assert run.font == "Verdana"
     # Should have RunProperty and Text in linked_objects
     assert len(run.linked_objects) >= 1
+
+
+def test_update_linked_objects():
+    """Test _update_linked_objects method"""
+    run = Run()
+
+    # Add property
+    run.bold = True
+    assert len(run.linked_objects) == 1  # RunProperty added
+
+    # Remove property - should remove RunProperty
+    run.bold = False
+    run._update_linked_objects()  # Явный вызов
+    assert len(run.linked_objects) == 0
+
+    # Test with multiple properties
+    run.bold = True
+    run.italic = True
+    assert len(run.linked_objects) == 1
+
+    run.bold = False  # Remove one property
+    run._update_linked_objects()
+    assert len(run.linked_objects) == 1  # Should still have RunProperty (italic)
+
+    run.italic = False  # Remove last property
+    run._update_linked_objects()
+    assert len(run.linked_objects) == 0  # Should remove RunProperty
+
+
+def test_set_run_property_edge_cases():
+    """Test set_run_property with various scenarios"""
+    run = Run()
+
+    # Set property when no RunProperty exists
+    run.set_run_property("bold", True)
+    assert run.run_property is not None
+    assert run.bold is True
+
+    # Update existing property
+    run.set_run_property("bold", False)
+    assert run.bold is False  # После удаления bold=False → None
+
+    # Set multiple properties
+    run.set_run_property("font", "Arial")
+    run.set_run_property("italic", True)
+    assert run.font == "Arial"
+    assert run.italic is True
+
+    # Invalid property name - должен упасть
+    with pytest.raises(AttributeError):
+        run.set_run_property("invalid_property", "value")
+
+
+def test_add_break_invalid_types():
+    """Test add_break with various invalid inputs"""
+    run = Run()
+
+    # Already tested: False
+    with pytest.raises(TypeError):
+        run.add_break(False)
+
+    # Other invalid types
+    with pytest.raises(TypeError):
+        run.add_break(None)
+
+    with pytest.raises(TypeError):
+        run.add_break(123)
+
+    with pytest.raises(TypeError):
+        run.add_break(["page"])
+
+    # Empty string
+    with pytest.raises(TypeError):
+        run.add_break("")
+
+    # Invalid break type string
+    with pytest.raises(ValueError):
+        run.add_break("invalid_break_type")
+
+
+def test_clear_preserves_properties():
+    run = Run(bold=True)
+    run.add_text("Text 1")
+    run.add_text("Text 2")
+
+    assert len(run.linked_objects) == 3
+
+    run.clear()
+
+    assert len(run.linked_objects) == 0
+    assert run.bold is None
+
+
+def test_run_property_property():
+    """Test run_property getter thoroughly"""
+    run = Run()
+
+    # Initially no run_property
+    assert run.run_property is None
+
+    # After adding bold
+    run.bold = True
+    assert run.run_property is not None
+    assert isinstance(run.run_property, RunProperty)
+
+    # After removing all properties
+    run.bold = False
+    assert run.run_property is None
+
+    # RunProperty not at position 0
+    with pytest.raises(IndexError):
+        Run([Text("First"), RunProperty(bold=True)])
+
+
+def test_run_as_base_container():
+    """Test that Run properly inherits from BaseContainerTag"""
+    run = Run()
+
+    # Inherited methods should work
+    run.add(Text("test"))
+    assert len(run.linked_objects) == 1
+
+    # find method
+    texts = run.find(Text)
+    assert len(texts) == 1
+
+    # remove method
+    run.remove(texts[0])
+    assert len(run.linked_objects) == 0
+
+    # pop method
+    run.add_text("text1")
+    run.add_text("text2")
+    popped = run.pop()
+    assert isinstance(popped, Text)
+    assert len(run.linked_objects) == 1
+
+
+def test_run_slots():
+    """Test that Run uses __slots__ correctly"""
+    run = Run()
+
+    # Should have slots
+    assert hasattr(run, "__slots__")
+    assert "_bold" in run.__slots__
+    assert "_italic" in run.__slots__
+    assert "_font" in run.__slots__
+
+    # Can't add new attributes
+    with pytest.raises(AttributeError):
+        run.new_attribute = "test"
