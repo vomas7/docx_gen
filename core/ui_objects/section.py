@@ -163,13 +163,16 @@ class DocGrid(BaseContentTag):
     def tag(self):
         return "w:docGrid"
 
-
 class Section(BaseContainerTag):
-    __slots__ = ("_pgSz", "_xml_children")
+    __slots__ = ("_xml_children",)
 
     def __init__(self, linked_objects: LinkedObjects | list = None):
         super().__init__(linked_objects)
-        self._xml_children = HiddenElements(linked_parent=self, initlist=[PageSize()])
+        self._xml_children = HiddenElements(initlist=self._retrive_hidden_elements(), linked_parent=self)
+
+    def _retrive_hidden_elements(self):
+        from core.oxml_magic.parser import get_section_template, convert_xml_to_cls
+        return [convert_xml_to_cls(i) for i in get_section_template()]
 
     @property
     def tag(self):
@@ -177,6 +180,16 @@ class Section(BaseContainerTag):
 
     @property
     def access_children(self):
+        return [
+            {"class": PageSize, "required_position": 0},
+            {"class": PageMargin, "required_position": 1},
+            {"class": Cols, "required_position": 2},
+            {"class": DocGrid, "required_position": 3},
+        ]
+
+
+    @property
+    def access_hidden_children(self):
         return [
             {"class": PageSize, "required_position": 0},
             {"class": PageMargin, "required_position": 1},

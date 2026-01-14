@@ -28,7 +28,7 @@ class LinkedObjects(UserList):
 
     def validate_access_child(self, item, position: int):
         allowed = (child["class"] for child in self.linked_parent.access_children)
-        if not item or not allowed:
+        if not item:
             return None
         if isinstance(item, tuple(allowed)):
             matching = [
@@ -64,3 +64,27 @@ class HiddenElements(LinkedObjects):
 
     def __init__(self, linked_parent, initlist=None):
         super().__init__(linked_parent, initlist)
+
+    def validate_access_child(self, item, position: int):
+        allowed = (child["class"] for child in self.linked_parent.access_hidden_children)
+        if not item:
+            return None
+        if isinstance(item, tuple(allowed)):
+            matching = [
+                child
+                for child in self.linked_parent.access_hidden_children
+                if child["class"] is type(item)
+            ]
+            access = matching[0] if matching else None
+            if access and "required_position" in access:
+                required_position = access.get("required_position")
+                if required_position != position:
+                    raise IndexError(
+                        f"Object {item} must be on position {required_position} "
+                        f"not {position}"
+                    )
+            return True
+        raise TypeError(
+            f"It is prohibited to add {item.__class__.__name__} to "
+            f"linked_objects of {self.linked_parent.__class__.__name__}"
+        )
