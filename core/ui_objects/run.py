@@ -180,7 +180,6 @@ class Run(BaseContainerTag):
     def get_from_run_property(self, property_name: str) -> bool | str | None:
         """Getter of property rPr"""
         if self.run_property:
-            print(self.run_property.font)
             return self.run_property.get_attribute(property_name)
         return None
 
