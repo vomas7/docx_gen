@@ -6,6 +6,9 @@ from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.base_content_tag import BaseContentTag
 from core.ui_objects.base.linked_objects import LinkedObjects
 from core.ui_objects.base.linked_objects import HiddenElements
+from core.ui_objects.paragraph import Paragraph
+from core.ui_objects.run import Run
+from core.ui_objects.bookmarks import BookmarkEnd, BookmarkStart
 
 
 class PageSize(BaseContentTag):
@@ -163,15 +166,18 @@ class DocGrid(BaseContentTag):
     def tag(self):
         return "w:docGrid"
 
+
 class Section(BaseContainerTag):
     __slots__ = ("_xml_children",)
 
     def __init__(self, linked_objects: LinkedObjects | list = None):
         super().__init__(linked_objects)
-        self._xml_children = HiddenElements(initlist=self._retrive_hidden_elements(), linked_parent=self)
+        self._xml_children = HiddenElements(
+            initlist=self._retrive_hidden_elements(), linked_parent=self)
 
     def _retrive_hidden_elements(self):
-        from core.oxml_magic.parser import get_section_template, convert_xml_to_cls
+        from core.oxml_magic.parser import get_section_template, \
+            convert_xml_to_cls
         return [convert_xml_to_cls(i) for i in get_section_template()]
 
     @property
@@ -180,13 +186,10 @@ class Section(BaseContainerTag):
 
     @property
     def access_children(self):
-        return [
-            {"class": PageSize, "required_position": 0},
-            {"class": PageMargin, "required_position": 1},
-            {"class": Cols, "required_position": 2},
-            {"class": DocGrid, "required_position": 3},
+        return [{
+            "class": Paragraph}, {"class": Run},
+            {"class": BookmarkEnd}, {"class": BookmarkStart}
         ]
-
 
     @property
     def access_hidden_children(self):

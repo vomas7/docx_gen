@@ -28,7 +28,7 @@ class LinkedObjects(UserList):
 
     def validate_access_child(self, item, position: int):
         allowed = (child["class"] for child in self.linked_parent.access_children)
-        if not item:
+        if not item or not allowed:
             return None
         if isinstance(item, tuple(allowed)):
             matching = [
