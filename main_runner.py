@@ -15,17 +15,21 @@ r.add_text("text1")
 p = Paragraph()
 p.add(r)
 doc = Document()
-doc.open(r"C:\Users\AkentevDV\Desktop\localProjects\docx_gen\something.docx")
+doc.open(r"/home/trydimas/work_dir/eipp/docx_gen/something.docx")
 #
 body = doc.linked_objects[0]
+# print(body)
 #
 sec = body.linked_objects[0]
+# print(sec)
 sec.add(p)
 # print(to_xml_str(make_xml_tree(body)))
 doc.save("sosa.docx")
 sec.linked_objects.extend([Paragraph([Run([Text("aaaaaaaa")])])])
 # s = Section()
+print(sec.linked_objects)
 from core.oxml_magic.parser import to_xml_str, make_xml_tree, convert_xml_to_cls
 
 xm = make_xml_tree(body)
+print(to_xml_str(xm))
 # print(xm.getchildren(), "ssssssssssssssss")
