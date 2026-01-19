@@ -9,7 +9,7 @@ from core.ui_objects.base.base_attribute import BaseAttribute
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.base_content_tag import BaseContentTag
 from core.ui_objects.base.base_tag import BaseTag
-from core.ui_objects.base.linked_objects import LinkedObjects
+from core.ui_objects.base.linked_objects import Objects
 from core.ui_objects.break_ import Break
 from core.ui_objects.document import Body, Document
 from core.ui_objects.paragraph import Paragraph, ParagraphProperty
@@ -87,7 +87,7 @@ __all__ = [
     "Text",
     "Break",
     "BaseTag",
-    "LinkedObjects",
+    "Objects",
     "BaseContentTag",
     "BaseContainerTag",
     "CLASS_REGISTRY",

@@ -1,14 +1,12 @@
-from core.ui_objects.atrib.margins import Bottom, Left, LinePitch, Right, \
-    Space, Top
+from core.ui_objects.atrib.margins import Bottom, Left, LinePitch, Right, Space, Top
 from core.ui_objects.atrib.ref import Footer, Gutter, Header
 from core.ui_objects.atrib.size import Height, Width
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.base_content_tag import BaseContentTag
-from core.ui_objects.base.linked_objects import LinkedObjects
-from core.ui_objects.base.linked_objects import HiddenElements
+from core.ui_objects.base.linked_objects import Objects, Property
+from core.ui_objects.bookmarks import BookmarkEnd, BookmarkStart
 from core.ui_objects.paragraph import Paragraph
 from core.ui_objects.run import Run
-from core.ui_objects.bookmarks import BookmarkEnd, BookmarkStart
 
 
 class PageSize(BaseContentTag):
@@ -40,18 +38,17 @@ class PageSize(BaseContentTag):
 
 
 class PageMargin(BaseContentTag):
-    __slots__ = ("_top", "_right", "_bottom", "_left", "_header", "_footer",
-                 "_gutter")
+    __slots__ = ("_top", "_right", "_bottom", "_left", "_header", "_footer", "_gutter")
 
     def __init__(
-            self,
-            top: str = None,
-            right: str = None,
-            bottom: str = None,
-            left: str = None,
-            header: str = None,
-            footer: str = None,
-            gutter: str = None,
+        self,
+        top: str = None,
+        right: str = None,
+        bottom: str = None,
+        left: str = None,
+        header: str = None,
+        footer: str = None,
+        gutter: str = None,
     ):
         self._top = Top(top)
         self._right = Right(right)
@@ -168,17 +165,12 @@ class DocGrid(BaseContentTag):
 
 
 class Section(BaseContainerTag):
-    __slots__ = ("_xml_children",)
+    __slots__ = ()
 
-    def __init__(self, linked_objects: LinkedObjects | list = None):
-        super().__init__(linked_objects)
-        self._xml_children = HiddenElements(
-            initlist=self._retrive_hidden_elements(), linked_parent=self)
-
-    def _retrive_hidden_elements(self):
-        from core.oxml_magic.parser import get_section_template, \
-            convert_xml_to_cls
-        return [convert_xml_to_cls(i) for i in get_section_template()]
+    def __init__(
+        self, objects: Objects | list = None, property: Property | list = None
+    ):
+        super().__init__(objects, property)
 
     @property
     def tag(self):
@@ -186,13 +178,15 @@ class Section(BaseContainerTag):
 
     @property
     def access_children(self):
-        return [{
-            "class": Paragraph}, {"class": Run},
-            {"class": BookmarkEnd}, {"class": BookmarkStart}
+        return [
+            {"class": Paragraph},
+            {"class": Run},
+            {"class": BookmarkEnd},
+            {"class": BookmarkStart},
         ]
 
     @property
-    def access_hidden_children(self):
+    def access_property(self):
         return [
             {"class": PageSize, "required_position": 0},
             {"class": PageMargin, "required_position": 1},

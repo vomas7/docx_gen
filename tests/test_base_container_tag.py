@@ -2,7 +2,7 @@ import pytest
 
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.base_tag import BaseTag
-from core.ui_objects.base.linked_objects import LinkedObjects
+from core.ui_objects.base.linked_objects import Objects
 
 
 class ConcreteTag(BaseTag):
@@ -28,17 +28,21 @@ class ConcreteContainer(BaseContainerTag):
     def access_children(self):
         return [{"class": ConcreteTag}, {"class": ConcreteContainer}]
 
+    @property
+    def access_property(self):
+        return list()
+
 
 def test_init_with_linked_objects_instance():
     """Test initialization with LinkedObjects instance"""
     container = ConcreteContainer()
-    lo = LinkedObjects(container, [])
+    lo = Objects(container, [])
 
     container_with_lo = ConcreteContainer(lo)
 
-    assert container_with_lo.linked_objects is not lo
-    assert isinstance(container_with_lo._linked_objects, LinkedObjects)
-    assert container_with_lo._linked_objects.linked_parent is container_with_lo
+    assert container_with_lo.objects is not lo
+    assert isinstance(container_with_lo._objects, Objects)
+    assert container_with_lo._objects.linked_parent is container_with_lo
 
 
 def test_init_with_list_of_base_tags():
@@ -48,27 +52,27 @@ def test_init_with_list_of_base_tags():
 
     container = ConcreteContainer([tag1, tag2])
 
-    assert isinstance(container._linked_objects, LinkedObjects)
-    assert len(container._linked_objects) == 2
-    assert container.linked_objects.linked_parent is container
+    assert isinstance(container._objects, Objects)
+    assert len(container._objects) == 2
+    assert container.objects.linked_parent is container
 
 
 def test_init_with_empty_list():
     """Test initialization with empty list"""
     container = ConcreteContainer([])
 
-    assert isinstance(container._linked_objects, LinkedObjects)
-    assert len(container.linked_objects) == 0
-    assert container.linked_objects.linked_parent is container
+    assert isinstance(container._objects, Objects)
+    assert len(container.objects) == 0
+    assert container.objects.linked_parent is container
 
 
 def test_init_with_none():
     """Test initialization with None"""
     container = ConcreteContainer(None)
 
-    assert isinstance(container._linked_objects, LinkedObjects)
-    assert len(container._linked_objects) == 0
-    assert container._linked_objects.linked_parent is container
+    assert isinstance(container._objects, Objects)
+    assert len(container._objects) == 0
+    assert container._objects.linked_parent is container
 
 
 def test_init_with_invalid_type():
@@ -80,69 +84,69 @@ def test_init_with_invalid_type():
 
 
 def test_linked_objects_setter_with_linked_objects_instance():
-    """Test linked_objects setter with LinkedObjects instance"""
+    """Test objects setter with LinkedObjects instance"""
     container = ConcreteContainer()
 
-    lo = LinkedObjects(container, [ConcreteTag("Tag1")])
-    container.linked_objects = lo
+    lo = Objects(container, [ConcreteTag("Tag1")])
+    container.objects = lo
 
-    assert container.linked_objects.linked_parent is container
+    assert container.objects.linked_parent is container
 
 
 def test_linked_objects_setter_with_list():
-    """Test linked_objects setter with list"""
+    """Test objects setter with list"""
     container = ConcreteContainer()
 
     tag1 = ConcreteTag("Tag1")
     tag2 = ConcreteTag("Tag2")
-    container.linked_objects = [tag1, tag2]
+    container.objects = [tag1, tag2]
 
-    assert isinstance(container._linked_objects, LinkedObjects)
-    assert len(container._linked_objects) == 2
-    assert container._linked_objects.linked_parent is container
+    assert isinstance(container._objects, Objects)
+    assert len(container._objects) == 2
+    assert container._objects.linked_parent is container
 
 
 def test_linked_objects_setter_with_empty_list():
-    """Test linked_objects setter with empty list"""
+    """Test objects setter with empty list"""
     container = ConcreteContainer()
 
-    container.linked_objects = []
+    container.objects = []
 
-    assert isinstance(container._linked_objects, LinkedObjects)
-    assert len(container._linked_objects) == 0
+    assert isinstance(container._objects, Objects)
+    assert len(container._objects) == 0
 
 
 def test_linked_objects_setter_replaces_existing():
-    """Test that setter replaces existing linked_objects"""
+    """Test that setter replaces existing objects"""
     tag1 = ConcreteTag("Tag1")
     container = ConcreteContainer([tag1])
 
-    original_lo = container._linked_objects
+    original_lo = container._objects
 
     tag2 = ConcreteTag("Tag2")
     tag3 = ConcreteTag("Tag3")
-    container.linked_objects = [tag2, tag3]
+    container.objects = [tag2, tag3]
 
-    assert container._linked_objects is not original_lo
-    assert len(container.linked_objects) == 2
+    assert container._objects is not original_lo
+    assert len(container.objects) == 2
 
 
 def test_linked_objects_setter_with_invalid_type():
-    """Test linked_objects setter with invalid type raises TypeError"""
+    """Test objects setter with invalid type raises TypeError"""
     container = ConcreteContainer()
 
     with pytest.raises(TypeError) as exc_info:
-        container.linked_objects = "invalid"
+        container.objects = "invalid"
 
     assert "is not an instance of BaseTag" in str(exc_info.value)
 
 
 def test_linked_objects_setter_with_invalid_list():
-    """Test linked_objects setter with list containing non-BaseTag"""
+    """Test objects setter with list containing non-BaseTag"""
     container = ConcreteContainer()
 
     with pytest.raises(TypeError):
-        container.linked_objects = [ConcreteTag("Tag1"), "invalid"]
+        container.objects = [ConcreteTag("Tag1"), "invalid"]
 
 
 def test_tag_property_is_abstract():
@@ -173,14 +177,14 @@ def test_access_children_property_is_abstract():
 
 
 def test_add_valid_tag():
-    """Test adding valid tag to linked_objects"""
+    """Test adding valid tag to objects"""
     container = ConcreteContainer()
     tag = ConcreteTag("TestTag")
 
     container.add(tag)
 
-    assert len(container._linked_objects) == 1
-    assert container._linked_objects[0] is tag
+    assert len(container._objects) == 1
+    assert container._objects[0] is tag
 
 
 def test_add_multiple_tags():
@@ -194,21 +198,21 @@ def test_add_multiple_tags():
     container.add(tag2)
     container.add(tag3)
 
-    assert len(container._linked_objects) == 3
-    assert container._linked_objects[0] is tag1
-    assert container._linked_objects[1] is tag2
-    assert container._linked_objects[2] is tag3
+    assert len(container._objects) == 3
+    assert container._objects[0] is tag1
+    assert container._objects[1] is tag2
+    assert container._objects[2] is tag3
 
 
 def test_add_to_existing_linked_objects():
-    """Test adding tag to existing linked_objects"""
+    """Test adding tag to existing objects"""
     tag1 = ConcreteTag("Tag1")
     container = ConcreteContainer([tag1])
 
     tag2 = ConcreteTag("Tag2")
     container.add(tag2)
 
-    assert len(container._linked_objects) == 2
+    assert len(container._objects) == 2
 
 
 def test_add_with_type_checking():
@@ -223,6 +227,10 @@ def test_add_with_type_checking():
         def access_children(self):
             return [{"class": ConcreteTag}]
 
+        @property
+        def access_property(self) -> list[dict]:
+            return []
+
     class OtherTag(BaseTag):
         @property
         def tag(self) -> str:
@@ -232,7 +240,7 @@ def test_add_with_type_checking():
 
     valid_tag = ConcreteTag("Valid")
     container.add(valid_tag)
-    assert len(container._linked_objects) == 1
+    assert len(container._objects) == 1
 
     invalid_tag = OtherTag()
 
@@ -240,7 +248,7 @@ def test_add_with_type_checking():
         container.add(invalid_tag)
 
     assert "It is prohibited to add" in str(exc_info.value)
-    assert len(container._linked_objects) == 1
+    assert len(container._objects) == 1
 
 
 def test_slots_prevent_dynamic_attributes():
@@ -250,13 +258,13 @@ def test_slots_prevent_dynamic_attributes():
     with pytest.raises(AttributeError):
         container.new_attribute = "test"
 
-    container._linked_objects = LinkedObjects(container, [])
-    assert isinstance(container._linked_objects, LinkedObjects)
+    container._objects = Objects(container, [])
+    assert isinstance(container._objects, Objects)
 
 
 def test_slots_contains_linked_objects():
-    """Test that _linked_objects is in __slots__"""
-    assert "_linked_objects" in BaseContainerTag.__slots__
+    """Test that _objects is in __slots__"""
+    assert "_objects" in BaseContainerTag.__slots__
 
 
 def test_circular_reference_handling():
@@ -265,12 +273,12 @@ def test_circular_reference_handling():
     container2 = ConcreteContainer()
 
     tag = ConcreteTag("Connector")
-    container1.linked_objects = [container2, tag]
-    container2.linked_objects = [container1]
+    container1.objects = [container2, tag]
+    container2.objects = [container1]
 
     try:
-        copied = container1.linked_objects
-        assert isinstance(copied, LinkedObjects)
+        copied = container1.objects
+        assert isinstance(copied, Objects)
     except RecursionError:
         pytest.fail("Deepcopy should handle circular references")
 
@@ -282,9 +290,9 @@ def test_large_number_of_tags():
     for i in range(100):
         container.add(ConcreteTag(f"Tag{i}"))
 
-    assert len(container._linked_objects) == 100
+    assert len(container._objects) == 100
 
-    copied = container.linked_objects
+    copied = container.objects
     assert len(copied) == 100
 
 
@@ -297,7 +305,7 @@ def test_memory_efficiency_with_slots():
 
     slots_size = sys.getsizeof(container_with_slots)
 
-    container_without_slots._linked_objects = LinkedObjects(container_with_slots, [])
+    container_without_slots._objects = Objects(container_with_slots, [])
 
     no_slots_size = sys.getsizeof(container_without_slots)
 
@@ -326,11 +334,15 @@ def test_integration_with_linked_objects_validation():
         def access_children(self):
             return [{"class": TextTag}]
 
+        @property
+        def access_property(self) -> list[dict]:
+            return []
+
     paragraph = ParagraphContainer()
 
     text_tag = TextTag()
     paragraph.add(text_tag)
-    assert len(paragraph._linked_objects) == 1
+    assert len(paragraph._objects) == 1
 
     image_tag = ImageTag()
 
@@ -338,7 +350,7 @@ def test_integration_with_linked_objects_validation():
         paragraph.add(image_tag)
 
     assert "It is prohibited to add ImageTag" in str(exc_info.value)
-    assert len(paragraph._linked_objects) == 1
+    assert len(paragraph._objects) == 1
 
 
 def test_chaining_operations():
@@ -350,16 +362,16 @@ def test_chaining_operations():
     for tag in tags:
         container.add(tag)
 
-    assert len(container._linked_objects) == 5
+    assert len(container._objects) == 5
 
     new_tags = [ConcreteTag(f"NewTag{i}") for i in range(3)]
-    container.linked_objects = new_tags
+    container.objects = new_tags
 
-    assert len(container._linked_objects) == 3
+    assert len(container._objects) == 3
 
-    copied = container.linked_objects
+    copied = container.objects
     assert len(copied) == 3
-    assert copied is container.linked_objects
+    assert copied is container.objects
 
 
 def test_remove_method():
@@ -368,11 +380,11 @@ def test_remove_method():
     tag1 = ConcreteTag("Tag1")
     tag2 = ConcreteTag("Tag2")
 
-    container.linked_objects = [tag1, tag2]
+    container.objects = [tag1, tag2]
     container.remove(tag1)
 
-    assert len(container.linked_objects) == 1
-    assert container.linked_objects[0] is tag2
+    assert len(container.objects) == 1
+    assert container.objects[0] is tag2
 
 
 def test_remove_nonexistent():
@@ -393,9 +405,9 @@ def test_pop_method():
 
     popped = container.pop(1)
     assert popped is tag2
-    assert len(container.linked_objects) == 2
-    assert container.linked_objects[0] is tag1
-    assert container.linked_objects[1] is tag3
+    assert len(container.objects) == 2
+    assert container.objects[0] is tag1
+    assert container.objects[1] is tag3
 
 
 def test_pop_default():
@@ -406,7 +418,7 @@ def test_pop_default():
 
     popped = container.pop()
     assert popped is tag2
-    assert len(container.linked_objects) == 1
+    assert len(container.objects) == 1
 
 
 def test_pop_empty():
@@ -424,7 +436,7 @@ def test_find_method():
     tag2 = ConcreteTag("Tag2")
     subtag = ConcreteContainer()
 
-    container.linked_objects = [tag1, subtag, tag2]
+    container.objects = [tag1, subtag, tag2]
 
     tags = container.find(ConcreteTag)
     assert len(tags) == 2
@@ -445,8 +457,8 @@ def test_remove_children():
     subtag = ConcreteContainer()
     tag3 = ConcreteTag("Tag3")
 
-    container.linked_objects = [tag1, subtag, tag2, tag3]
+    container.objects = [tag1, subtag, tag2, tag3]
     container.remove_children(ConcreteTag)
 
-    assert len(container.linked_objects) == 1
-    assert container.linked_objects[0] is subtag
+    assert len(container.objects) == 1
+    assert container.objects[0] is subtag
