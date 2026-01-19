@@ -14,6 +14,13 @@ select = [
     "PD",  # Pandas-специфичные правила (опционально)
 ]
 
+exculde = [
+    ".git",
+    "__pycache__",
+    ".idea",
+    "README.md",
+    ".venv",
+]
 
 [tool.ruff.lint.isort]
 known-first-party = ["docx_gen"]
@@ -21,3 +28,4 @@ lines-between-types = 1
 
 [tool.ruff.lint.per-file-ignores]
 "main_runner.py" = ["ALL"]
+
