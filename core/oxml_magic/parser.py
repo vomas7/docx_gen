@@ -6,25 +6,28 @@ from lxml import etree
 from core.oxml_magic.ns import NamespacePrefixedTag, nsmap, qn
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.base_tag import BaseTag
-from core.ui_objects.text import Text
 from core.ui_objects.section import Section
+from core.ui_objects.text import Text
 
 
 def get_cls_by_tag(tag: str):
     from core.ui_objects import CLASS_REGISTRY
+
     return CLASS_REGISTRY.get(tag)
 
 
 def make_xml_tree(cls_element: BaseTag) -> etree.Element:
-    xml_tree = etree.Element(qn(cls_element.tag), attrib=cls_element.attrs,
-                             nsmap=nsmap)
+    xml_tree = etree.Element(qn(cls_element.tag), attrib=cls_element.attrs, nsmap=nsmap)
     if isinstance(cls_element, BaseContainerTag):
-        children = cls_element._xml_children if isinstance(cls_element,
-                                                           Section) else cls_element.linked_objects
+        children = (
+            cls_element._xml_children
+            if isinstance(cls_element, Section)
+            else cls_element.objects
+        )
 
         for ch in children:
             if isinstance(ch, Section):
-                extracted = [make_xml_tree(i) for i in ch.linked_objects]
+                extracted = [make_xml_tree(i) for i in ch.objects]
                 list(map(lambda ex: xml_tree.append(ex), extracted))
 
             tp_elem = make_xml_tree(ch)
@@ -71,6 +74,7 @@ def read_xml_markup(xml_tree: etree.ElementBase):
 
 def process_sections(obj_markup: BaseTag):
     from core.ui_objects.document import Body
+
     if isinstance(obj_markup, Body):
         elements = []
         body_linked = []
@@ -85,7 +89,7 @@ def process_sections(obj_markup: BaseTag):
 
 
 def convert_xml_to_cls(
-        xml_tree: etree.ElementBase,
+    xml_tree: etree.ElementBase,
 ) -> BaseTag:
     object_markup = read_xml_markup(xml_tree)
     process_sections(object_markup)
@@ -93,15 +97,16 @@ def convert_xml_to_cls(
 
 
 def to_xml_str(xml_tree: etree.Element) -> str:
-    return etree.tostring(xml_tree, pretty_print=True,
-                          encoding="utf-8").decode()
+    return etree.tostring(xml_tree, pretty_print=True, encoding="utf-8").decode()
 
 
 def get_section_template():
     from core.io.api import parse_document_part
+
     file_path = os.path.dirname(__file__)
-    template_file = os.path.join(os.path.abspath(file_path), '..', "templates",
-                                 "default.docx")
+    template_file = os.path.join(
+        os.path.abspath(file_path), "..", "templates", "default.docx"
+    )
 
     _part = parse_document_part(template_file)
     [_body] = _part._element.getchildren()
