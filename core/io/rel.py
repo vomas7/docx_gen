@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from core.io.oxml import CT_Relationships
 
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from core.io.part import Part
 
 
-class Relationships(Dict[str, "_Relationship"]):
+class Relationships(dict[str, "_Relationship"]):
     """Collection object for |_Relationship| instances, having list semantics."""
 
     def __init__(self, baseURI: str):
@@ -20,7 +20,7 @@ class Relationships(Dict[str, "_Relationship"]):
 
     def add_relationship(
         self, reltype: str, target: Part | str, rId: str, is_external: bool = False
-    ) -> "_Relationship":
+    ) -> _Relationship:
         """Return a newly added |_Relationship| instance."""
         rel = _Relationship(rId, reltype, target, self._baseURI, is_external)
         self[rId] = rel

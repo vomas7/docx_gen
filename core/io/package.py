@@ -2,18 +2,17 @@
 
 from __future__ import annotations
 
-from typing import IO, TYPE_CHECKING, Iterator, cast
+from collections.abc import Iterator
+from typing import IO, TYPE_CHECKING, cast
 
 from core.io.constants import RELATIONSHIP_TYPE as RT
 from core.io.part import PartFactory
 from core.io.pkgreader import PackageReader
-from core.io.utils import lazyproperty
-
-from core.io.rel import Relationships
 from core.io.pkgurl import PACKAGE_URI
-
-from core.parts.image import ImageParts
 from core.io.pkgwriter import PackageWriter
+from core.io.rel import Relationships
+from core.io.utils import lazyproperty
+from core.parts.image import ImageParts
 
 if TYPE_CHECKING:
     from core.io.part import Part

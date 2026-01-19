@@ -1,8 +1,10 @@
-from typing import Dict, Any, Generic, TypeVar, Callable, cast
 import functools
 
+from collections.abc import Callable
+from typing import Any, Generic, TypeVar, cast
 
-class CaseInsensitiveDict(Dict[str, Any]):
+
+class CaseInsensitiveDict(dict[str, Any]):
     """Mapping type that behaves like dict except that it matches without respect to the
     case of the key.
 

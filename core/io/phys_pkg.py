@@ -1,6 +1,7 @@
 """Provides a general interface to a `physical` OPC package, such as a zip file."""
 
 import os
+
 from zipfile import ZIP_DEFLATED, ZipFile, is_zipfile
 
 from core.io.exceptions import PackageNotFoundError
@@ -63,7 +64,7 @@ class _DirPkgReader(PhysPkgReader):
         rels item."""
         try:
             rels_xml = self.blob_for(source_uri.rels_uri)
-        except IOError:
+        except OSError:
             rels_xml = None
         return rels_xml
 

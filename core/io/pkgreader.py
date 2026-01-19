@@ -1,11 +1,12 @@
 """Low-level, read-only API to a serialized Open Packaging Convention (OPC) package."""
 
-from core.io.utils import CaseInsensitiveDict
+from typing import TYPE_CHECKING, cast
+
 from core.io.constants import RELATIONSHIP_TARGET_MODE as RTM
-from core.io.pkgurl import PACKAGE_URI, PackURI
-from core.io.phys_pkg import PhysPkgReader
 from core.io.oxml import parse_xml
-from typing import cast, TYPE_CHECKING
+from core.io.phys_pkg import PhysPkgReader
+from core.io.pkgurl import PACKAGE_URI, PackURI
+from core.io.utils import CaseInsensitiveDict
 
 if TYPE_CHECKING:
     from core.io.oxml import CT_Types

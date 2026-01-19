@@ -6,8 +6,8 @@ from lxml import etree
 from core.oxml_magic.ns import NamespacePrefixedTag, nsmap, qn
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.base_tag import BaseTag
-from core.ui_objects.text import Text
 from core.ui_objects.section import Section
+from core.ui_objects.text import Text
 
 
 def get_cls_by_tag(tag: str):

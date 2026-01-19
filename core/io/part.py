@@ -4,15 +4,14 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Type, cast
+from typing import TYPE_CHECKING, cast
 
-from core.io.oxml import serialize_part_xml
-from core.io.pkgurl import PackURI
-from core.io.rel import Relationships
-from core.io.oxml import parse_xml
-from core.io.utils import lazyproperty
 from lxml import etree
 
+from core.io.oxml import parse_xml, serialize_part_xml
+from core.io.pkgurl import PackURI
+from core.io.rel import Relationships
+from core.io.utils import lazyproperty
 
 if TYPE_CHECKING:
     from core.io.package import Package
@@ -213,15 +212,15 @@ class XmlPart(Part):
         return len([_rId for _rId in rIds if _rId == rId])
 
 
-from core.parts.document import DocumentPart
-from core.parts.styles import StylesPart
-from core.parts.image import ImagePart
-from core.parts.hdrftr import FooterPart, HeaderPart
-from core.parts.settings import SettingsPart
-from core.parts.numbering import NumberingPart
 from core.io.constants import CONTENT_TYPE as CT
 from core.io.constants import RELATIONSHIP_TYPE as RT
 from core.parts.coreprops import CorePropertiesPart
+from core.parts.document import DocumentPart
+from core.parts.hdrftr import FooterPart, HeaderPart
+from core.parts.image import ImagePart
+from core.parts.numbering import NumberingPart
+from core.parts.settings import SettingsPart
+from core.parts.styles import StylesPart
 
 
 class PartFactory:
@@ -237,13 +236,13 @@ class PartFactory:
     the part, which is by default ``io.package.Part``.
     """
 
-    def part_class_selector(content_type: str, reltype: str) -> Type[Part] | None:
+    def part_class_selector(content_type: str, reltype: str) -> type[Part] | None:
         if reltype == RT.IMAGE:
             return ImagePart
         return None
 
     # assign parts with content types
-    part_type_for: dict[str, Type[Part]] = {
+    part_type_for: dict[str, type[Part]] = {
         CT.OPC_CORE_PROPERTIES: CorePropertiesPart,
         CT.WML_DOCUMENT_MAIN: DocumentPart,
         CT.WML_FOOTER: FooterPart,
@@ -262,7 +261,7 @@ class PartFactory:
         blob: bytes,
         package: Package,
     ):
-        PartClass: Type[Part] | None = cls.part_class_selector(content_type, reltype)
+        PartClass: type[Part] | None = cls.part_class_selector(content_type, reltype)
         if PartClass is None:
             PartClass = cls._part_cls_for(content_type)
 

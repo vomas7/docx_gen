@@ -3,11 +3,10 @@ from core.ui_objects.atrib.ref import Footer, Gutter, Header
 from core.ui_objects.atrib.size import Height, Width
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.base_content_tag import BaseContentTag
-from core.ui_objects.base.linked_objects import LinkedObjects
-from core.ui_objects.base.linked_objects import HiddenElements
+from core.ui_objects.base.linked_objects import HiddenElements, LinkedObjects
+from core.ui_objects.bookmarks import BookmarkEnd, BookmarkStart
 from core.ui_objects.paragraph import Paragraph
 from core.ui_objects.run import Run
-from core.ui_objects.bookmarks import BookmarkEnd, BookmarkStart
 
 
 class PageSize(BaseContentTag):
@@ -175,7 +174,7 @@ class Section(BaseContainerTag):
         )
 
     def _retrive_hidden_elements(self):
-        from core.oxml_magic.parser import get_section_template, convert_xml_to_cls
+        from core.oxml_magic.parser import convert_xml_to_cls, get_section_template
 
         return [convert_xml_to_cls(i) for i in get_section_template()]
 

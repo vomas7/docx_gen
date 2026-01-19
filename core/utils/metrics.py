@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Tuple
-
 
 class Length(int):
     """Base class for length constructor classes Inches, Cm, Mm, Px, and Emu.
@@ -104,7 +102,7 @@ class Twips(Length):
         return Length.__new__(cls, emu)
 
 
-class RGBColor(Tuple[int, int, int]):
+class RGBColor(tuple[int, int, int]):
     """Immutable value object defining a particular RGB color."""
 
     def __new__(cls, r: int, g: int, b: int):

@@ -6,12 +6,14 @@ OpcPackage.save().
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable
+from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
-from core.io.constants import CONTENT_TYPE as CT, default_content_types
+from core.io.constants import CONTENT_TYPE as CT
+from core.io.constants import default_content_types
 from core.io.oxml import CT_Types, serialize_part_xml
-from core.io.pkgurl import CONTENT_TYPES_URI, PACKAGE_URI
 from core.io.phys_pkg import PhysPkgWriter
+from core.io.pkgurl import CONTENT_TYPES_URI, PACKAGE_URI
 from core.io.utils import CaseInsensitiveDict
 
 if TYPE_CHECKING:
