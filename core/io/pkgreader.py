@@ -12,7 +12,6 @@ if TYPE_CHECKING:
     from core.io.oxml import CT_Relationships
 
 
-
 class PackageReader:
     """Provides access to the contents of a zip-format OPC package via its
     :attr:`serialized_parts` and :attr:`pkg_srels` attributes."""
@@ -113,7 +112,6 @@ class _ContentTypeMap:
             return self._defaults[partname.ext]
         tmpl = "no content type for partname '%s' in [Content_Types].xml"
         raise KeyError(tmpl % partname)
-
 
     @staticmethod
     def from_xml(content_types_xml):
@@ -240,7 +238,6 @@ class _SerializedRelationship:
 
 
 class _SerializedRelationships:
-
     def __init__(self):
         super(_SerializedRelationships, self).__init__()
         self._srels = []
@@ -251,7 +248,6 @@ class _SerializedRelationships:
 
     @staticmethod
     def load_from_xml(baseURI, rels_item_xml):
-
         srels = _SerializedRelationships()
         if rels_item_xml is not None:
             rels_elm = cast("CT_Relationships", parse_xml(rels_item_xml))

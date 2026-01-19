@@ -14,7 +14,6 @@ from core.io.utils import lazyproperty
 from lxml import etree
 
 
-
 if TYPE_CHECKING:
     from core.io.package import Package
 
@@ -27,11 +26,11 @@ class Part:
     """
 
     def __init__(
-            self,
-            partname: PackURI,
-            content_type: str,
-            blob: bytes | None = None,
-            package: Package | None = None,
+        self,
+        partname: PackURI,
+        content_type: str,
+        blob: bytes | None = None,
+        package: Package | None = None,
     ):
         super(Part, self).__init__()
         self._partname = partname
@@ -83,12 +82,12 @@ class Part:
             del self.rels[rId]
 
     @classmethod
-    def load(cls, partname: PackURI, content_type: str, blob: bytes,
-             package: Package):
+    def load(cls, partname: PackURI, content_type: str, blob: bytes, package: Package):
         return cls(partname, content_type, blob, package)
 
-    def load_rel(self, reltype: str, target: Part | str, rId: str,
-                 is_external: bool = False):
+    def load_rel(
+        self, reltype: str, target: Part | str, rId: str, is_external: bool = False
+    ):
         """Return newly added |_Relationship| instance of `reltype`.
 
         The new relationship relates the `target` part to this part with key `rId`.
@@ -126,8 +125,9 @@ class Part:
         """
         return self.rels.part_with_reltype(reltype)
 
-    def relate_to(self, target: Part | str, reltype: str,
-                  is_external: bool = False) -> str:
+    def relate_to(
+        self, target: Part | str, reltype: str, is_external: bool = False
+    ) -> str:
         """Return rId key of relationship of `reltype` to `target`.
 
         The returned `rId` is from an existing relationship if there is one, otherwise a
@@ -165,6 +165,7 @@ class Part:
         """
         return 0
 
+
 class XmlPart(Part):
     """Base class for package parts containing an XML payload, which is most of them.
 
@@ -173,8 +174,11 @@ class XmlPart(Part):
     """
 
     def __init__(
-            self, partname: PackURI, content_type: str,
-            element: etree._Element, package: Package
+        self,
+        partname: PackURI,
+        content_type: str,
+        element: etree._Element,
+        package: Package,
     ):
         super(XmlPart, self).__init__(partname, content_type, package=package)
         self._element = element
@@ -189,8 +193,7 @@ class XmlPart(Part):
         return self._element
 
     @classmethod
-    def load(cls, partname: PackURI, content_type: str, blob: bytes,
-             package: Package):
+    def load(cls, partname: PackURI, content_type: str, blob: bytes, package: Package):
         element = parse_xml(blob)
         return cls(partname, content_type, element, package)
 
@@ -220,6 +223,7 @@ from core.io.constants import CONTENT_TYPE as CT
 from core.io.constants import RELATIONSHIP_TYPE as RT
 from core.parts.coreprops import CorePropertiesPart
 
+
 class PartFactory:
     """Provides a way for client code to specify a subclass of |Part| to be constructed
     by |Unmarshaller| based on its content type and/or a custom callable.
@@ -234,7 +238,6 @@ class PartFactory:
     """
 
     def part_class_selector(content_type: str, reltype: str) -> Type[Part] | None:
-
         if reltype == RT.IMAGE:
             return ImagePart
         return None
@@ -252,15 +255,14 @@ class PartFactory:
     default_part_type = Part
 
     def __new__(
-            cls,
-            partname: PackURI,
-            content_type: str,
-            reltype: str,
-            blob: bytes,
-            package: Package,
+        cls,
+        partname: PackURI,
+        content_type: str,
+        reltype: str,
+        blob: bytes,
+        package: Package,
     ):
-        PartClass: Type[Part] | None = cls.part_class_selector(content_type,
-                                                               reltype)
+        PartClass: Type[Part] | None = cls.part_class_selector(content_type, reltype)
         if PartClass is None:
             PartClass = cls._part_cls_for(content_type)
 
@@ -273,6 +275,3 @@ class PartFactory:
         if content_type in cls.part_type_for:
             return cls.part_type_for[content_type]
         return cls.default_part_type
-
-
-

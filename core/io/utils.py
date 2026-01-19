@@ -21,7 +21,7 @@ class CaseInsensitiveDict(Dict[str, Any]):
         return super(CaseInsensitiveDict, self).__setitem__(key.lower(), value)
 
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class lazyproperty(Generic[T]):

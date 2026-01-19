@@ -26,8 +26,7 @@ nsmap = {
 
 pfxmap = {value: key for key, value in nsmap.items()}
 
-qn_pattern = re.compile(r'</?[a-zA-Z_][a-zA-Z0-9_-]*:[a-zA-Z_][a-zA-Z0-9_-]*[^>]*>')
-
+qn_pattern = re.compile(r"</?[a-zA-Z_][a-zA-Z0-9_-]*:[a-zA-Z_][a-zA-Z0-9_-]*[^>]*>")
 
 
 class NamespacePrefixedTag(str):

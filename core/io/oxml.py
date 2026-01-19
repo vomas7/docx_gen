@@ -28,8 +28,6 @@ nsmap = {
 }
 
 
-
-
 # ===========================================================================
 # Custom element classes
 # ===========================================================================
@@ -46,7 +44,6 @@ class BaseOxmlElement(etree.ElementBase):
         Pretty printed for readability and without an XML declaration at the top.
         """
         return serialize_for_reading(self)
-
 
 
 # ===========================================================================
@@ -86,8 +83,6 @@ def serialize_for_reading(element):
     No XML declaration.
     """
     return etree.tostring(element, encoding="unicode", pretty_print=True)
-
-
 
 
 class CT_Default(BaseOxmlElement):

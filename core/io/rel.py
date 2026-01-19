@@ -73,7 +73,9 @@ class Relationships(Dict[str, "_Relationship"]):
         """Return relationship of matching `reltype`, `target`, and `is_external` from
         collection, or None if not found."""
 
-        def matches(rel: _Relationship, reltype: str, target: Part | str, is_external: bool):
+        def matches(
+            rel: _Relationship, reltype: str, target: Part | str, is_external: bool
+        ):
             if rel.reltype != reltype:
                 return False
             if rel.is_external != is_external:
@@ -117,7 +119,12 @@ class _Relationship:
     """Value object for relationship to part."""
 
     def __init__(
-        self, rId: str, reltype: str, target: Part | str, baseURI: str, external: bool = False
+        self,
+        rId: str,
+        reltype: str,
+        target: Part | str,
+        baseURI: str,
+        external: bool = False,
     ):
         super(_Relationship, self).__init__()
         self._rId = rId
@@ -142,7 +149,8 @@ class _Relationship:
     def target_part(self) -> Part:
         if self._is_external:
             raise ValueError(
-                "target_part property on _Relationship is undef" "ined when target mode is External"
+                "target_part property on _Relationship is undef"
+                "ined when target mode is External"
             )
         return cast("Part", self._target)
 

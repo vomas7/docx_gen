@@ -56,17 +56,17 @@ class LinkedObjects(UserList):
                 self.validate_access_child(item, index)
 
 
-
 class HiddenElements(LinkedObjects):
     """This class responsible for sequence of xml elements, which contains into parent element, but we should hide it.
     it's suitable when need to make sequence of linked objects is another then xml tree structure"""
-
 
     def __init__(self, linked_parent, initlist=None):
         super().__init__(linked_parent, initlist)
 
     def validate_access_child(self, item, position: int):
-        allowed = (child["class"] for child in self.linked_parent.access_hidden_children)
+        allowed = (
+            child["class"] for child in self.linked_parent.access_hidden_children
+        )
         if not item:
             return None
         if isinstance(item, tuple(allowed)):

@@ -77,7 +77,6 @@ class _ContentTypesItem:
 
         return serialize_part_xml(self._element)
 
-
     @classmethod
     def from_parts(cls, parts):
         """Return content types XML mapping each part in `parts` to the appropriate

@@ -27,4 +27,4 @@ def parse_document_part(docx: str | IO[bytes] | None = None) -> "DocumentPart":
 def _default_docx_path():
     """Return the path to the built-in default .ui_objects package."""
     _thisdir = os.path.split(__file__)[0]
-    return os.path.join(_thisdir, '..', "templates", "default.docx")
+    return os.path.join(_thisdir, "..", "templates", "default.docx")

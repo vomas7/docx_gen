@@ -111,10 +111,9 @@ class RGBColor(Tuple[int, int, int]):
         msg = "RGBColor() takes three integer values 0-255"
         for val in (r, g, b):
             if (
-                    not isinstance(val,
-                                   int)  # pyright: ignore[reportUnnecessaryIsInstance]
-                    or val < 0
-                    or val > 255
+                not isinstance(val, int)  # pyright: ignore[reportUnnecessaryIsInstance]
+                or val < 0
+                or val > 255
             ):
                 raise ValueError(msg)
         return super(RGBColor, cls).__new__(cls, (r, g, b))
