@@ -63,8 +63,7 @@ def test_enum_attribute_initialization():
 
 
 def test_enum_attribute_initialization_with_enum_instance():
-    with pytest.raises(AttributeError):
-        EnumAttributeTest(EnumAttributeTest.Options.value2)
+    EnumAttributeTest(EnumAttributeTest.Options.value2)
 
 
 def test_enum_attribute_case_insensitive():

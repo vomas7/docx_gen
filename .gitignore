@@ -2,9 +2,12 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+.python-version
+uv.lock
+.pre-commit-config.yaml
 # C extensions
 *.so
+main_runner.py
 
 # Distribution / packaging
 .Python

@@ -1,42 +1,35 @@
-from docx import Document
+from core.ui_objects.document import Document
+from core.ui_objects.section import Section
+from core.ui_objects import Run, Paragraph, Text, Section
+from core.oxml_magic.parser import to_xml_str, make_xml_tree
 
-from core.oxml_magic.parser import make_xml_tree, to_xml_str
-from core.ui_objects import Run, Text
+from core.oxml_magic.parser import get_section_template
+
+# print(se)
 
 r = Run()
-r.add_page_break()
 
-r.add(Text("AAAAAAAAAAAAAAAAAAAAA"))
-r.add_column_break()
-
-run_element = make_xml_tree(r)
-
-
-run_xml_str = to_xml_str(run_element)
-print(run_xml_str)
-
-s = """
-  <w:body xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-    <w:p>
-      {run}
-    </w:p>
-    <w:sectPr w:rsidR="00FC693F" w:rsidRPr="0006063C" w:rsidSect="00034616">
-      <w:pgSz w:w="12240" w:h="15840"/>
-      <w:pgMar w:top="1440" w:right="1800" w:bottom="1440" w:left="1800" w:header="720" 
-      w:footer="720" w:gutter="0"/>
-      <w:cols w:space="720"/>
-      <w:docGrid w:linePitch="360"/>
-    </w:sectPr>
-  </w:body>
-"""
-s = s.format(run=run_xml_str)
-from lxml import etree
-
-namespaces = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
-root = etree.fromstring(s.encode("utf-8"))
-d = Document()
-
-d._element.clear()
-d._element.insert(0, root)
-
-d.save("test.docx")
+r.add_text("text1")
+# r.font = "Times New Roman"
+# r.linked_objects.reverse()
+p = Paragraph()
+p.add(r)
+doc = Document()
+doc.open(r"/home/trydimas/work_dir/eipp/docx_gen/something.docx")
+#
+body = doc.linked_objects[0]
+# print(body)
+#
+sec = body.linked_objects[0]
+# print(sec)
+sec.add(p)
+# print(to_xml_str(make_xml_tree(body)))
+doc.save("sosa.docx")
+sec.linked_objects.extend([Paragraph([Run([Text("aaaaaaaa")])])])
+# s = Section()
+print(sec.linked_objects)
+from core.oxml_magic.parser import to_xml_str, make_xml_tree, convert_xml_to_cls
+#f
+xm = make_xml_tree(body)
+print(to_xml_str(xm))
+# print(xm.getchildren(), "ssssssssssssssss")

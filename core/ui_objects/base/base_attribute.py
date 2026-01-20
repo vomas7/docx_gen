@@ -63,12 +63,21 @@ class EnumAttribute(BaseAttribute):
         super().__init__(xml_name)
         self.value = value
 
-    def validate(self, value: str) -> bool:
-        value = value.strip().lower() if value else value
-        return any(
-            enum_item.value == value or enum_item.name == value
-            for enum_item in self._enum_class
-        )
+    def validate(self, value) -> bool:
+        if isinstance(value, Enum):
+            if not isinstance(value, self._enum_class):
+                return False
+            return isinstance(value, self._enum_class)
+        elif isinstance(value, str):
+            value = value.strip().lower() if value else value
+            return any(
+                enum_item.value == value or enum_item.name == value
+                for enum_item in self._enum_class
+            )
+        elif value is None:
+            return any(enum_item.value is None for enum_item in self._enum_class)
+
+        return False
 
     def _convert_to_value(self, value) -> str | None:
         if isinstance(value, Enum):
@@ -122,3 +131,26 @@ class BooleanAttribute(BaseAttribute):
             raise TypeError(
                 f"Attribute {self.name} has two states True|False not {type(another)}!"
             )
+
+
+class SimpleAttribute(BaseAttribute):
+    def __init__(self, xml_name: str, value: str):
+        self._value = value
+        super().__init__(xml_name)
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, another: str | int):
+        if isinstance(another, str) and another.isdecimal():
+            self._value = another
+        elif isinstance(another, int):
+            self._value = str(another)
+        else:
+            TypeError(f"another must be str or int not {type(another)}")
+
+    @property
+    def xml_name(self):
+        return self._xml_name

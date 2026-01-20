@@ -14,13 +14,23 @@ select = [
     "PD",  # Pandas-специфичные правила (опционально)
 ]
 
+exclude = [
+    ".git",
+    "__pycache__",
+    ".idea",
+    "README.md",
+    ".venv",
+]
+
+ignore = [
+    "UP031",
+    "I001"
+]
 
 [tool.ruff.lint.isort]
 known-first-party = ["docx_gen"]
 lines-between-types = 1
 
-[tool.ruff.format]
-docstring-code-line-length = 88  # Макс. длина для кода в docstrings
-
 [tool.ruff.lint.per-file-ignores]
 "main_runner.py" = ["ALL"]
+

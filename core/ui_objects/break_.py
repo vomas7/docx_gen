@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Literal
 
 from core.ui_objects.base.base_attribute import EnumAttribute
 from core.ui_objects.base.base_content_tag import BaseContentTag
@@ -11,19 +12,27 @@ class Type(EnumAttribute):
         column = "column"
         textwrapping = "textWrapping"
 
-    def __init__(self, value: str):
+    def __init__(self, value: str | Options | None):
         super().__init__(xml_name="w:type", value=value)
 
 
-class Clear(EnumAttribute):
-    def __init__(self, value: str):
-        super().__init__(xml_name="w:clear", value=value)
+TypeSpec = (
+    Literal["page", "column", "textWrapping", "line"] | Type.Options | None | Type
+)
 
+
+class Clear(EnumAttribute):
     class Options(Enum):
         empty = None
         left = "left"
         right = "right"
         all = "all"
+
+    def __init__(self, value: str | Options | None):
+        super().__init__(xml_name="w:clear", value=value)
+
+
+ClearSpec = Literal["left", "right", "all", "empty"] | Clear.Options | None | Clear
 
 
 class Break(BaseContentTag):
@@ -31,9 +40,9 @@ class Break(BaseContentTag):
 
     __slots__ = ("_type", "_clear")
 
-    def __init__(self, type: str | Type = None, clear: str | Clear = None):
-        self.clear = Clear(clear)
-        self.type = Type(type)
+    def __init__(self, type: TypeSpec = None, clear: ClearSpec = None):
+        self.clear = clear
+        self.type = type
 
     @property
     def tag(self) -> str:
@@ -49,8 +58,10 @@ class Break(BaseContentTag):
         return self._type.value
 
     @type.setter
-    def type(self, new_type: Type | str):
-        if isinstance(new_type, str):
+    def type(self, new_type: TypeSpec):
+        if not new_type:
+            self._type = Type(Type.Options.line)
+        elif isinstance(new_type, (str | Type.Options)):
             self._type = Type(new_type)
         elif isinstance(new_type, Type):
             self._type = new_type
@@ -67,10 +78,15 @@ class Break(BaseContentTag):
         return self._clear.value
 
     @clear.setter
-    def clear(self, new_clear: str | Clear):
-        if isinstance(new_clear, str):
+    def clear(self, new_clear: ClearSpec):
+        if not new_clear:
+            self._clear = Clear(Clear.Options.empty)
+        elif isinstance(new_clear, str):
             self._clear = Clear(new_clear)
         elif isinstance(new_clear, Clear):
             self._clear = new_clear
         else:
             raise ValueError(f"Wrong type for w:clear!: {new_clear}")
+
+
+BreakSpec = Literal["page", "column", "textWrapping"] | Break
