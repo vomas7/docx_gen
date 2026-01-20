@@ -1,11 +1,12 @@
 from collections import UserList
 
 
-class LinkedObjects(UserList):
-    def __init__(self, linked_parent, initlist=None):
+class LinkedList(UserList):
+    def __init__(self, linked_parent, access_list: list, initlist=None):
         self.linked_parent = linked_parent
-        super().__init__(initlist)
+        self.access_list = access_list
         self.validate_access_children(initlist)
+        super().__init__(initlist)
 
     def append(self, item):
         self.validate_access_child(item, self.__len__())
@@ -19,7 +20,7 @@ class LinkedObjects(UserList):
         if isinstance(other, list):
             self.validate_access_children(other)
             super().extend(other)
-        elif isinstance(other, LinkedObjects):
+        elif isinstance(other, Objects):
             super().extend(other)
 
     def __setitem__(self, index: int, value):
@@ -27,14 +28,12 @@ class LinkedObjects(UserList):
         super().__setitem__(index, value)
 
     def validate_access_child(self, item, position: int):
-        allowed = (child["class"] for child in self.linked_parent.access_children)
-        if not item or not allowed:
+        allowed_classes = tuple(child["class"] for child in self.access_list)
+        if not item or not allowed_classes:
             return None
-        if isinstance(item, tuple(allowed)):
+        if isinstance(item, allowed_classes):
             matching = [
-                child
-                for child in self.linked_parent.access_children
-                if child["class"] is type(item)
+                child for child in self.access_list if child["class"] is type(item)
             ]
             access = matching[0] if matching else None
             if access and "required_position" in access:
@@ -54,3 +53,17 @@ class LinkedObjects(UserList):
         if items:
             for index, item in enumerate(items):
                 self.validate_access_child(item, index)
+
+
+class Objects(LinkedList):
+    """A list of objects that can be inside this tag and their sequence in the docx"""
+
+    def __init__(self, linked_parent, initlist=None):
+        super().__init__(linked_parent, linked_parent.access_children, initlist)
+
+
+class Property(LinkedList):
+    """List of object properties (These are usually additional or technical tags)"""
+
+    def __init__(self, linked_parent, initlist=None):
+        super().__init__(linked_parent, linked_parent.access_property, initlist)

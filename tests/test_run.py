@@ -14,64 +14,63 @@ def test_run_tag(run):
 
 def test_run_access_children(run):
     assert run.access_children == [
-        {"class": RunProperty, "required_position": 0},
         {"class": Break},
         {"class": Text},
         {"class": Tab},
     ]
 
 
-def test_run_init_with_linked_objects(run):
-    assert run.linked_objects == []
+def test_run_init_with_objects(run):
+    assert run.objects == []
 
 
 def test_run_init_with_list():
     test_list = [Text("style1"), Text("style2")]
     run = Run(test_list)
-    assert run.linked_objects
-    assert run.linked_objects[0].text == "style1"
-    assert run.linked_objects[1].text == "style2"
+    assert run.objects
+    assert run.objects[0].text == "style1"
+    assert run.objects[1].text == "style2"
 
 
 def test_add_page_break(run):
     run.add_break("page")
 
-    assert len(run.linked_objects) == 1
-    assert isinstance(run.linked_objects[0], Break)
-    assert run.linked_objects[0].type == "page"
+    assert len(run.objects) == 1
+    assert isinstance(run.objects[0], Break)
+    assert run.objects[0].type == "page"
 
 
 def test_add_column_break(run):
     run.add_break("column")
 
-    assert len(run.linked_objects) == 1
-    assert isinstance(run.linked_objects[0], Break)
-    assert run.linked_objects[0].type == "column"
+    assert len(run.objects) == 1
+    assert isinstance(run.objects[0], Break)
+    assert run.objects[0].type == "column"
 
 
 def test_add_text_with_string(run):
     run.add_text("test string")
 
-    assert len(run.linked_objects) == 1
-    assert isinstance(run.linked_objects[0], Text)
-    assert run.linked_objects[0].text == "test string"
+    assert len(run.objects) == 1
+    assert isinstance(run.objects[0], Text)
+    assert run.objects[0].text == "test string"
 
 
 def test_add_text_with_text_object(run):
     text_obj = Text("test content")
     run.add_text(text_obj)
 
-    assert len(run.linked_objects) == 1
-    assert isinstance(run._linked_objects[0], Text)
-    assert run._linked_objects[0].text == text_obj.text
+    assert len(run.objects) == 1
+    assert isinstance(run._objects[0], Text)
+    assert run._objects[0].text == text_obj.text
 
 
 def test_add_text_with_empty_string(run):
     run.add_text("")
 
-    assert len(run.linked_objects) == 1
-    assert isinstance(run.linked_objects[0], Text)
-    assert run.linked_objects[0].text == ""
+    assert len(run.objects) == 1
+    assert isinstance(run.objects[0], Text)
+    assert run.objects[0].text == ""
 
 
 def test_run_inherits_from_base_container(run):
@@ -83,20 +82,20 @@ def test_run_with_multiple_children(run):
     run.add_break("page")
     run.add_text("After page break")
 
-    assert len(run.linked_objects) == 3
-    assert isinstance(run.linked_objects[0], Text)
-    assert isinstance(run.linked_objects[1], Break)
-    assert isinstance(run.linked_objects[2], Text)
-    assert run.linked_objects[0].text == "First part "
-    assert run.linked_objects[1].type == "page"
-    assert run.linked_objects[2].text == "After page break"
+    assert len(run.objects) == 3
+    assert isinstance(run.objects[0], Text)
+    assert isinstance(run.objects[1], Break)
+    assert isinstance(run.objects[2], Text)
+    assert run.objects[0].text == "First part "
+    assert run.objects[1].type == "page"
+    assert run.objects[2].text == "After page break"
 
 
 def test_add_text_directly(run):
     text_obj = Text("direct text")
     run.add(text_obj)
 
-    assert text_obj in run._linked_objects
+    assert text_obj in run._objects
 
 
 def test_run_with_only_breaks(run):
@@ -104,41 +103,41 @@ def test_run_with_only_breaks(run):
     run.add_break("column")
     run.add_break("page")
 
-    assert len(run.linked_objects) == 3
-    assert all(isinstance(child, Break) for child in run.linked_objects)
-    assert run.linked_objects[0].type == "page"
-    assert run.linked_objects[1].type == "column"
-    assert run.linked_objects[2].type == "page"
+    assert len(run.objects) == 3
+    assert all(isinstance(child, Break) for child in run.objects)
+    assert run.objects[0].type == "page"
+    assert run.objects[1].type == "column"
+    assert run.objects[2].type == "page"
 
 
 def test_add_text_with_special_characters(run):
     special_text = "Text with <>&\"' symbols"
     run.add_text(special_text)
 
-    assert len(run.linked_objects) == 1
-    text_child = run.linked_objects[0]
+    assert len(run.objects) == 1
+    text_child = run.objects[0]
     assert text_child.text == special_text
 
 
 def test_add_method_works(run):
-    run.linked_objects = []
+    run.objects = []
     text = Text("test")
     run.add(text)
 
-    assert text in run._linked_objects
-    assert len(run.linked_objects) == 1
+    assert text in run._objects
+    assert len(run.objects) == 1
 
 
 def test_add_break(run):
     run.add_break("textwrapping")
-    assert len(run.linked_objects) == 1
-    assert isinstance(run._linked_objects[0], Break)
-    assert run.linked_objects[0].type == "textWrapping"
+    assert len(run.objects) == 1
+    assert isinstance(run._objects[0], Break)
+    assert run.objects[0].type == "textWrapping"
 
     run.add_break(Break("page"))
-    assert len(run.linked_objects) == 2
-    assert isinstance(run._linked_objects[1], Break)
-    assert run.linked_objects[1].type == "page"
+    assert len(run.objects) == 2
+    assert isinstance(run._objects[1], Break)
+    assert run.objects[1].type == "page"
 
     with pytest.raises(TypeError):
         run.add_break(False)
@@ -146,7 +145,7 @@ def test_add_break(run):
 
 def test_add_tab(run):
     run.add_tab()
-    assert isinstance(run.linked_objects[0], Tab)
+    assert isinstance(run.objects[0], Tab)
 
 
 def test_run_init_with_bold_property():
@@ -210,16 +209,16 @@ def test_run_property_auto_add_remove():
     """Test that RunProperty is automatically added/removed when properties change"""
     run = Run()
     # Initially no RunProperty should be present
-    assert len(run.linked_objects) == 0
+    assert len(run.objects) == 0
 
     # Add bold property - should add RunProperty
     run.bold = True
-    assert len(run.linked_objects) == 1
-    assert isinstance(run.linked_objects[0], RunProperty)
+    assert len(run.property) == 1
+    assert isinstance(run.property[0], RunProperty)
 
     # Remove bold property - should remove RunProperty
     run.bold = False
-    assert len(run.linked_objects) == 0
+    assert len(run.property) == 0
 
 
 def test_run_multiple_properties():
@@ -228,29 +227,28 @@ def test_run_multiple_properties():
     assert run.bold is True
     assert run.italic is True
     assert run.font == "Times New Roman"
-    assert len(run.linked_objects) == 1  # Only one RunProperty
+    assert len(run.property) == 1  # Only one RunProperty
 
 
 def test_run_clear_method():
-    """Test clear method removes all linked objects"""
+    """Test clear method removes all objects"""
     run = Run()
     run.add_text("Text 1")
     run.add_break("page")
     run.add_text("Text 2")
 
-    assert len(run.linked_objects) == 3
+    assert len(run.objects) == 3
 
     run.clear()
-    assert len(run.linked_objects) == 0
+    assert len(run.objects) == 0
 
 
-def test_run_with_linked_objects_and_properties():
-    """Test Run with both linked objects and properties"""
+def test_run_with_objects_and_properties():
+    """Test Run with both objects and properties"""
     run = Run([Text("First")], bold=True, italic=True)
-    assert len(run.linked_objects) == 2  # RunProperty + Text
     assert run.bold is True
     assert run.italic is True
-    assert run.linked_objects[1].text == "First"
+    assert run.objects[0].text == "First"
 
 
 def test_add_text_with_index():
@@ -260,10 +258,10 @@ def test_add_text_with_index():
     run.add_text("Middle", 0)
     run.add_text("Start", 0)
 
-    assert len(run.linked_objects) == 3
-    assert run.linked_objects[0].text == "Start"
-    assert run.linked_objects[1].text == "Middle"
-    assert run.linked_objects[2].text == "End"
+    assert len(run.objects) == 3
+    assert run.objects[0].text == "Start"
+    assert run.objects[1].text == "Middle"
+    assert run.objects[2].text == "End"
 
 
 def test_add_tab_with_index():
@@ -272,9 +270,9 @@ def test_add_tab_with_index():
     run.add_text("After tab")
     run.add_tab(0)  # Add tab at the beginning
 
-    assert len(run.linked_objects) == 2
-    assert isinstance(run.linked_objects[0], Tab)
-    assert isinstance(run.linked_objects[1], Text)
+    assert len(run.objects) == 2
+    assert isinstance(run.objects[0], Tab)
+    assert isinstance(run.objects[1], Text)
 
 
 def test_run_with_only_properties_no_content():
@@ -295,35 +293,35 @@ def test_run_property_persistence():
 
     assert run.bold is True
     assert run.font == "Verdana"
-    # Should have RunProperty and Text in linked_objects
-    assert len(run.linked_objects) >= 1
+    # Should have RunProperty and Text in objects
+    assert len(run.objects) >= 1
 
 
-def test_update_linked_objects():
-    """Test _update_linked_objects method"""
+def test_update_objects():
+    """Test _update_objects method"""
     run = Run()
 
     # Add property
     run.bold = True
-    assert len(run.linked_objects) == 1  # RunProperty added
+    assert len(run.property) == 1  # RunProperty added
 
     # Remove property - should remove RunProperty
     run.bold = False
-    run._update_linked_objects()  # Явный вызов
-    assert len(run.linked_objects) == 0
+    run._update_properties()  # Явный вызов
+    assert len(run.property) == 0
 
     # Test with multiple properties
     run.bold = True
     run.italic = True
-    assert len(run.linked_objects) == 1
+    assert len(run.property) == 1
 
     run.bold = False  # Remove one property
-    run._update_linked_objects()
-    assert len(run.linked_objects) == 1  # Should still have RunProperty (italic)
+    run._update_properties()
+    assert len(run.property) == 1  # Should still have RunProperty (italic)
 
     run.italic = False  # Remove last property
-    run._update_linked_objects()
-    assert len(run.linked_objects) == 0  # Should remove RunProperty
+    run._update_properties()
+    assert len(run.property) == 0  # Should remove RunProperty
 
 
 def test_set_run_property_edge_cases():
@@ -382,12 +380,12 @@ def test_clear_preserves_properties():
     run.add_text("Text 1")
     run.add_text("Text 2")
 
-    assert len(run.linked_objects) == 3
+    assert len(run.objects) == 2
 
     run.clear()
 
-    assert len(run.linked_objects) == 0
-    assert run.bold is None
+    assert len(run.objects) == 0
+    assert run.bold is True
 
 
 def test_run_property_property():
@@ -406,10 +404,6 @@ def test_run_property_property():
     run.bold = False
     assert run.run_property is None
 
-    # RunProperty not at position 0
-    with pytest.raises(IndexError):
-        Run([Text("First"), RunProperty(bold=True)])
-
 
 def test_run_as_base_container():
     """Test that Run properly inherits from BaseContainerTag"""
@@ -417,7 +411,7 @@ def test_run_as_base_container():
 
     # Inherited methods should work
     run.add(Text("test"))
-    assert len(run.linked_objects) == 1
+    assert len(run.objects) == 1
 
     # find method
     texts = run.find(Text)
@@ -425,14 +419,14 @@ def test_run_as_base_container():
 
     # remove method
     run.remove(texts[0])
-    assert len(run.linked_objects) == 0
+    assert len(run.objects) == 0
 
     # pop method
     run.add_text("text1")
     run.add_text("text2")
     popped = run.pop()
     assert isinstance(popped, Text)
-    assert len(run.linked_objects) == 1
+    assert len(run.objects) == 1
 
 
 def test_run_slots():

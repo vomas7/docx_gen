@@ -1,5 +1,5 @@
 from core.ui_objects.base.base_container_tag import BaseContainerTag
-from core.ui_objects.base.linked_objects import LinkedObjects
+from core.ui_objects.base.linked_objects import Objects, Property
 from core.ui_objects.break_ import Break, BreakSpec
 from core.ui_objects.text import Bold, Font, Italic, Tab, Text
 
@@ -9,12 +9,13 @@ class RunProperty(BaseContainerTag):
 
     def __init__(
         self,
-        linked_objects: LinkedObjects | list = None,
+        objects: Objects | list = None,
+        property: Property | list = None,
         bold: bool = False,
         italic: bool = False,
         font: str = None,
     ):
-        super().__init__(linked_objects)
+        super().__init__(objects, property)
         self.bold = bold
         self.italic = italic
         self.font = font
@@ -26,6 +27,10 @@ class RunProperty(BaseContainerTag):
     @property
     def access_children(self) -> list[dict]:
         return [{"class": Bold}, {"class": Italic}, {"class": Font}]
+
+    @property
+    def access_property(self) -> list[dict]:
+        return list()
 
     @property
     def bold(self):
@@ -82,12 +87,13 @@ class Run(BaseContainerTag):
 
     def __init__(
         self,
-        linked_objects: LinkedObjects | list = None,
+        objects: Objects | list = None,
+        property: Property | list = None,
         bold: Bold | bool = False,
         italic: Italic | bool = False,
         font: Font | str = None,
     ):
-        super().__init__(linked_objects)
+        super().__init__(objects, property)
         self.bold = bold
         self.italic = italic
         self.font = font
@@ -99,11 +105,14 @@ class Run(BaseContainerTag):
     @property
     def access_children(self):
         return [
-            {"class": RunProperty, "required_position": 0},
             {"class": Break},
             {"class": Text},
             {"class": Tab},
         ]
+
+    @property
+    def access_property(self) -> list[dict]:
+        return [{"class": RunProperty, "required_position": 0}]
 
     def add_break(self, break_: BreakSpec, index: int = -1):
         """Adds a break (page or column) to the Run"""
@@ -132,8 +141,8 @@ class Run(BaseContainerTag):
 
     @property
     def run_property(self):
-        if self.linked_objects:
-            run_property = self.linked_objects[0]
+        if self.property:
+            run_property = self.property[0]
             if isinstance(run_property, RunProperty):
                 return run_property
         return None
@@ -147,11 +156,11 @@ class Run(BaseContainerTag):
     def bold(self, value: bool):
         """Set bold for contain text in Run"""
         self.set_run_property("bold", value)
-        self._update_linked_objects()
+        self._update_properties()
 
     def clear(self):
         """Clear all objects in linked objects"""
-        self.linked_objects.clear()
+        self.objects.clear()
 
     @property
     def contains_page_break(self):
@@ -166,7 +175,7 @@ class Run(BaseContainerTag):
     def italic(self, value: bool):
         """Set italic for contain text in Run"""
         self.set_run_property("italic", value)
-        self._update_linked_objects()
+        self._update_properties()
 
     @property
     def font(self):
@@ -175,12 +184,11 @@ class Run(BaseContainerTag):
     @font.setter
     def font(self, value: str):
         self.set_run_property("font", value)
-        self._update_linked_objects()
+        self._update_properties()
 
     def get_from_run_property(self, property_name: str) -> bool | str | None:
         """Getter of property rPr"""
         if self.run_property:
-            print(self.run_property.font)
             return self.run_property.get_attribute(property_name)
         return None
 
@@ -188,19 +196,18 @@ class Run(BaseContainerTag):
         """Setter property rPr"""
         if not self.run_property:
             run_property = RunProperty()
-            # print("Че нахуй?")
             setattr(run_property, property_name, value)
-            self.add(run_property, 0)
+            self.property.insert(0, run_property)
         else:
             setattr(self.run_property, property_name, value)
 
-    def _update_linked_objects(self):
+    def _update_properties(self):
         if self.run_property and not self._has_any_property():
-            self.remove(self.run_property)
+            self.property.remove(self.run_property)
 
     def _has_any_property(self) -> bool:
         properties = [
-            self.run_property.get_attribute(prop_name)
+            self.get_from_run_property(prop_name)
             for prop_name in self.run_property.__slots__
         ]
         return any(properties)

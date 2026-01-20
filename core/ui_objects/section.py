@@ -3,7 +3,10 @@ from core.ui_objects.atrib.ref import Footer, Gutter, Header
 from core.ui_objects.atrib.size import Height, Width
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.base_content_tag import BaseContentTag
-from core.ui_objects.base.linked_objects import LinkedObjects
+from core.ui_objects.base.linked_objects import Objects, Property
+from core.ui_objects.bookmarks import BookmarkEnd, BookmarkStart
+from core.ui_objects.paragraph import Paragraph
+from core.ui_objects.run import Run
 
 
 class PageSize(BaseContentTag):
@@ -162,11 +165,12 @@ class DocGrid(BaseContentTag):
 
 
 class Section(BaseContainerTag):
-    __slots__ = ("_pgSz",)
+    __slots__ = ()
 
-    def __init__(self, linked_objects: LinkedObjects | list = None):
-        super().__init__(linked_objects)
-        self._pgSz = PageSize()
+    def __init__(
+        self, objects: Objects | list = None, property: Property | list = None
+    ):
+        super().__init__(objects, property)
 
     @property
     def tag(self):
@@ -174,6 +178,15 @@ class Section(BaseContainerTag):
 
     @property
     def access_children(self):
+        return [
+            {"class": Paragraph},
+            {"class": Run},
+            {"class": BookmarkEnd},
+            {"class": BookmarkStart},
+        ]
+
+    @property
+    def access_property(self):
         return [
             {"class": PageSize, "required_position": 0},
             {"class": PageMargin, "required_position": 1},

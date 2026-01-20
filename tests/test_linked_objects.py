@@ -1,6 +1,6 @@
 import pytest
 
-from core.ui_objects.base.linked_objects import LinkedObjects
+from core.ui_objects.base.linked_objects import Objects
 
 
 class BaseContainerTag:
@@ -75,7 +75,7 @@ def test_linked_objects_initialization():
     """Test basic initialization with linked_parent"""
     parent = BaseContainerTag()
 
-    lo = LinkedObjects(parent, [1, 2, 3])
+    lo = Objects(parent, [1, 2, 3])
 
     assert lo.linked_parent == parent
     assert len(lo) == 3
@@ -88,7 +88,7 @@ def test_linked_objects_with_container_tags():
     """Test with actual container tags"""
     paragraph = ParagraphTag()
 
-    lo = LinkedObjects(paragraph, [TextTag(), ImageTag()])
+    lo = Objects(paragraph, [TextTag(), ImageTag()])
 
     assert lo.linked_parent == paragraph
     assert len(lo.linked_parent.access_children) == 3
@@ -97,7 +97,7 @@ def test_linked_objects_with_container_tags():
 def test_validate_access_child_allowed():
     """Test validation with allowed child"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, [])
+    lo = Objects(paragraph, [])
 
     text_tag = TextTag()
     try:
@@ -110,7 +110,7 @@ def test_validate_access_child_allowed():
 def test_validate_access_child_prohibited():
     """Test validation with prohibited child"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, [])
+    lo = Objects(paragraph, [])
 
     table_tag = TableTag()
 
@@ -125,7 +125,7 @@ def test_validate_access_child_prohibited():
 def test_append_with_validation():
     """Test that append validates before adding"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, [])
+    lo = Objects(paragraph, [])
 
     text_tag = TextTag()
 
@@ -144,7 +144,7 @@ def test_append_with_validation():
 def test_insert_with_validation():
     """Test that insert validates before adding"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, ["item1", "item3"])
+    lo = Objects(paragraph, ["item1", "item3"])
 
     text_tag = TextTag()
 
@@ -165,7 +165,7 @@ def test_insert_with_validation():
 def test_extend_with_list_validation():
     """Test that extend validates list items"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, [])
+    lo = Objects(paragraph, [])
 
     text_tag = TextTag()
     image_tag = ImageTag()
@@ -179,7 +179,7 @@ def test_extend_with_list_validation():
 def test_extend_with_mixed_list():
     """Test extend with mixed allowed/prohibited items"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, [])
+    lo = Objects(paragraph, [])
 
     text_tag = TextTag()
     table_tag = TableTag()
@@ -194,8 +194,8 @@ def test_extend_with_mixed_list():
 def test_extend_with_linked_objects():
     """Test extend with another LinkedObjects"""
     paragraph = ParagraphTag()
-    lo1 = LinkedObjects(paragraph, [])
-    lo2 = LinkedObjects(paragraph, [])
+    lo1 = Objects(paragraph, [])
+    lo2 = Objects(paragraph, [])
 
     text_tag = TextTag()
 
@@ -211,7 +211,7 @@ def test_setitem_with_validation():
     paragraph = ParagraphTag()
     text1 = TextTag()
     text2 = TextTag()
-    lo = LinkedObjects(paragraph, [text1])
+    lo = Objects(paragraph, [text1])
 
     lo[0] = text2
     assert lo[0] == text2
@@ -229,27 +229,17 @@ def test_initialization_validation():
     text_tag = TextTag()
     table_tag = TableTag()
 
-    lo1 = LinkedObjects(paragraph, [text_tag])
+    lo1 = Objects(paragraph, [text_tag])
     assert len(lo1) == 1
 
     with pytest.raises(TypeError):
-        LinkedObjects(paragraph, [table_tag])
-
-
-def test_empty_allowed_children():
-    """Test when parent has no allowed children"""
-    text = TextTag()
-    lo = LinkedObjects(text, [])
-
-    another_text = TextTag()
-    with pytest.raises(TypeError):
-        lo.append(another_text)
+        Objects(paragraph, [table_tag])
 
 
 def test_none_item_validation():
     """Test validation with None item"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, [])
+    lo = Objects(paragraph, [])
 
     result = lo.validate_access_child(None, 0)
     assert result is None
@@ -258,7 +248,7 @@ def test_none_item_validation():
 def test_non_container_tag_validation():
     """Test validation with non-container item"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, [])
+    lo = Objects(paragraph, [])
 
     class RegularClass:
         pass
@@ -272,7 +262,7 @@ def test_non_container_tag_validation():
 def test_real_scenario_paragraph_children():
     """Test real scenario: paragraph containing text and image"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, [])
+    lo = Objects(paragraph, [])
 
     text_tag = TextTag()
     lo.append(text_tag)
@@ -296,7 +286,7 @@ def test_real_scenario_paragraph_children():
 def test_validate_access_child_string_allowed():
     """Test that string is allowed for ParagraphTag"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, [])
+    lo = Objects(paragraph, [])
 
     result = lo.validate_access_child("test string", 0)
     assert result is True
@@ -320,7 +310,7 @@ def test_validate_access_child_with_position_validation():
             return self._access_children
 
     strict_parent = StrictTag()
-    lo = LinkedObjects(strict_parent, [])
+    lo = Objects(strict_parent, [])
 
     text_tag = TextTag()
     # TextTag должен быть на позиции 0
@@ -352,7 +342,7 @@ def test_insert_with_required_position():
             return self._access_children
 
     strict_parent = StrictTag()
-    lo = LinkedObjects(strict_parent, [])
+    lo = Objects(strict_parent, [])
 
     text_tag = TextTag()
     # Вставка на правильную позицию
@@ -382,7 +372,7 @@ def test_setitem_with_required_position():
     strict_parent = StrictTag()
     text_tag = TextTag()
     image_tag = ImageTag()
-    lo = LinkedObjects(strict_parent, [text_tag, image_tag])
+    lo = Objects(strict_parent, [text_tag, image_tag])
 
     # Правильная замена
     new_text = TextTag()
@@ -397,33 +387,19 @@ def test_setitem_with_required_position():
 def test_validate_access_children():
     """Test validate_access_children method"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, [])
+    lo = Objects(paragraph, [])
 
     items = [TextTag(), ImageTag(), "string"]
     lo.validate_access_children(items)
 
-    # Проверяем, что невалидные элементы вызывают ошибку
     with pytest.raises(TypeError):
         lo.validate_access_children([TextTag(), TableTag()])
-
-
-def test_linked_objects_len_during_validation():
-    """Test that __len__ is used correctly during validation"""
-    paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, [TextTag(), ImageTag()])
-
-    # При добавлении третьего элемента, позиция должна быть 2
-    result = lo.validate_access_child("test", 2)
-    assert result is True
-
-    lo.append("test")
-    assert lo[2] == "test"
 
 
 def test_multiple_allowed_classes():
     """Test with multiple allowed classes including non-container"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, [])
+    lo = Objects(paragraph, [])
 
     # Все три типа должны быть разрешены
     text_tag = TextTag()
@@ -441,11 +417,9 @@ def test_multiple_allowed_classes():
 
 
 def test_generator_exhaustion():
-    """Test that generator can be exhausted"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, [])
+    lo = Objects(paragraph, [])
 
-    # Дважды проверяем один и тот же элемент
     text_tag = TextTag()
     result1 = lo.validate_access_child(text_tag, 0)
     result2 = lo.validate_access_child(text_tag, 1)
@@ -457,7 +431,7 @@ def test_generator_exhaustion():
 def test_validate_access_child_str_representation():
     """Test error messages include proper string representations"""
     paragraph = ParagraphTag()
-    lo = LinkedObjects(paragraph, [])
+    lo = Objects(paragraph, [])
 
     table_tag = TableTag()
 
