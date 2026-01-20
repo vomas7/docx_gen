@@ -114,7 +114,7 @@ class RGBColor(tuple[int, int, int]):
                     or val > 255
             ):
                 raise ValueError(msg)
-        return super(RGBColor, cls).__new__(cls, (r, g, b))
+        return super().__new__(cls, (r, g, b))
 
     def __repr__(self):
         return "RGBColor(0x%02x, 0x%02x, 0x%02x)" % self

@@ -23,7 +23,7 @@ CLASS_REGISTRY: dict[str, dict[str, Any]] = {}
 def _is_valid_tag_class(cls: type) -> bool:
     """Checks if a class is a content or container tag."""
     return isinstance(cls, type) and issubclass(
-        cls.__base__, (BaseContentTag, BaseContainerTag)
+        cls.__base__, (BaseContentTag | BaseContainerTag)
     )
 
 

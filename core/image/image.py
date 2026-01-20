@@ -22,7 +22,7 @@ class Image:
     required by ImagePart."""
 
     def __init__(self, blob: bytes, filename: str, image_header: BaseImageHeader):
-        super(Image, self).__init__()
+        super().__init__()
         self._blob = blob
         self._filename = filename
         self._image_header = image_header
@@ -168,7 +168,11 @@ class Image:
 
 
 def _ImageHeaderFactory(stream: IO[bytes]):
-    """A |BaseImageHeader| subclass instance that can parse headers of image in `stream`."""
+    """
+    A |BaseImageHeader| subclass instance
+    that can parse headers of image in `stream`.
+    """
+
     from core.image import SIGNATURES
 
     def read_32(stream: IO[bytes]):

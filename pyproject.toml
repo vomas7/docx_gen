@@ -14,12 +14,17 @@ select = [
     "PD",  # Pandas-специфичные правила (опционально)
 ]
 
-exculde = [
+exclude = [
     ".git",
     "__pycache__",
     ".idea",
     "README.md",
     ".venv",
+]
+
+ignore = [
+    "UP031",
+    "I001"
 ]
 
 [tool.ruff.lint.isort]

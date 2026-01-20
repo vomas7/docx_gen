@@ -14,7 +14,7 @@ class Relationships(dict[str, "_Relationship"]):
     """Collection object for |_Relationship| instances, having list semantics."""
 
     def __init__(self, baseURI: str):
-        super(Relationships, self).__init__()
+        super().__init__()
         self._baseURI = baseURI
         self._target_parts_by_rId: dict[str, Any] = {}
 
@@ -81,9 +81,7 @@ class Relationships(dict[str, "_Relationship"]):
             if rel.is_external != is_external:
                 return False
             rel_target = rel.target_ref if rel.is_external else rel.target_part
-            if rel_target != target:
-                return False
-            return True
+            return rel_target != target
 
         for rel in self.values():
             if matches(rel, reltype, target, is_external):
@@ -126,7 +124,7 @@ class _Relationship:
         baseURI: str,
         external: bool = False,
     ):
-        super(_Relationship, self).__init__()
+        super().__init__()
         self._rId = rId
         self._reltype = reltype
         self._target = target

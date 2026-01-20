@@ -42,7 +42,9 @@ class PackURI(str):
 
     @property
     def ext(self) -> str:
-        """The extension portion of this pack URI, e.g. ``'xml'`` for ``'/word/document.xml'``.
+        """
+        The extension portion of this pack URI,
+        e.g. ``'xml'`` for ``'/word/document.xml'``.
 
         Note the period is not included.
         """

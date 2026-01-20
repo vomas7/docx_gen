@@ -14,13 +14,13 @@ class CaseInsensitiveDict(dict[str, Any]):
     """
 
     def __contains__(self, key):
-        return super(CaseInsensitiveDict, self).__contains__(key.lower())
+        return super().__contains__(key.lower())
 
     def __getitem__(self, key):
-        return super(CaseInsensitiveDict, self).__getitem__(key.lower())
+        return super().__getitem__(key.lower())
 
     def __setitem__(self, key, value):
-        return super(CaseInsensitiveDict, self).__setitem__(key.lower(), value)
+        return super().__setitem__(key.lower(), value)
 
 
 T = TypeVar("T")

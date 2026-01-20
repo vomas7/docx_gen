@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 class IOPackage:
     def __init__(self):
-        super(IOPackage, self).__init__()
+        super().__init__()
 
     def after_unmarshal(self):
         pass
@@ -73,14 +73,14 @@ class IOPackage:
                 for rel in walk_rels(new_source, visited):
                     yield rel
 
-        for rel in walk_rels(self):
-            yield rel
+        yield from walk_rels(self)
 
     def iter_parts(self) -> Iterator[Part]:
         """Generate exactly one reference to each of the parts in the package by
         performing a depth-first traversal of the rels graph."""
 
-        def walk_parts(source, visited=[]):
+        def walk_parts(source, visited = None):
+            visited = visited or []
             for rel in source.rels.values():
                 if rel.is_external:
                     continue
@@ -93,8 +93,7 @@ class IOPackage:
                 for part in walk_parts(new_source, visited):
                     yield part
 
-        for part in walk_parts(self):
-            yield part
+        yield from walk_parts(self)
 
     @property
     def parts(self) -> list[Part]:
