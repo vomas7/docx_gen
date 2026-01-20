@@ -2,7 +2,7 @@ from typing import IO
 
 from core.oxml_magic.parser import make_xml_tree
 from core.ui_objects.base.base_container_tag import BaseContainerTag
-from core.ui_objects.base.linked_objects import LinkedObjects
+from core.ui_objects.base.linked_objects import Objects
 from core.ui_objects.paragraph import Paragraph
 from core.ui_objects.section import Section
 
@@ -10,7 +10,7 @@ from core.ui_objects.section import Section
 class Body(BaseContainerTag):
     __slots__ = ("some",)
 
-    def __init__(self, linked_objects: LinkedObjects | list = None):
+    def __init__(self, linked_objects: Objects | list = None):
         super().__init__(linked_objects)
 
     @property
@@ -25,7 +25,7 @@ class Body(BaseContainerTag):
 class Document(BaseContainerTag):
     __slots__ = ("some", "_part")
 
-    def __init__(self, linked_objects: LinkedObjects | list = None):
+    def __init__(self, linked_objects: Objects | list = None):
         self._part = None
         super().__init__(linked_objects)
 

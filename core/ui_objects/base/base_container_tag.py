@@ -3,58 +3,82 @@ import copy
 from abc import abstractmethod
 
 from core.ui_objects.base.base_tag import BaseTag
-from core.ui_objects.base.linked_objects import LinkedObjects
+from core.ui_objects.base.linked_objects import Objects, Property
 
 
 class BaseContainerTag(BaseTag):
-    __slots__ = ("_linked_objects",)
+    __slots__ = ("_objects", "_property")
 
-    def __init__(self, linked_objects: LinkedObjects | list = None):
-        self.linked_objects = linked_objects
+    def __init__(
+        self, objects: Objects | list = None, property: Property | list = None
+    ):
+        self.objects = objects
+        self.property = property
 
     @property
     @abstractmethod
     def tag(self) -> str:
         """Must be implemented in child"""
-        pass
+        raise NotImplementedError
 
     @property
     @abstractmethod
     def access_children(self) -> list[dict]:
-        """Must assign children class that can be in linked_objects"""
-        pass
+        raise NotImplementedError
 
     @property
-    def linked_objects(self) -> LinkedObjects:
-        return self._linked_objects
+    @abstractmethod
+    def access_property(self) -> list[dict]:
+        raise NotImplementedError
 
-    @linked_objects.setter
-    def linked_objects(self, new: LinkedObjects):
+    @property
+    def objects(self) -> Objects:
+        return self._objects
+
+    @property
+    def property(self) -> Property:
+        return self._property
+
+    @property.setter
+    def property(self, new: Property):
         if new is None:
-            self._linked_objects = LinkedObjects(self, [])
-        elif isinstance(new, LinkedObjects):
+            self._property = Property(self, [])
+        elif isinstance(new, Property):
             new = copy.deepcopy(new)
             new.linked_parent = self
-            self._linked_objects = new
+            self._property = new
         elif isinstance(new, list):
-            self._linked_objects = LinkedObjects(self, new)
+            self._property = Property(self, new)
+        else:
+            raise TypeError(f"{new} is not an instance of BaseTag")
+
+    @objects.setter
+    def objects(self, new: Objects):
+        if new is None:
+            self._objects = Objects(self, [])
+        elif isinstance(new, Objects):
+            new = copy.deepcopy(new)
+            new.linked_parent = self
+            self._objects = new
+        elif isinstance(new, list):
+            self._objects = Objects(self, new)
         else:
             raise TypeError(f"{new} is not an instance of BaseTag")
 
     def add(self, item: BaseTag, index=-1):
         if index < 0:
-            self.linked_objects.append(item)
+            self.objects.append(item)
         else:
-            self.linked_objects.insert(index, item)
+            self.objects.insert(index, item)
 
     def remove(self, item: BaseTag):
-        self.linked_objects.remove(item)
+        self.objects.remove(item)
 
     def pop(self, index: int = -1):
-        return self.linked_objects.pop(index)
+        return self.objects.pop(index)
 
     def find(self, item: type[BaseTag]) -> list:
-        return [obj for obj in self.linked_objects if isinstance(obj, item)]
+        return [obj for obj in self.objects if isinstance(obj, item)]
 
     def remove_children(self, child_class: BaseTag | type[BaseTag]):
         children = self.find(child_class)

@@ -27,7 +27,7 @@ def make_xml_tree(cls_element: BaseTag) -> etree.Element:
 
         for ch in children:
             if isinstance(ch, Section):
-                extracted = [make_xml_tree(i) for i in ch.linked_objects]
+                extracted = [make_xml_tree(i) for i in ch.objects]
                 list(map(lambda ex: xml_tree.append(ex), extracted))
 
             tp_elem = make_xml_tree(ch)
