@@ -22,7 +22,7 @@ def make_xml_tree(cls_element: BaseTag) -> etree.Element:
         children = (
             cls_element._xml_children
             if isinstance(cls_element, Section)
-            else cls_element.objects
+            else cls_element.linked_objects
         )
 
         for ch in children:

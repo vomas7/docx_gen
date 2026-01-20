@@ -1,6 +1,7 @@
 """Provides a general interface to a `physical` OPC package, such as a zip file."""
 
 import os
+
 from zipfile import ZIP_DEFLATED, ZipFile, is_zipfile
 
 from core.io.exceptions import PackageNotFoundError
@@ -22,14 +23,14 @@ class PhysPkgReader:
         else:  # assume it's a stream and pass it to Zip reader to sort out
             reader_cls = _ZipPkgReader
 
-        return super(PhysPkgReader, cls).__new__(reader_cls)
+        return super().__new__(reader_cls)
 
 
 class PhysPkgWriter:
     """Factory for physical package writer objects."""
 
     def __new__(cls, pkg_file):
-        return super(PhysPkgWriter, cls).__new__(_ZipPkgWriter)
+        return super().__new__(_ZipPkgWriter)
 
 
 class _DirPkgReader(PhysPkgReader):
@@ -38,7 +39,7 @@ class _DirPkgReader(PhysPkgReader):
 
     def __init__(self, path):
         """`path` is the path to a directory containing an expanded package."""
-        super(_DirPkgReader, self).__init__()
+        super().__init__()
         self._path = os.path.abspath(path)
 
     def blob_for(self, pack_uri):
@@ -63,7 +64,7 @@ class _DirPkgReader(PhysPkgReader):
         rels item."""
         try:
             rels_xml = self.blob_for(source_uri.rels_uri)
-        except IOError:
+        except OSError:
             rels_xml = None
         return rels_xml
 
@@ -72,7 +73,7 @@ class _ZipPkgReader(PhysPkgReader):
     """Implements |PhysPkgReader| interface for a zip file OPC package."""
 
     def __init__(self, pkg_file):
-        super(_ZipPkgReader, self).__init__()
+        super().__init__()
         self._zipf = ZipFile(pkg_file, "r")
 
     def blob_for(self, pack_uri):
@@ -105,7 +106,7 @@ class _ZipPkgWriter(PhysPkgWriter):
     """Implements |PhysPkgWriter| interface for a zip file OPC package."""
 
     def __init__(self, pkg_file):
-        super(_ZipPkgWriter, self).__init__()
+        super().__init__()
         self._zipf = ZipFile(pkg_file, "w", compression=ZIP_DEFLATED)
 
     def close(self):

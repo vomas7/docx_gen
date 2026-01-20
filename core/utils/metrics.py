@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Tuple
-
 
 class Length(int):
     """Base class for length constructor classes Inches, Cm, Mm, Px, and Emu.
@@ -104,20 +102,19 @@ class Twips(Length):
         return Length.__new__(cls, emu)
 
 
-class RGBColor(Tuple[int, int, int]):
+class RGBColor(tuple[int, int, int]):
     """Immutable value object defining a particular RGB color."""
 
     def __new__(cls, r: int, g: int, b: int):
         msg = "RGBColor() takes three integer values 0-255"
         for val in (r, g, b):
             if (
-                    not isinstance(val,
-                                   int)  # pyright: ignore[reportUnnecessaryIsInstance]
+                    not isinstance(val, int)  # pyright: ignore[reportUnnecessaryIsInstance]
                     or val < 0
                     or val > 255
             ):
                 raise ValueError(msg)
-        return super(RGBColor, cls).__new__(cls, (r, g, b))
+        return super().__new__(cls, (r, g, b))
 
     def __repr__(self):
         return "RGBColor(0x%02x, 0x%02x, 0x%02x)" % self

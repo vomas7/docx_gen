@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
 import re
+
+from typing import Any
 
 nsmap = {
     "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
@@ -26,8 +27,7 @@ nsmap = {
 
 pfxmap = {value: key for key, value in nsmap.items()}
 
-qn_pattern = re.compile(r'</?[a-zA-Z_][a-zA-Z0-9_-]*:[a-zA-Z_][a-zA-Z0-9_-]*[^>]*>')
-
+qn_pattern = re.compile(r"</?[a-zA-Z_][a-zA-Z0-9_-]*:[a-zA-Z_][a-zA-Z0-9_-]*[^>]*>")
 
 
 class NamespacePrefixedTag(str):
@@ -113,7 +113,7 @@ def qn(tag: str) -> str:
     return f"{{{uri}}}{tagroot}"
 
 
-def find_qn(collection: Dict[str, str]):
+def find_qn(collection: dict[str, str]):
     print(collection)
     items = list(filter(lambda x: qn_pattern.match(x.keys()), collection))
     print(items)

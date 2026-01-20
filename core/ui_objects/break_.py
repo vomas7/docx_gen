@@ -61,7 +61,7 @@ class Break(BaseContentTag):
     def type(self, new_type: TypeSpec):
         if not new_type:
             self._type = Type(Type.Options.line)
-        elif isinstance(new_type, (str, Type.Options)):
+        elif isinstance(new_type, (str | Type.Options)):
             self._type = Type(new_type)
         elif isinstance(new_type, Type):
             self._type = new_type

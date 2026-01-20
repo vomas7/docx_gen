@@ -1,8 +1,10 @@
-from typing import Dict, Any, Generic, TypeVar, Callable, cast
 import functools
 
+from collections.abc import Callable
+from typing import Any, Generic, TypeVar, cast
 
-class CaseInsensitiveDict(Dict[str, Any]):
+
+class CaseInsensitiveDict(dict[str, Any]):
     """Mapping type that behaves like dict except that it matches without respect to the
     case of the key.
 
@@ -12,16 +14,16 @@ class CaseInsensitiveDict(Dict[str, Any]):
     """
 
     def __contains__(self, key):
-        return super(CaseInsensitiveDict, self).__contains__(key.lower())
+        return super().__contains__(key.lower())
 
     def __getitem__(self, key):
-        return super(CaseInsensitiveDict, self).__getitem__(key.lower())
+        return super().__getitem__(key.lower())
 
     def __setitem__(self, key, value):
-        return super(CaseInsensitiveDict, self).__setitem__(key.lower(), value)
+        return super().__setitem__(key.lower(), value)
 
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class lazyproperty(Generic[T]):

@@ -2,18 +2,17 @@
 
 from __future__ import annotations
 
-from typing import IO, TYPE_CHECKING, Iterator, cast
+from collections.abc import Iterator
+from typing import IO, TYPE_CHECKING, cast
 
 from core.io.constants import RELATIONSHIP_TYPE as RT
 from core.io.part import PartFactory
 from core.io.pkgreader import PackageReader
-from core.io.utils import lazyproperty
-
-from core.io.rel import Relationships
 from core.io.pkgurl import PACKAGE_URI
-
-from core.parts.image import ImageParts
 from core.io.pkgwriter import PackageWriter
+from core.io.rel import Relationships
+from core.io.utils import lazyproperty
+from core.parts.image import ImageParts
 
 if TYPE_CHECKING:
     from core.io.part import Part
@@ -22,9 +21,8 @@ if TYPE_CHECKING:
 
 
 class IOPackage:
-
     def __init__(self):
-        super(IOPackage, self).__init__()
+        super().__init__()
 
     def after_unmarshal(self):
         pass
@@ -35,8 +33,9 @@ class IOPackage:
         relationships for this package."""
         return Relationships(PACKAGE_URI.baseURI)
 
-    def load_rel(self, reltype: str, target: Part | str, rId: str,
-                 is_external: bool = False):
+    def load_rel(
+        self, reltype: str, target: Part | str, rId: str, is_external: bool = False
+    ):
         """Return newly added |_Relationship| instance of `reltype` between this part
         and `target` with key `rId`.
 
@@ -59,7 +58,7 @@ class IOPackage:
         performing a depth-first traversal of the rels graph."""
 
         def walk_rels(
-                source: IOPackage | Part, visited: list[Part] | None = None
+            source: IOPackage | Part, visited: list[Part] | None = None
         ) -> Iterator[_Relationship]:
             visited = [] if visited is None else visited
             for rel in source.rels.values():
@@ -74,14 +73,14 @@ class IOPackage:
                 for rel in walk_rels(new_source, visited):
                     yield rel
 
-        for rel in walk_rels(self):
-            yield rel
+        yield from walk_rels(self)
 
     def iter_parts(self) -> Iterator[Part]:
         """Generate exactly one reference to each of the parts in the package by
         performing a depth-first traversal of the rels graph."""
 
-        def walk_parts(source, visited=[]):
+        def walk_parts(source, visited = None):
+            visited = visited or []
             for rel in source.rels.values():
                 if rel.is_external:
                     continue
@@ -94,8 +93,7 @@ class IOPackage:
                 for part in walk_parts(new_source, visited):
                     yield part
 
-        for part in walk_parts(self):
-            yield part
+        yield from walk_parts(self)
 
     @property
     def parts(self) -> list[Part]:
@@ -142,8 +140,7 @@ class Package(IOPackage):
         """
         self._gather_image_parts()
 
-    def get_or_add_image_part(self,
-                              image_descriptor: str | IO[bytes]) -> ImagePart:
+    def get_or_add_image_part(self, image_descriptor: str | IO[bytes]) -> ImagePart:
         """Return |ImagePart| containing image specified by `image_descriptor`.
 
         The image-part is newly created if a matching one is not already present in the
@@ -178,11 +175,7 @@ class Unmarshaller:
 
         Package relationships are added to `pkg`.
         """
-        parts = (Unmarshaller._unmarshal_parts(
-            pkg_reader,
-            package,
-            part_factory
-        ))
+        parts = Unmarshaller._unmarshal_parts(pkg_reader, package, part_factory)
         Unmarshaller._unmarshal_relationships(pkg_reader, package, parts)
         for part in parts.values():
             part.after_unmarshal()
@@ -199,11 +192,7 @@ class Unmarshaller:
         parts = {}
         for partname, content_type, reltype, blob in pkg_reader.iter_sparts():
             parts[partname] = part_factory(
-                partname,
-                content_type,
-                reltype,
-                blob,
-                package
+                partname, content_type, reltype, blob, package
             )
         return parts
 
@@ -214,6 +203,7 @@ class Unmarshaller:
         in `parts`."""
         for source_uri, srel in pkg_reader.iter_srels():
             source = package if source_uri == "/" else parts[source_uri]
-            target = srel.target_ref if srel.is_external else parts[
-                srel.target_partname]
+            target = (
+                srel.target_ref if srel.is_external else parts[srel.target_partname]
+            )
             source.load_rel(srel.reltype, target, srel.rId, srel.is_external)

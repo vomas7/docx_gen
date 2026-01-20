@@ -4,16 +4,15 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Type, cast
+from typing import TYPE_CHECKING, cast
 
-from core.io.oxml import serialize_part_xml
-from core.io.pkgurl import PackURI
-from core.io.rel import Relationships
-from core.io.oxml import parse_xml
-from core.io.utils import lazyproperty
 from lxml import etree
 
-
+from core.io.constants import CONTENT_TYPE as CT, RELATIONSHIP_TYPE as RT
+from core.io.oxml import parse_xml, serialize_part_xml
+from core.io.pkgurl import PackURI
+from core.io.rel import Relationships
+from core.io.utils import lazyproperty
 
 if TYPE_CHECKING:
     from core.io.package import Package
@@ -33,7 +32,7 @@ class Part:
             blob: bytes | None = None,
             package: Package | None = None,
     ):
-        super(Part, self).__init__()
+        super().__init__()
         self._partname = partname
         self._content_type = content_type
         self._blob = blob
@@ -83,12 +82,12 @@ class Part:
             del self.rels[rId]
 
     @classmethod
-    def load(cls, partname: PackURI, content_type: str, blob: bytes,
-             package: Package):
+    def load(cls, partname: PackURI, content_type: str, blob: bytes, package: Package):
         return cls(partname, content_type, blob, package)
 
-    def load_rel(self, reltype: str, target: Part | str, rId: str,
-                 is_external: bool = False):
+    def load_rel(
+            self, reltype: str, target: Part | str, rId: str, is_external: bool = False
+    ):
         """Return newly added |_Relationship| instance of `reltype`.
 
         The new relationship relates the `target` part to this part with key `rId`.
@@ -126,8 +125,9 @@ class Part:
         """
         return self.rels.part_with_reltype(reltype)
 
-    def relate_to(self, target: Part | str, reltype: str,
-                  is_external: bool = False) -> str:
+    def relate_to(
+            self, target: Part | str, reltype: str, is_external: bool = False
+    ) -> str:
         """Return rId key of relationship of `reltype` to `target`.
 
         The returned `rId` is from an existing relationship if there is one, otherwise a
@@ -149,7 +149,8 @@ class Part:
     @lazyproperty
     def rels(self):
         """|Relationships| instance holding the relationships for this part."""
-        # -- prevent breakage in `python-ui_objects-template` by retaining legacy `._rels` attribute --
+        # -- prevent breakage in `python-ui_objects-template` by retaining
+        # legacy `._rels` attribute --
         self._rels = Relationships(self._partname.baseURI)
         return self._rels
 
@@ -159,11 +160,13 @@ class Part:
         return rel.target_ref
 
     def _rel_ref_count(self, rId: str) -> int:
-        """Return the count of references in this part to the relationship identified by `rId`.
+        """Return the count of references
+        in this part to the relationship identified by `rId`.
 
         Only an XML part can contain references, so this is 0 for `Part`.
         """
         return 0
+
 
 class XmlPart(Part):
     """Base class for package parts containing an XML payload, which is most of them.
@@ -173,10 +176,13 @@ class XmlPart(Part):
     """
 
     def __init__(
-            self, partname: PackURI, content_type: str,
-            element: etree._Element, package: Package
+            self,
+            partname: PackURI,
+            content_type: str,
+            element: etree._Element,
+            package: Package,
     ):
-        super(XmlPart, self).__init__(partname, content_type, package=package)
+        super().__init__(partname, content_type, package=package)
         self._element = element
 
     @property
@@ -189,8 +195,7 @@ class XmlPart(Part):
         return self._element
 
     @classmethod
-    def load(cls, partname: PackURI, content_type: str, blob: bytes,
-             package: Package):
+    def load(cls, partname: PackURI, content_type: str, blob: bytes, package: Package):
         element = parse_xml(blob)
         return cls(partname, content_type, element, package)
 
@@ -210,16 +215,6 @@ class XmlPart(Part):
         return len([_rId for _rId in rIds if _rId == rId])
 
 
-from core.parts.document import DocumentPart
-from core.parts.styles import StylesPart
-from core.parts.image import ImagePart
-from core.parts.hdrftr import FooterPart, HeaderPart
-from core.parts.settings import SettingsPart
-from core.parts.numbering import NumberingPart
-from core.io.constants import CONTENT_TYPE as CT
-from core.io.constants import RELATIONSHIP_TYPE as RT
-from core.parts.coreprops import CorePropertiesPart
-
 class PartFactory:
     """Provides a way for client code to specify a subclass of |Part| to be constructed
     by |Unmarshaller| based on its content type and/or a custom callable.
@@ -233,22 +228,34 @@ class PartFactory:
     the part, which is by default ``io.package.Part``.
     """
 
-    def part_class_selector(content_type: str, reltype: str) -> Type[Part] | None:
+    def part_class_selector(content_type: str, reltype: str) -> type[Part] | None:
+        from core.parts.image import ImagePart
 
         if reltype == RT.IMAGE:
             return ImagePart
         return None
 
-    # assign parts with content types
-    part_type_for: dict[str, Type[Part]] = {
-        CT.OPC_CORE_PROPERTIES: CorePropertiesPart,
-        CT.WML_DOCUMENT_MAIN: DocumentPart,
-        CT.WML_FOOTER: FooterPart,
-        CT.WML_HEADER: HeaderPart,
-        CT.WML_NUMBERING: NumberingPart,
-        CT.WML_SETTINGS: SettingsPart,
-        CT.WML_STYLES: StylesPart,
-    }
+    @staticmethod
+    def part_type_for(content_type = None):
+        from core.parts.coreprops import CorePropertiesPart
+        from core.parts.hdrftr import FooterPart, HeaderPart
+        from core.parts.numbering import NumberingPart
+        from core.parts.settings import SettingsPart
+        from core.parts.styles import StylesPart
+        from core.parts.document import DocumentPart
+
+        # assign parts with content types
+        content_types: dict[str, type[Part]] = {
+            CT.OPC_CORE_PROPERTIES: CorePropertiesPart,
+            CT.WML_DOCUMENT_MAIN: DocumentPart,
+            CT.WML_FOOTER: FooterPart,
+            CT.WML_HEADER: HeaderPart,
+            CT.WML_NUMBERING: NumberingPart,
+            CT.WML_SETTINGS: SettingsPart,
+            CT.WML_STYLES: StylesPart,
+        }
+        res = content_types[content_type] if content_type else content_types
+        return res
     default_part_type = Part
 
     def __new__(
@@ -259,8 +266,7 @@ class PartFactory:
             blob: bytes,
             package: Package,
     ):
-        PartClass: Type[Part] | None = cls.part_class_selector(content_type,
-                                                               reltype)
+        PartClass: type[Part] | None = cls.part_class_selector(content_type, reltype)
         if PartClass is None:
             PartClass = cls._part_cls_for(content_type)
 
@@ -270,9 +276,6 @@ class PartFactory:
     def _part_cls_for(cls, content_type: str):
         """Return the custom part class registered for `content_type`, or the default
         part class if no custom class is registered for `content_type`."""
-        if content_type in cls.part_type_for:
-            return cls.part_type_for[content_type]
+        if content_type in cls.part_type_for():
+            return cls.part_type_for(content_type)
         return cls.default_part_type
-
-
-

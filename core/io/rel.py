@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from core.io.oxml import CT_Relationships
 
@@ -10,17 +10,17 @@ if TYPE_CHECKING:
     from core.io.part import Part
 
 
-class Relationships(Dict[str, "_Relationship"]):
+class Relationships(dict[str, "_Relationship"]):
     """Collection object for |_Relationship| instances, having list semantics."""
 
     def __init__(self, baseURI: str):
-        super(Relationships, self).__init__()
+        super().__init__()
         self._baseURI = baseURI
         self._target_parts_by_rId: dict[str, Any] = {}
 
     def add_relationship(
         self, reltype: str, target: Part | str, rId: str, is_external: bool = False
-    ) -> "_Relationship":
+    ) -> _Relationship:
         """Return a newly added |_Relationship| instance."""
         rel = _Relationship(rId, reltype, target, self._baseURI, is_external)
         self[rId] = rel
@@ -73,15 +73,15 @@ class Relationships(Dict[str, "_Relationship"]):
         """Return relationship of matching `reltype`, `target`, and `is_external` from
         collection, or None if not found."""
 
-        def matches(rel: _Relationship, reltype: str, target: Part | str, is_external: bool):
+        def matches(
+            rel: _Relationship, reltype: str, target: Part | str, is_external: bool
+        ):
             if rel.reltype != reltype:
                 return False
             if rel.is_external != is_external:
                 return False
             rel_target = rel.target_ref if rel.is_external else rel.target_part
-            if rel_target != target:
-                return False
-            return True
+            return rel_target != target
 
         for rel in self.values():
             if matches(rel, reltype, target, is_external):
@@ -117,9 +117,14 @@ class _Relationship:
     """Value object for relationship to part."""
 
     def __init__(
-        self, rId: str, reltype: str, target: Part | str, baseURI: str, external: bool = False
+        self,
+        rId: str,
+        reltype: str,
+        target: Part | str,
+        baseURI: str,
+        external: bool = False,
     ):
-        super(_Relationship, self).__init__()
+        super().__init__()
         self._rId = rId
         self._reltype = reltype
         self._target = target
@@ -142,7 +147,8 @@ class _Relationship:
     def target_part(self) -> Part:
         if self._is_external:
             raise ValueError(
-                "target_part property on _Relationship is undef" "ined when target mode is External"
+                "target_part property on _Relationship is undef"
+                "ined when target mode is External"
             )
         return cast("Part", self._target)
 

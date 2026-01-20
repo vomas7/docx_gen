@@ -9,11 +9,12 @@ from __future__ import annotations
 import hashlib
 import io
 import os
-from typing import IO, Tuple
+
+from typing import IO
 
 from core.image.exceptions import UnrecognizedImageError
-from core.utils.metrics import Emu, Inches, Length
 from core.io.utils import lazyproperty
+from core.utils.metrics import Emu, Inches, Length
 
 
 class Image:
@@ -21,7 +22,7 @@ class Image:
     required by ImagePart."""
 
     def __init__(self, blob: bytes, filename: str, image_header: BaseImageHeader):
-        super(Image, self).__init__()
+        super().__init__()
         self._blob = blob
         self._filename = filename
         self._image_header = image_header
@@ -116,7 +117,7 @@ class Image:
 
     def scaled_dimensions(
         self, width: int | Length | None = None, height: int | Length | None = None
-    ) -> Tuple[Length, Length]:
+    ) -> tuple[Length, Length]:
         """(cx, cy) pair representing scaled dimensions of this image.
 
         The native dimensions of the image are scaled by applying the following rules to
@@ -167,7 +168,11 @@ class Image:
 
 
 def _ImageHeaderFactory(stream: IO[bytes]):
-    """A |BaseImageHeader| subclass instance that can parse headers of image in `stream`."""
+    """
+    A |BaseImageHeader| subclass instance
+    that can parse headers of image in `stream`.
+    """
+
     from core.image import SIGNATURES
 
     def read_32(stream: IO[bytes]):
@@ -195,7 +200,10 @@ class BaseImageHeader:
     @property
     def content_type(self) -> str:
         """Abstract property definition, must be implemented by all subclasses."""
-        msg = "content_type property must be implemented by all subclasses of " "BaseImageHeader"
+        msg = (
+            "content_type property must be implemented by all subclasses of "
+            "BaseImageHeader"
+        )
         raise NotImplementedError(msg)
 
     @property
@@ -205,7 +213,8 @@ class BaseImageHeader:
         An abstract property definition, must be implemented by all subclasses.
         """
         raise NotImplementedError(
-            "default_ext property must be implemented by all subclasses of " "BaseImageHeader"
+            "default_ext property must be implemented by all subclasses of "
+            "BaseImageHeader"
         )
 
     @property

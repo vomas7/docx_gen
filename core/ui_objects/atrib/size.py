@@ -9,6 +9,3 @@ class Height(SimpleAttribute):
 class Width(SimpleAttribute):
     def __init__(self, value: str):
         super().__init__(value=value, xml_name="w:w")
-
-
-
