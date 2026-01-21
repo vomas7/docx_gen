@@ -38,6 +38,10 @@ class Paragraph(BaseContainerTag):
             {"class": BookmarkStart},
         ]
 
+    def access_property(self) -> list[dict]:
+        return []
+
+
     def add_run(self, run: Run, index: int = -1):
         self.add(run, index)
 
