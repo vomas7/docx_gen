@@ -22,8 +22,8 @@ class ParagraphProperty(BaseContainerTag):
 class Paragraph(BaseContainerTag):
     __slots__ = ()
 
-    def __init__(self, linked_objects: Objects | list = None):
-        super().__init__(linked_objects)
+    def __init__(self, objects: Objects | list = None):
+        super().__init__(objects)
 
     @property
     def tag(self):
