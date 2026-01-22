@@ -80,7 +80,7 @@ class BaseContainerTag(BaseTag):
     def find(self, item: type[BaseTag]) -> list:
         return [obj for obj in self.objects if isinstance(obj, item)]
 
-    def remove_children(self, child_class: BaseTag | type[BaseTag]):
+    def remove_children(self, child_class: type[BaseTag]):
         children = self.find(child_class)
         for child in children:
             self.remove(child)

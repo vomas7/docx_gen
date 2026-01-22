@@ -8,7 +8,6 @@ from core.writer.recording_tools import folder_to_docx
 from core.writer.recording_tools import put_document_xml
 from core.writer.recording_tools import clean_temp_dir
 
-# from core.oxml_magic.parser import make_xml_tree, to_xml_str
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.linked_objects import Objects
 from core.ui_objects.paragraph import Paragraph

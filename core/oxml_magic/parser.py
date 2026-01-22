@@ -1,13 +1,16 @@
 import warnings
 from lxml import etree
-from core.oxml_magic.ns import NamespacePrefixedTag, nsmap, qn
+from core.oxml_magic.ns import NamespacePrefixedTag, nsmap, qn, XmlString
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.base_tag import BaseTag
 from core.ui_objects.section import Section
 from core.ui_objects.text import Text
-from core.utils.registry import _discover_and_register
 
-CLASS_REGISTRY: dict = _discover_and_register()
+
+def get_cls_by_tag(tag: str):
+    from core.ui_objects import CLASS_REGISTRY
+
+    return CLASS_REGISTRY.get(tag)
 
 
 def make_xml_tree(cls_element: BaseTag) -> etree.Element:
@@ -41,7 +44,7 @@ def declare_attrib(xml_elem: etree._Element, cls_obj: BaseTag):
 
 
 def read_xml_markup(xml_tree: etree.ElementBase):
-    tag = CLASS_REGISTRY.get(NamespacePrefixedTag.from_clark_name(xml_tree.tag))
+    tag = get_cls_by_tag(NamespacePrefixedTag.from_clark_name(xml_tree.tag))
     if not tag:
         warnings.warn(f"{xml_tree} object is not readable", stacklevel=2)
         return None
@@ -90,5 +93,15 @@ def convert_xml_to_cls(
     return object_markup
 
 
-def to_xml_str(xml_tree: etree.Element) -> str:
-    return etree.tostring(xml_tree, pretty_print=True, encoding="utf-8").decode()
+def to_xml_str(xml_tree: etree.Element) -> XmlString:
+    xml = etree.tostring(xml_tree, pretty_print=True, encoding="utf-8").decode()
+    return XmlString(xml)
+
+
+def get_section_template():
+    from core.io.api import parse_document_part
+
+    _part = parse_document_part()
+    [_body] = _part._element.getchildren()
+    _section = _body.getchildren()[-1]
+    return _section

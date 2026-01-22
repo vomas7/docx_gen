@@ -118,3 +118,64 @@ def find_qn(collection: dict[str, str]):
     items = list(filter(lambda x: qn_pattern.match(x.keys()), collection))
     print(items)
     # return re.findall(qn_pattern, collection)
+
+
+class XmlString(str):
+    """Provides string comparison override suitable for serialized XML that is useful
+    for tests."""
+
+    # '    <w:xyz xmlns:a="http://ns/decl/a" attr_name="val">text</w:xyz>'
+    # |          |                                          ||           |
+    # +----------+------------------------------------------++-----------+
+    #  front      attrs                                     | text
+    #                                                     close
+
+    _xml_elm_line_patt = re.compile(r"( *</?[\w:]+)(.*?)(/?>)([^<]*</[\w:]+>)?$")
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, str):
+            return False
+        lines = self.splitlines()
+        lines_other = other.splitlines()
+        if len(lines) != len(lines_other):
+            return False
+        for line, line_other in zip(lines, lines_other):
+            if not self._eq_elm_strs(line, line_other):
+                return False
+        return True
+
+    def __ne__(self, other: object) -> bool:
+        return not self.__eq__(other)
+
+    def _attr_seq(self, attrs: str) -> tuple[str]:
+        """Return a sequence of attribute strings parsed from `attrs`.
+
+        Each attribute string is stripped of whitespace on both ends.
+        """
+        attrs = attrs.strip()
+        attr_lst = attrs.split()
+        return sorted(attr_lst)
+
+    def _eq_elm_strs(self, line: str, line_2: str):
+        """Return True if the element in `line_2` is XML equivalent to the element in
+        `line`."""
+        front, attrs, close, text = self._parse_line(line)
+        front_2, attrs_2, close_2, text_2 = self._parse_line(line_2)
+        if front != front_2:
+            return False
+        if self._attr_seq(attrs) != self._attr_seq(attrs_2):
+            return False
+        if close != close_2:
+            return False
+        if text != text_2:
+            return False
+        return True
+
+    @classmethod
+    def _parse_line(cls, line: str) -> tuple[str, str, str, str]:
+        """(front, attrs, close, text) 4-tuple result of parsing XML element `line`."""
+        match = cls._xml_elm_line_patt.match(line)
+        if match is None:
+            return "", "", "", ""
+        front, attrs, close, text = [match.group(n) for n in range(1, 5)]
+        return front, attrs, close, text
