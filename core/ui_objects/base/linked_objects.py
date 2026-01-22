@@ -30,7 +30,7 @@ class LinkedList(UserList):
     def validate_access_child(self, item, position: int):
         allowed_classes = tuple(child["class"] for child in self.access_list)
         if not item or not allowed_classes:
-            return None
+            raise TypeError("No item or allowed_classes")
         if isinstance(item, allowed_classes):
             matching = [
                 child for child in self.access_list if child["class"] is type(item)

@@ -42,26 +42,26 @@ class BaseContainerTag(BaseTag):
     @property.setter
     def property(self, new: Property):
         if new is None:
-            self._property = Property(self, [])
+            self._property = Property(self, initlist=[])
         elif isinstance(new, Property):
             new = copy.deepcopy(new)
             new.linked_parent = self
             self._property = new
         elif isinstance(new, list):
-            self._property = Property(self, new)
+            self._property = Property(self, initlist=new)
         else:
             raise TypeError(f"{new} is not an instance of BaseTag")
 
     @objects.setter
     def objects(self, new: Objects):
         if new is None:
-            self._objects = Objects(self, [])
+            self._objects = Objects(self, initlist=[])
         elif isinstance(new, Objects):
             new = copy.deepcopy(new)
             new.linked_parent = self
             self._objects = new
         elif isinstance(new, list):
-            self._objects = Objects(self, new)
+            self._objects = Objects(self, initlist=new)
         else:
             raise TypeError(f"{new} is not an instance of BaseTag")
 

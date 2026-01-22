@@ -165,8 +165,6 @@ class DocGrid(BaseContentTag):
 
 
 class Section(BaseContainerTag):
-    __slots__ = ()
-
     def __init__(
         self, objects: Objects | list = None, property: Property | list = None
     ):

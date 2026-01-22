@@ -18,6 +18,10 @@ class ParagraphProperty(BaseContainerTag):
     def access_children(self):
         return [{"class": RunProperty}]
 
+    @property
+    def access_property(self) -> list[dict]:
+        return list()
+
 
 class Paragraph(BaseContainerTag):
     __slots__ = ()
@@ -32,18 +36,19 @@ class Paragraph(BaseContainerTag):
     @property
     def access_children(self):
         return [
-            {"class": ParagraphProperty, "required_position": 0},
             {"class": Run},
             {"class": BookmarkEnd},
             {"class": BookmarkStart},
         ]
 
+    @property
     def access_property(self) -> list[dict]:
-        return []
-
+        return [{"class": ParagraphProperty, "required_position": 0}]
 
     def add_run(self, run: Run, index: int = -1):
         self.add(run, index)
 
     def add_text(self, text: str):
-        self.add(Run().add_text(text))
+        r = Run()
+        r.add_text(text)
+        self.add(r)

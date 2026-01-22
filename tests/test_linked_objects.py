@@ -241,8 +241,8 @@ def test_none_item_validation():
     paragraph = ParagraphTag()
     lo = Objects(paragraph, [])
 
-    result = lo.validate_access_child(None, 0)
-    assert result is None
+    with pytest.raises(TypeError):
+        lo.validate_access_child(None, 0)
 
 
 def test_non_container_tag_validation():

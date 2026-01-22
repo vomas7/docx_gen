@@ -1,8 +1,5 @@
-import os.path
 import warnings
-
 from lxml import etree
-
 from core.oxml_magic.ns import NamespacePrefixedTag, nsmap, qn, XmlString
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.base_tag import BaseTag
@@ -19,12 +16,12 @@ def get_cls_by_tag(tag: str):
 def make_xml_tree(cls_element: BaseTag) -> etree.Element:
     xml_tree = etree.Element(qn(cls_element.tag), attrib=cls_element.attrs, nsmap=nsmap)
     if isinstance(cls_element, BaseContainerTag):
-        children = (
-            cls_element._xml_children
-            if isinstance(cls_element, Section)
-            else cls_element.linked_objects
-        )
-
+        if isinstance(cls_element, Section):
+            children = cls_element.property
+        elif cls_element.property:
+            children = list(cls_element.property) + list(cls_element.objects)
+        else:
+            children = cls_element.objects
         for ch in children:
             if isinstance(ch, Section):
                 extracted = [make_xml_tree(i) for i in ch.objects]
@@ -65,10 +62,10 @@ def read_xml_markup(xml_tree: etree.ElementBase):
     for child in xml_tree:
         cls_object = read_xml_markup(child)
         if cls_object:
-            if isinstance(obj, Section):
-                continue
+            if cls_object.__class__ in [i.get("class") for i in obj.access_property]:
+                obj.property.append(cls_object)
             else:
-                obj.linked_objects.append(cls_object)
+                obj.objects.append(cls_object)
     return obj
 
 
@@ -78,14 +75,14 @@ def process_sections(obj_markup: BaseTag):
     if isinstance(obj_markup, Body):
         elements = []
         body_linked = []
-        for item in obj_markup.linked_objects:
+        for item in obj_markup.objects:
             if isinstance(item, Section):
-                item.linked_objects = elements
+                item.objects = elements
                 elements.clear()
                 body_linked.append(item)
             else:
                 elements.append(item)
-        obj_markup.linked_objects = body_linked
+        obj_markup.objects = body_linked
 
 
 def convert_xml_to_cls(
