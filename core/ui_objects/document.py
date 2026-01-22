@@ -1,5 +1,5 @@
 from typing import IO
-
+import os
 from core.oxml_magic.parser import make_xml_tree
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.linked_objects import Objects
@@ -37,7 +37,10 @@ class Document(BaseContainerTag):
     def access_children(self):
         return [{"class": Body}]
 
-    def open(self, file: str | IO[bytes]):
+    def access_property(self) -> list[dict]:
+        return []
+
+    def open(self, file: str | IO[bytes] = None):
         from core.io.api import parse_document_part
         from core.oxml_magic.parser import convert_xml_to_cls
 

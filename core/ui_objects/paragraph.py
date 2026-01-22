@@ -22,8 +22,8 @@ class ParagraphProperty(BaseContainerTag):
 class Paragraph(BaseContainerTag):
     __slots__ = ()
 
-    def __init__(self, linked_objects: Objects | list = None):
-        super().__init__(linked_objects)
+    def __init__(self, objects: Objects | list = None):
+        super().__init__(objects)
 
     @property
     def tag(self):
@@ -37,6 +37,10 @@ class Paragraph(BaseContainerTag):
             {"class": BookmarkEnd},
             {"class": BookmarkStart},
         ]
+
+    def access_property(self) -> list[dict]:
+        return []
+
 
     def add_run(self, run: Run, index: int = -1):
         self.add(run, index)
