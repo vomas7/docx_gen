@@ -1,34 +1,27 @@
-# from lxml import etree
-# from core.oxml_magic.ns import XmlString
-# import pytest
-# from core.io.api import parse_document_part
-# from core.ui_objects import Document
-# from core.ui_objects.paragraph import Paragraph
-# from core.ui_objects.run import Run
-# from core.ui_objects.section import Section
-#
-#
-# @pytest.fixture
-# def default_xml() -> etree.Element:
-#     return parse_document_part()._element
-#
-# def document():
-#     doc = Document()
-#     doc.open()
-#     return doc
-#
-# @pytest.fixture()
-# def any_objects(document):
-#     r = Run()
-#     r.add_text("test1")
-#     nested_elem = Section(objects=[Paragraph(objects=[r])])
-#     return [document, Section(), Paragraph(), Run(), nested_elem]
-#
-#
-# def test_convert_to_xml(any_objects):
-#     ...
-#
-#
-# def test_from_xml_to_cls(default_xml):
-#     doc = parse_document_part(default_xml)
-#     # pass
+from lxml import etree
+import zipfile
+from core.utils.constants import DOC_DEFAULT_PATH
+import pytest
+from core.ui_objects import Document
+
+parser = etree.XMLParser(remove_blank_text=True)
+
+
+@pytest.fixture
+def default_document_xml():
+    with (
+        zipfile.ZipFile(DOC_DEFAULT_PATH, "r") as docx_zip,
+        docx_zip.open("word/document.xml") as xml_file,
+    ):
+        xml_content = xml_file.read()
+        return etree.fromstring(xml_content, parser=parser)
+
+
+@pytest.fixture
+def document_xml():
+    doc = Document()
+    return etree.fromstring(doc.to_xml(), parser=parser)
+
+
+# def test_doc_to_xml(default_document_xml, document_xml):
+#     assert etree.tostring(document_xml) == etree.tostring(default_document_xml)

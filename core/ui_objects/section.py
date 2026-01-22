@@ -12,7 +12,7 @@ from core.ui_objects.run import Run
 class PageSize(BaseContentTag):
     __slots__ = ("_width", "_height")
 
-    def __init__(self, width: str = None, height: str = None):
+    def __init__(self, width: int = 12240, height: int = 15840):
         self._width = Width(width)
         self._height = Height(height)
 
@@ -22,7 +22,7 @@ class PageSize(BaseContentTag):
 
     @width.setter
     def width(self, value):
-        self._width = value
+        self._width.value = value
 
     @property
     def height(self):
@@ -30,7 +30,7 @@ class PageSize(BaseContentTag):
 
     @height.setter
     def height(self, value):
-        self._height = value
+        self._height.value = value
 
     @property
     def tag(self):
@@ -41,14 +41,14 @@ class PageMargin(BaseContentTag):
     __slots__ = ("_top", "_right", "_bottom", "_left", "_header", "_footer", "_gutter")
 
     def __init__(
-        self,
-        top: str = None,
-        right: str = None,
-        bottom: str = None,
-        left: str = None,
-        header: str = None,
-        footer: str = None,
-        gutter: str = None,
+            self,
+            top: int = 1440,
+            right: int = 1800,
+            bottom: int = 1440,
+            left: int = 1800,
+            header: int = 720,
+            footer: int = 720,
+            gutter: int = 0,
     ):
         self._top = Top(top)
         self._right = Right(right)
@@ -129,7 +129,7 @@ class PageMargin(BaseContentTag):
 class Cols(BaseContentTag):
     __slots__ = ("_space",)
 
-    def __init__(self, space: str = None):
+    def __init__(self, space: int = 720):
         self._space = Space(space)
 
     @property
@@ -148,7 +148,7 @@ class Cols(BaseContentTag):
 class DocGrid(BaseContentTag):
     __slots__ = ("_line_pitch",)
 
-    def __init__(self, line_pitch: str = None):
+    def __init__(self, line_pitch: int = 360):
         self._line_pitch = LinePitch(line_pitch)
 
     @property
@@ -166,8 +166,12 @@ class DocGrid(BaseContentTag):
 
 class Section(BaseContainerTag):
     def __init__(
-        self, objects: Objects | list = None, property: Property | list = None
+            self,
+            objects: Objects | list = None,
+            property: Property | list = None
     ):
+        if not property:
+            property = [PageSize(), PageMargin(), Cols(), DocGrid()]
         super().__init__(objects, property)
 
     @property
@@ -191,3 +195,33 @@ class Section(BaseContainerTag):
             {"class": Cols, "required_position": 2},
             {"class": DocGrid, "required_position": 3},
         ]
+
+    def change_page_size(self, width: int, height: int):
+        self._change_property(PageSize(width=width, height=height))
+
+    def change_page_margin(
+            self,
+            top: int,
+            right: int,
+            bottom: int,
+            left: int,
+            header: int,
+            footer: int,
+            gutter: int
+    ):
+        self._change_property(
+            PageMargin(
+                top=top,
+                right=right,
+                bottom=bottom,
+                left=left,
+                header=header,
+                footer=footer,
+                gutter=gutter)
+        )
+
+    def change_cols(self, space: int):
+        self._change_property(Cols(space))
+
+    def change_doc_grid(self, line_pitch: int):
+        self._change_property(DocGrid(line_pitch))

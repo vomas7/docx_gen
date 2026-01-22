@@ -27,7 +27,7 @@ def _is_valid_tag_class(cls: type) -> bool:
     )
 
 
-def _extract_slot_attributes(cls: type) -> list:
+def _extract_slot_attributes(cls: BaseContainerTag) -> list:
     """Extracts attribute classes from class slots."""
     if not hasattr(cls, "__slots__"):
         return []
@@ -69,7 +69,9 @@ def _register_module_classes(module, initialized_classes: list) -> None:
 def _discover_and_register() -> None:
     """Discovers and registers all classes in the package."""
     initialized_classes = []
-    for _, module_name, _ in pkgutil.iter_modules(__path__):
+    module_names = [module_name for _, module_name, _ in pkgutil.iter_modules(__path__)]
+    module_names[-1] = module_names.pop(module_names.index('document'))
+    for module_name in module_names:
         if module_name in ("__main__", "__init__"):
             continue
 
@@ -78,6 +80,9 @@ def _discover_and_register() -> None:
             _register_module_classes(module, initialized_classes)
         except ImportError as e:
             print(f"Warning: Could not import {module_name}: {e}")
+
+
+_discover_and_register()
 
 
 __all__ = [
