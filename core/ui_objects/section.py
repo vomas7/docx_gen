@@ -1,4 +1,3 @@
-from core.ui_objects import BaseTag
 from core.ui_objects.atrib.margins import Bottom, Left, LinePitch, Right, Space, Top
 from core.ui_objects.atrib.ref import Footer, Gutter, Header
 from core.ui_objects.atrib.size import Height, Width

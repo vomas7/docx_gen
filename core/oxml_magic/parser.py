@@ -10,7 +10,7 @@ from core.ui_objects.text import Text
 
 
 if TYPE_CHECKING:
-    from core.ui_objects import Body
+    pass
 
 
 def get_cls_by_tag(tag: str):

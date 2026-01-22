@@ -31,11 +31,11 @@ class LinkedList(UserList):
         allowed_classes = tuple(child["class"] for child in self.access_list)
         if not item:
             raise TypeError(
-                f"item is None"
+                "item is None"
             )
         if not allowed_classes:
             raise TypeError(
-                f"allowed_classes is None"
+                "allowed_classes is None"
             )
         if isinstance(item, allowed_classes):
             matching = [
