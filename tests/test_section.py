@@ -28,7 +28,7 @@ def test_init(section):
         assert prop["class"] in test_access_prop
 
     for prop in section.property:
-        assert prop["class"].__class__ in test_access_prop
+        assert prop.__class__ in test_access_prop
 
     assert len(section.objects) == 0
 

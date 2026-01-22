@@ -1,10 +1,16 @@
+import zipfile
 import warnings
+from typing import TYPE_CHECKING, IO
 from lxml import etree
 from core.oxml_magic.ns import NamespacePrefixedTag, nsmap, qn, XmlString
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.base_tag import BaseTag
 from core.ui_objects.section import Section
 from core.ui_objects.text import Text
+
+
+if TYPE_CHECKING:
+    from core.ui_objects import Body
 
 
 def get_cls_by_tag(tag: str):
@@ -62,8 +68,12 @@ def read_xml_markup(xml_tree: etree.ElementBase):
     for child in xml_tree:
         cls_object = read_xml_markup(child)
         if cls_object:
-            if cls_object.__class__ in [i.get("class") for i in obj.access_property]:
-                obj.property.append(cls_object)
+            access_property = list(filter(
+                lambda x: x.get('class') == cls_object.__class__, obj.access_property
+            ))
+            if len(access_property) > 0:
+                position = access_property[0].get("required_position")
+                obj.property[position] = cls_object
             else:
                 obj.objects.append(cls_object)
     return obj
@@ -83,14 +93,12 @@ def process_sections(obj_markup: BaseTag):
             else:
                 elements.append(item)
         obj_markup.objects = body_linked
+        return obj_markup
 
 
-def convert_xml_to_cls(
-    xml_tree: etree.ElementBase,
-) -> BaseTag:
+def convert_xml_to_cls(xml_tree: etree.ElementBase) -> BaseTag:
     object_markup = read_xml_markup(xml_tree)
-    process_sections(object_markup)
-    return object_markup
+    return process_sections(object_markup)
 
 
 def to_xml_str(xml_tree: etree.Element) -> XmlString:
@@ -98,10 +106,13 @@ def to_xml_str(xml_tree: etree.Element) -> XmlString:
     return XmlString(xml)
 
 
-def get_section_template():
-    from core.io.api import parse_document_part
-
-    _part = parse_document_part()
-    [_body] = _part._element.getchildren()
-    _section = _body.getchildren()[-1]
-    return _section
+def parse_document(file: str | IO[bytes]) -> BaseTag:
+    """Returns the Document Body tag"""
+    with (
+        zipfile.ZipFile(file, "r") as docx_zip,
+        docx_zip.open("word/document.xml") as xml_file,
+    ):
+        xml_content = xml_file.read()
+        xml = etree.fromstring(xml_content)
+    [_body] = xml.getchildren()
+    return convert_xml_to_cls(_body)

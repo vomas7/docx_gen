@@ -1,13 +1,8 @@
 from typing import IO
-import zipfile
-from lxml import etree
 
-from core.oxml_magic.parser import make_xml_tree, to_xml_str
-from core.writer.recording_tools import create_tmp_dir
-from core.writer.recording_tools import folder_to_docx
-from core.writer.recording_tools import put_document_xml
-from core.writer.recording_tools import clean_temp_dir
-
+from core.ui_objects.atrib.ignorable import Ignorable
+from core.utils.constants import DOC_DEFAULT_PATH
+from core.writer.recording_tools import create_docx, docx_to_xml
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.linked_objects import Objects
 from core.ui_objects.paragraph import Paragraph
@@ -34,9 +29,18 @@ class Body(BaseContainerTag):
 
 
 class Document(BaseContainerTag):
-    def __init__(self, path: str = "default.docx", objects: Objects | list = None):
+    __slots__ = ('_ignorable',)
+
+    def __init__(
+            self,
+            path: str = None,
+            objects: Objects | list = None
+    ):
         super().__init__(objects)
+        if not path:
+            path = DOC_DEFAULT_PATH
         self.open(path)
+        self._ignorable = Ignorable("w14 wp14")
 
     @property
     def tag(self):
@@ -50,21 +54,31 @@ class Document(BaseContainerTag):
     def access_property(self) -> list[dict]:
         return list()
 
+    @property
+    def ignorable(self):
+        return self._ignorable.value
+
+    @ignorable.setter
+    def ignorable(self, value):
+        self._ignorable.value = value
+
     def open(self, file: str | IO[bytes]):
-        from core.oxml_magic.parser import convert_xml_to_cls
+        from core.oxml_magic.parser import parse_document
+        self.add(parse_document(file))
 
-        with (
-            zipfile.ZipFile(file, "r") as docx_zip,
-            docx_zip.open("word/document.xml") as xml_file,
-        ):
-            xml_content = xml_file.read()
-            xml = etree.fromstring(xml_content)
-        [_body] = xml.getchildren()
-        self.add(convert_xml_to_cls(_body))
+    def save(self, file_path: str):
+        create_docx(self, file_path)
 
-    def save(self, filename: str):
-        document_folder_template = create_tmp_dir()
-        xml_str = to_xml_str(make_xml_tree(self))
-        put_document_xml(document_folder_template, xml_str)
-        folder_to_docx(filename, document_folder_template)
-        clean_temp_dir(document_folder_template)
+    @property
+    def body(self) -> Body:
+        return self.objects[0]
+
+    @property
+    def sections(self) -> list[Section]:
+        return list(filter(lambda x: isinstance(x, Section), self.body.objects))
+
+    def get_section(self, index: int = -1) -> Section:
+        return self.sections[index]
+
+    def to_xml(self):
+        return docx_to_xml(self)
