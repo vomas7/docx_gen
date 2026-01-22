@@ -30,7 +30,10 @@ class LinkedList(UserList):
     def validate_access_child(self, item, position: int):
         allowed_classes = tuple(child["class"] for child in self.access_list)
         if not item or not allowed_classes:
-            return None
+            raise TypeError(
+                f"It is prohibited to add {item.__class__.__name__} to "
+                f"linked_objects of {self.linked_parent.__class__.__name__}"
+            )
         if isinstance(item, allowed_classes):
             matching = [
                 child for child in self.access_list if child["class"] is type(item)

@@ -80,8 +80,6 @@ def _discover_and_register() -> None:
             print(f"Warning: Could not import {module_name}: {e}")
 
 
-_discover_and_register()
-
 __all__ = [
     "Run",
     "Text",
