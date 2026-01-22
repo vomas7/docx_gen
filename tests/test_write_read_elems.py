@@ -31,3 +31,4 @@ def test_convert_to_xml(any_objects):
 
 def test_from_xml_to_cls(default_xml):
     doc = parse_document_part(default_xml)
+    # pass
