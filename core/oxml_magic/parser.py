@@ -3,7 +3,7 @@ import warnings
 
 from lxml import etree
 
-from core.oxml_magic.ns import NamespacePrefixedTag, nsmap, qn
+from core.oxml_magic.ns import NamespacePrefixedTag, nsmap, qn, XmlString
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.base_tag import BaseTag
 from core.ui_objects.section import Section
@@ -96,19 +96,15 @@ def convert_xml_to_cls(
     return object_markup
 
 
-def to_xml_str(xml_tree: etree.Element) -> str:
-    return etree.tostring(xml_tree, pretty_print=True, encoding="utf-8").decode()
+def to_xml_str(xml_tree: etree.Element) -> XmlString:
+    xml = etree.tostring(xml_tree, pretty_print=True, encoding="utf-8").decode()
+    return XmlString(xml)
 
 
 def get_section_template():
     from core.io.api import parse_document_part
 
-    file_path = os.path.dirname(__file__)
-    template_file = os.path.join(
-        os.path.abspath(file_path), "..", "templates", "default.docx"
-    )
-
-    _part = parse_document_part(template_file)
+    _part = parse_document_part()
     [_body] = _part._element.getchildren()
     _section = _body.getchildren()[-1]
     return _section
