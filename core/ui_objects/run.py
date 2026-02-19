@@ -2,6 +2,7 @@ from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.linked_objects import Objects, Property
 from core.ui_objects.break_ import Break, BreakSpec
 from core.ui_objects.text import Bold, Font, Italic, Tab, Text
+from core.ui_objects.image.image import Drawing
 
 
 class RunProperty(BaseContainerTag):
@@ -108,6 +109,7 @@ class Run(BaseContainerTag):
             {"class": Break},
             {"class": Text},
             {"class": Tab},
+            {"class": Drawing},
         ]
 
     @property

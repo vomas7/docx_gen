@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from enum import Enum
 from typing import ClassVar
+from core.utils.metrics import Length, Twips
 
 
 class BaseAttribute:
@@ -135,7 +136,7 @@ class BooleanAttribute(BaseAttribute):
 
 class SimpleAttribute(BaseAttribute):
     def __init__(self, xml_name: str, value: str | int | float):
-        self.value = value
+        self._value = value
         super().__init__(xml_name)
 
     @property
@@ -146,11 +147,36 @@ class SimpleAttribute(BaseAttribute):
     def value(self, another: str | int | float):
         if isinstance(another, str) and another.isdecimal():
             self._value = another
-        elif isinstance(another, int) or isinstance(another, float):
+        elif isinstance(another, int | float):
             self._value = str(another)
         else:
             TypeError(f"another must be str or int not {type(another)}")
 
+
+class SizeAttribute(BaseAttribute):
+    def __init__(self, xml_name: str, value: Length):
+        self.value = value
+        super().__init__(xml_name)
+
     @property
-    def xml_name(self):
-        return self._xml_name
+    def value(self) -> Length:
+        return self._value
+
+    @value.setter
+    def value(self, new_value: Length):
+        if isinstance(new_value, Length):
+            self._value = new_value
+        TypeError(f"value must be Length not {type(new_value)}")
+
+
+class TwipsAttribute(SizeAttribute):
+    def __init__(self, xml_name: str, value: Length):
+        super().__init__(xml_name, value)
+
+    @property
+    def value(self) -> Twips:
+        return self._value.twips
+
+    @value.setter
+    def value(self, new_value: Length):
+        SizeAttribute.value.fset(self, new_value)

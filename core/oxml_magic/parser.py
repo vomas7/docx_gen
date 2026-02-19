@@ -2,6 +2,7 @@ import zipfile
 import warnings
 from typing import TYPE_CHECKING, IO
 from lxml import etree
+from core.oxml_magic.xml_object import find_name_attr
 from core.oxml_magic.ns import NamespacePrefixedTag, nsmap, qn, XmlString
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.base_tag import BaseTag
@@ -43,8 +44,11 @@ def make_xml_tree(cls_element: BaseTag) -> etree.Element:
 
 def declare_attrib(xml_elem: etree._Element, cls_obj: BaseTag):
     for attr, val in xml_elem.attrib.items():
-        attr_name = NamespacePrefixedTag.from_clark_name(attr).split(":")[1]
-        if hasattr(cls_obj, attr_name):
+        if ":" not in attr:
+            attr = cls_obj.tag.split(":")[0] + f":{attr}"  # takes tag prefix
+        attr_name = find_name_attr(cls_obj, attr)
+        if attr_name is not None and attr_name.startswith("_"):
+            attr_name = attr_name[1:]
             property_attr = getattr(type(cls_obj), attr_name)
             property_attr.__set__(cls_obj, val)
 
@@ -68,12 +72,16 @@ def read_xml_markup(xml_tree: etree.ElementBase):
     for child in xml_tree:
         cls_object = read_xml_markup(child)
         if cls_object:
-            access_property = list(filter(
-                lambda x: x.get('class') == cls_object.__class__, obj.access_property
-            ))
+            access_property = list(
+                filter(
+                    lambda x: x.get("class").__name__ == cls_object.__class__.__name__,
+                    obj.access_property,
+                )
+            )
+
             if len(access_property) > 0:
-                position = access_property[0].get("required_position")
-                obj.property[position] = cls_object
+                position = access_property[0].get("required_position") or 0
+                obj.property.insert(position, cls_object)
             else:
                 obj.objects.append(cls_object)
     return obj

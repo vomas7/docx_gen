@@ -54,3 +54,10 @@ def create_docx(doc_obj: "Document", file_path: str):
     put_document_xml(document_folder_template, docx_to_xml(doc_obj))
     folder_to_docx(file_path, document_folder_template)
     clean_temp_dir(document_folder_template)
+
+
+def create_docx2(xml, file_path: str):
+    document_folder_template = create_tmp_dir()
+    put_document_xml(document_folder_template, xml)
+    folder_to_docx(file_path, document_folder_template)
+    clean_temp_dir(document_folder_template)

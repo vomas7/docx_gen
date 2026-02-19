@@ -1,5 +1,6 @@
 import pytest
 
+from core.ui_objects.image.image import Drawing
 from core.ui_objects.run import Break, Run, RunProperty, Tab, Text
 
 
@@ -17,6 +18,7 @@ def test_run_access_children(run):
         {"class": Break},
         {"class": Text},
         {"class": Tab},
+        {"class": Drawing},
     ]
 
 

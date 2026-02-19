@@ -1,5 +1,5 @@
 from core.ui_objects.base.base_container_tag import BaseContainerTag
-from core.ui_objects.base.linked_objects import Objects
+from core.ui_objects.base.linked_objects import Objects, Property
 from core.ui_objects.bookmarks import BookmarkEnd, BookmarkStart
 from core.ui_objects.run import Run, RunProperty
 
@@ -7,8 +7,10 @@ from core.ui_objects.run import Run, RunProperty
 class ParagraphProperty(BaseContainerTag):
     __slots__ = ()
 
-    def __init__(self, linked_objects: Objects | list = None):
-        super().__init__(linked_objects)
+    def __init__(
+        self, objects: Objects | list = None, property: Property | list = None
+    ):
+        super().__init__(objects=objects, property=property)
 
     @property
     def tag(self):
@@ -26,8 +28,10 @@ class ParagraphProperty(BaseContainerTag):
 class Paragraph(BaseContainerTag):
     __slots__ = ()
 
-    def __init__(self, objects: Objects | list = None):
-        super().__init__(objects)
+    def __init__(
+        self, objects: Objects | list = None, property: Property | list = None
+    ):
+        super().__init__(objects=objects, property=property)
 
     @property
     def tag(self):

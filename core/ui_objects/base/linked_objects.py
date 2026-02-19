@@ -37,6 +37,8 @@ class LinkedList(UserList):
             raise TypeError(
                 "allowed_classes is None"
             )
+
+
         if isinstance(item, allowed_classes):
             matching = [
                 child for child in self.access_list if child["class"] is type(item)

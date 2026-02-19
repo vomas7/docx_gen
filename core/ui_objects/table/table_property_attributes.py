@@ -46,7 +46,7 @@ class Justification(BaseContentTag):
     def val(self, new_val: ValSpec):
         if not new_val:
             self._val = Val(Val.Options.none)
-        elif isinstance(new_val, (str, Val.Options)):
+        elif isinstance(new_val, str | Val.Options):
             self._val = Val(new_val)
         elif isinstance(new_val, Val):
             self._val = Val

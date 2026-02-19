@@ -25,7 +25,7 @@ class BaseTag(ABC):
 
     @property
     def attrs(self):
-        """Complete dict with attributes for xml craft"""
+        """Complete dict with attributes for XML craft"""
         slots = getattr(self, "__slots__", ())
         attrs = {}
         for slot in slots:
@@ -35,7 +35,9 @@ class BaseTag(ABC):
                 and isinstance(attribute, BaseAttribute)
                 and attribute.value is not None
             ):
-                attrs[qn(attribute.xml_name)] = attribute.value
+                _value = attribute.value
+                value = _value if isinstance(_value, str) else str(_value)
+                attrs[qn(attribute.xml_name)] = value
         return attrs
 
     def get_attribute(self, attribute: str) -> Any:
