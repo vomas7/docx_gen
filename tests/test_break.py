@@ -1,6 +1,6 @@
 import pytest
 
-from core.ui_objects.break_ import Break, Clear, Type
+from core.ui_objects.break_ import Break, Clear, BreakType
 
 
 @pytest.fixture
@@ -116,10 +116,10 @@ def test_br_slots_behavior():
 def test_enum_attribute_options():
     """Test Type and Clear Enum options"""
     # Test Type Options
-    assert Type.Options.line.value is None
-    assert Type.Options.page.value == "page"
-    assert Type.Options.column.value == "column"
-    assert Type.Options.textwrapping.value == "textWrapping"
+    assert BreakType.Options.line.value is None
+    assert BreakType.Options.page.value == "page"
+    assert BreakType.Options.column.value == "column"
+    assert BreakType.Options.textwrapping.value == "textWrapping"
 
     # Test Clear Options
     assert Clear.Options.empty.value is None
@@ -130,7 +130,7 @@ def test_enum_attribute_options():
 
 def test_init_with_type_and_clear_objects():
     """Test initialization with Type and Clear objects directly"""
-    type_obj = Type("page")
+    type_obj = BreakType("page")
     clear_obj = Clear("left")
 
     br = Break(type=type_obj, clear=clear_obj)
@@ -236,7 +236,7 @@ def test_breakspec_usage():
 
     # Test each valid type
     Break(type="page")  # Literal string
-    Break(type=Type.Options.column)  # Enum option
+    Break(type=BreakType.Options.column)  # Enum option
     Break(type=None)  # None
 
     # Break object itself

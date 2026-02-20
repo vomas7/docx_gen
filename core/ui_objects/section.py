@@ -202,7 +202,7 @@ class Section(BaseContainerTag):
         ]
 
     def change_page_size(self, width: Length, height: Length):
-        self._change_property(PageSize(width=width.twips, height=height.twips))
+        self.assign_property(PageSize(width=width.twips, height=height.twips))
 
     def change_page_margin(
         self,
@@ -214,7 +214,7 @@ class Section(BaseContainerTag):
         footer: Cm,
         gutter: Cm,
     ):
-        self._change_property(
+        self.assign_property(
             PageMargin(
                 top=Twips(top.twips),
                 right=Twips(right.twips),
@@ -227,14 +227,14 @@ class Section(BaseContainerTag):
         )
 
     def change_cols(self, space: Cm):
-        self._change_property(Cols(Twips(space.twips)))
+        self.assign_property(Cols(Twips(space.twips)))
 
     def change_doc_grid(self, line_pitch: Cm):
-        self._change_property(DocGrid(Twips(line_pitch.twips)))
+        self.assign_property(DocGrid(Twips(line_pitch.twips)))
 
     @property
     def page_width(self) -> int | Twips:
-        return self._get_property(PageSize).width
+        return self.get_property(PageSize).width
 
     @property
     def page_width_cm(self) -> float | Cm:
@@ -242,8 +242,8 @@ class Section(BaseContainerTag):
 
     @property
     def left_margin(self) -> int | Twips:
-        return self._get_property(PageMargin).left
+        return self.get_property(PageMargin).left
 
     @property
     def right_margin(self) -> int | Twips:
-        return self._get_property(PageMargin).right
+        return self.get_property(PageMargin).right

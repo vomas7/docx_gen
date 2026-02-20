@@ -5,7 +5,7 @@ from core.ui_objects.base.base_attribute import EnumAttribute
 from core.ui_objects.base.base_content_tag import BaseContentTag
 
 
-class Type(EnumAttribute):
+class BreakType(EnumAttribute):
     class Options(Enum):
         line = None
         page = "page"
@@ -16,8 +16,11 @@ class Type(EnumAttribute):
         super().__init__(xml_name="w:type", value=value)
 
 
-TypeSpec = (
-    Literal["page", "column", "textWrapping", "line"] | Type.Options | None | Type
+BreakTypeSpec = (
+    Literal["page", "column", "textWrapping", "line"]
+    | BreakType.Options
+    | None
+    | BreakType
 )
 
 
@@ -40,7 +43,7 @@ class Break(BaseContentTag):
 
     __slots__ = ("_type", "_clear")
 
-    def __init__(self, type: TypeSpec = None, clear: ClearSpec = None):
+    def __init__(self, type: BreakTypeSpec = None, clear: ClearSpec = None):
         self.clear = clear
         self.type = type
 
@@ -49,8 +52,8 @@ class Break(BaseContentTag):
         return "w:br"
 
     @property
-    def type(self) -> Type:
-        if not isinstance(self._type, Type):
+    def type(self) -> BreakType:
+        if not isinstance(self._type, BreakType):
             raise AttributeError(
                 f"Attribute <type> has not type(BreakTypeAttribute) "
                 f"Its type - {type(self._type)}!"
@@ -58,12 +61,12 @@ class Break(BaseContentTag):
         return self._type.value
 
     @type.setter
-    def type(self, new_type: TypeSpec):
+    def type(self, new_type: BreakTypeSpec):
         if not new_type:
-            self._type = Type(Type.Options.line)
-        elif isinstance(new_type, (str | Type.Options)):
-            self._type = Type(new_type)
-        elif isinstance(new_type, Type):
+            self._type = BreakType(BreakType.Options.line)
+        elif isinstance(new_type, (str | BreakType.Options)):
+            self._type = BreakType(new_type)
+        elif isinstance(new_type, BreakType):
             self._type = new_type
         else:
             raise TypeError(f"Wrong type for w:type!: {type(new_type)}")

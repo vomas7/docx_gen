@@ -1,8 +1,9 @@
 from enum import Enum
 from typing import Literal
 
-from core.ui_objects.base.base_attribute import EnumAttribute
+from core.ui_objects.base.base_attribute import EnumAttribute, TwipsAttribute
 from core.ui_objects.base.base_content_tag import BaseContentTag
+from core.utils.metrics import Twips
 
 
 class Val(EnumAttribute):
@@ -52,3 +53,26 @@ class Justification(BaseContentTag):
             self._val = Val
         else:
             raise TypeError(f"Wrong type for w:type!: {type(new_val)}")
+
+
+class CellType(EnumAttribute):
+    class Options(Enum):
+        dxa = "dxa"
+        nil = "nil"
+        pct = "pct"
+        auto = "auto"
+
+    def __init__(self, value):
+        super().__init__(xml_name="w:type", value=value)
+
+
+CellTypeSpec = Literal["dxa", "nil", "pct", "auto"] | CellType.Options | CellType
+
+
+CellWidthSpec = Twips | None
+
+
+class CellWidthAttribute(TwipsAttribute):
+    # TODO add PercentAttribute because CellWidth can also be in percent
+    def __init__(self, value: Twips = None):
+        super().__init__(xml_name="w:w", value=value)
