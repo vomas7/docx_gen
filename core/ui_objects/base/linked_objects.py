@@ -30,15 +30,9 @@ class LinkedList(UserList):
     def validate_access_child(self, item, position: int):
         allowed_classes = tuple(child["class"] for child in self.access_list)
         if not item:
-            raise TypeError(
-                "item is None"
-            )
+            raise TypeError("item is None")
         if not allowed_classes:
-            raise TypeError(
-                "allowed_classes is None"
-            )
-
-
+            raise TypeError("allowed_classes is None")
         if isinstance(item, allowed_classes):
             matching = [
                 child for child in self.access_list if child["class"] is type(item)
@@ -46,7 +40,16 @@ class LinkedList(UserList):
             access = matching[0] if matching else None
             if access and "required_position" in access:
                 required_position = access.get("required_position")
-                if required_position != position:
+                if required_position == -1:
+                    current_properties = self.linked_parent.property
+                    if current_properties and not isinstance(
+                        current_properties[-1], access
+                    ):
+                        raise IndexError(
+                            f"Object {item} must be on position {required_position} "
+                            f"not {position}"
+                        )
+                elif required_position != position:
                     raise IndexError(
                         f"Object {item} must be on position {required_position} "
                         f"not {position}"
