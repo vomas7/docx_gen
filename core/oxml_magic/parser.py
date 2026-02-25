@@ -1,17 +1,12 @@
 import zipfile
 import warnings
-from typing import TYPE_CHECKING, IO
+from typing import IO
 from lxml import etree
-from core.oxml_magic.xml_object import find_name_attr
 from core.oxml_magic.ns import NamespacePrefixedTag, nsmap, qn, XmlString
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.base.base_tag import BaseTag
 from core.ui_objects.section import Section
 from core.ui_objects.text import Text
-
-
-if TYPE_CHECKING:
-    pass
 
 
 def get_cls_by_tag(tag: str):
@@ -21,10 +16,14 @@ def get_cls_by_tag(tag: str):
 
 
 def make_xml_tree(cls_element: BaseTag) -> etree.Element:
+    from core.ui_objects.document import Body
+
     xml_tree = etree.Element(qn(cls_element.tag), attrib=cls_element.attrs, nsmap=nsmap)
     if isinstance(cls_element, BaseContainerTag):
         if isinstance(cls_element, Section):
             children = cls_element.property
+        elif isinstance(cls_element, Body):
+            children = list(cls_element.objects) + list(cls_element.property)
         elif cls_element.property:
             children = list(cls_element.property) + list(cls_element.objects)
         else:
@@ -44,11 +43,8 @@ def make_xml_tree(cls_element: BaseTag) -> etree.Element:
 
 def declare_attrib(xml_elem: etree._Element, cls_obj: BaseTag):
     for attr, val in xml_elem.attrib.items():
-        if ":" not in attr:
-            attr = cls_obj.tag.split(":")[0] + f":{attr}"  # takes tag prefix
-        attr_name = find_name_attr(cls_obj, attr)
-        if attr_name is not None and attr_name.startswith("_"):
-            attr_name = attr_name[1:]
+        attr_name = NamespacePrefixedTag.from_clark_name(attr).split(":")[1]
+        if hasattr(cls_obj, attr_name):
             property_attr = getattr(type(cls_obj), attr_name)
             property_attr.__set__(cls_obj, val)
 
@@ -74,14 +70,16 @@ def read_xml_markup(xml_tree: etree.ElementBase):
         if cls_object:
             access_property = list(
                 filter(
-                    lambda x: x.get("class").__name__ == cls_object.__class__.__name__,
+                    lambda x: x.get("class") == cls_object.__class__,
                     obj.access_property,
                 )
             )
-
             if len(access_property) > 0:
-                position = access_property[0].get("required_position") or 0
-                obj.property.insert(position, cls_object)
+                position = access_property[0].get("required_position")
+                if obj.property and position:
+                    obj.property[position] = cls_object
+                elif not obj.property:
+                    obj.property.append(cls_object)
             else:
                 obj.objects.append(cls_object)
     return obj
