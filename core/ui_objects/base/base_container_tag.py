@@ -80,7 +80,6 @@ class BaseContainerTag(BaseTag):
 
     def get_property(self, search) -> None | BaseTag:
         if isinstance(search, str):
-            print(self.property)
             if search not in self.allowed_property_names:
                 return None
             for prop in self.property:
@@ -97,9 +96,12 @@ class BaseContainerTag(BaseTag):
 
     def assign_property(self, property: BaseTag):
         position = self._get_property_required_position(property.__class__)
-        self.property[position] = property
+        if isinstance(position, int) and self.property:
+            self.property[position] = property
+        else:
+            self.property.append(property)
 
-    def _get_property_required_position(self, property: type[BaseTag]) -> int:
+    def _get_property_required_position(self, property: type[BaseTag]) -> int | None:
         return self._get_property_config(property).get("required_position")
 
     def _get_property_config(self, property: type[BaseTag]):
