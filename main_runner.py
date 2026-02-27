@@ -2,6 +2,8 @@ from core.ui_objects.document import Document
 
 # from core.ui_objects.paragraph import Paragraph
 from core.ui_objects.table.table import Table
+from core.ui_objects.table.cell import Cell
+from core.utils.metrics import Cm, Twips
 from core.writer.recording_tools import create_docx2
 from core.ui_objects import Run, RunProperty, Paragraph, Section
 
@@ -9,12 +11,9 @@ from core.ui_objects import Run, RunProperty, Paragraph, Section
 d = Document()
 b = d.body
 
-r = Run()
-r.bold = True
-r.italic = True
-r.font = "TimesNewRoman"
-r.add_text("Жопа")
-b.add(Paragraph([r]))
+sect = b.property[0]
+t = Table(1, 1, sect)
+b.objects.append(t)
 d.save("ts.docx")
 
 # sect = b.objects[0]

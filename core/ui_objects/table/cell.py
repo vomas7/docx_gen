@@ -16,7 +16,7 @@ class CellWidth(BaseContentTag):
 
     def __init__(self, w: Twips | None = None, type: CellTypeSpec | None = None):
         self.width = CellWidthAttribute(w)
-        self.type = CellType(type)
+        self.type = CellType(type if type else "dxa")
 
     @property
     def tag(self) -> str:
@@ -42,20 +42,24 @@ class CellWidth(BaseContentTag):
         return self._w.value
 
     @width.setter
-    def width(self, new_width: Twips):
-        if isinstance(new_width, Twips):
+    def width(self, new_width: CellWidthAttribute):
+        if isinstance(new_width, CellWidthAttribute):
             self._w = new_width
-        raise TypeError(f"width must be in Twips not {type(new_width)}!")
+        else:
+            raise TypeError(f"width must be in Twips not {type(new_width)}!")
 
 
 class CellProperty(BaseContainerTag):
+    __slots__ = ("_width",)
+
     def __init__(
         self,
-        width: CellWidth = None,
         objects: Objects | list = None,
         property: Property | list = None,
+        width: CellWidth | Twips = None,
     ):
         super().__init__(objects=objects, property=property)
+        self.width = width
 
     @property
     def tag(self) -> str:
@@ -69,14 +73,34 @@ class CellProperty(BaseContainerTag):
     def access_property(self) -> list[dict]:
         return []
 
+    @property
+    def width(self) -> int:
+        return self._width.width
+
+    @width.setter
+    def width(self, value: Twips | CellWidth):
+        if isinstance(value, Twips):
+            self._width = CellWidth(w=value)
+        elif isinstance(value, CellWidth):
+            self._width = value
+        elif value is None:
+            self._width = CellWidth(w=Twips(2000))
+        else:
+            raise TypeError(f"Width value must be CellWidth or Twips not {type(value)}")
+        self.add(self._width)
+
 
 class Cell(BaseContainerTag):
+    __slots__ = ("_width",)
+
     def __init__(
         self,
+        width: Twips = None,
         objects: Objects | list = None,
         property: Property | list = None,
     ):
         super().__init__(objects=objects, property=property)
+        self.width = width
 
     @property
     def tag(self) -> str:
@@ -92,4 +116,9 @@ class Cell(BaseContainerTag):
 
     @property
     def width(self) -> int:
-        return
+        return self._get_property_attr(CellProperty, "width")
+
+    @width.setter
+    @BaseContainerTag.autoclean
+    def width(self, value: Twips):
+        self._set_property_attr(CellProperty, "width", value)

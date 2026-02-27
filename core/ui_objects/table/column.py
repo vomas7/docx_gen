@@ -39,11 +39,7 @@ class TableGrid(BaseContainerTag):
         return [{"class": GridColumn}]
 
     def _create_columns(self):
-        print(1, self._block_width)
-        print(2, self.column_count)
         one_column_width = self._block_width // self.column_count
-        print(3, one_column_width)
-        print(4, Twips(one_column_width))
         for _ in range(self.column_count):
             self.property.append(GridColumn(Twips(one_column_width)))
 

@@ -1,5 +1,7 @@
 from types import NoneType
 
+from core.ui_objects import Objects
+from core.ui_objects.base.linked_objects import Property
 from core.ui_objects.section import Section
 from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.table.column import TableGrid
@@ -11,17 +13,20 @@ from core.utils.metrics import Twips
 
 
 class Table(BaseContainerTag):
-    def __init__(self, rows: int = None, cols: int = None, section: Section = None):
-        super().__init__()
-        if isinstance(rows, NoneType) or isinstance(cols, NoneType):
-            return
-        if not section:
-            section = Section()
-        validate_word_table_rows(rows)
-        validate_word_table_columns(cols)
-        self.rows = rows
-        self.columns = cols
-        self.section = section
+    def __init__(
+        self,
+        rows: int = None,
+        cols: int = None,
+        section: Section = None,
+        objects: Objects | list = None,
+        property: Property | list = None,
+    ):
+        super().__init__(objects=objects, property=property)
+        self.rows = rows if not isinstance(rows, NoneType) else 1
+        self.columns = cols if not isinstance(cols, NoneType) else 1
+        validate_word_table_rows(self.rows)
+        validate_word_table_columns(self.columns)
+        self.section = section if section else Section()
         self.block_width = self._calculate_block_width()
         self._create_table()
 
