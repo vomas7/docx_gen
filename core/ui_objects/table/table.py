@@ -7,8 +7,10 @@ from core.ui_objects.base.base_container_tag import BaseContainerTag
 from core.ui_objects.table.column import TableGrid
 from core.ui_objects.table.row import TableRow
 from core.ui_objects.table.table_property_attributes import Justification
+from core.ui_objects.table.table_property_attributes import TableStyle, StyleVal
 from core.ui_objects.table.validator import validate_word_table_rows
 from core.ui_objects.table.validator import validate_word_table_columns
+from core.utils.constants import DEFAULT_TABLE_STYLE
 from core.utils.metrics import Twips
 
 
@@ -20,6 +22,7 @@ class Table(BaseContainerTag):
         section: Section = None,
         objects: Objects | list = None,
         property: Property | list = None,
+        table_style_id: str | StyleVal = None,
     ):
         super().__init__(objects=objects, property=property)
         self.rows = rows if not isinstance(rows, NoneType) else 1
@@ -28,7 +31,7 @@ class Table(BaseContainerTag):
         validate_word_table_columns(self.columns)
         self.section = section if section else Section()
         self.block_width = self._calculate_block_width()
-        self._create_table()
+        self._create_table(table_style_id)
 
     @property
     def tag(self):
@@ -42,9 +45,10 @@ class Table(BaseContainerTag):
     def access_property(self) -> list[dict]:
         return [{"class": TableProperty, "required_position": 0}]
 
-    def _create_table(self):
+    def _create_table(self, table_style_id: str = None):
         self._create_table_grid()
         self._create_rows()
+        self.style = table_style_id
 
     def _create_table_grid(self):
         self.objects.append(
@@ -64,16 +68,56 @@ class Table(BaseContainerTag):
         right = self.section.right_margin
         return page_width - left - right
 
+    @property
+    def style(self):
+        return self._get_property_attr(TableProperty, "style")
+
+    @style.setter
+    def style(self, style_id: str):
+        self._set_property_attr(TableProperty, "style", style_id)
+
 
 class TableProperty(BaseContainerTag):
+    __slots__ = ("_style",)
+
+    def __init__(
+        self,
+        objects: Objects | list = None,
+        property: Property | list = None,
+        style: str = None,
+    ):
+        super().__init__(objects=objects, property=property)
+        self.style = style
+
     @property
     def tag(self):
         return "w:tblPr"
 
+    @property
     def access_children(self) -> list[dict]:
-        return [
-            {"class": Justification},
-        ]
+        return [{"class": Justification}, {"class": TableStyle}]
 
+    @property
     def access_property(self) -> list[dict]:
         return list()
+
+    @property
+    def style(self):
+        return self._style
+
+    @style.setter
+    def style(self, style_id: str):
+        style_id = style_id if style_id else DEFAULT_TABLE_STYLE
+        style_index = self._get_table_style_index()
+        new_style = TableStyle(style_id)
+        if style_index:
+            self.objects[style_index] = new_style
+        else:
+            self.objects.append(new_style)
+        self._style = style_id
+
+    def _get_table_style_index(self) -> int | None:
+        for index, obj in enumerate(self.objects):
+            if isinstance(obj, TableStyle):
+                return index
+        return None
