@@ -1,6 +1,7 @@
 import copy
 from abc import abstractmethod
 from typing import overload
+from collections.abc import Callable
 from core.ui_objects.base.base_tag import BaseTag
 from core.ui_objects.base.linked_objects import Objects, Property
 
@@ -53,6 +54,19 @@ class BaseContainerTag(BaseTag):
             self.objects.append(item)
         else:
             self.objects.insert(index, item)
+
+    def index_siblings(self, item: BaseTag):
+        for index, obj in enumerate(self.objects):
+            if isinstance(obj, item.__class__):
+                return index
+        return None
+
+    def change_siblings(self, item: BaseTag):
+        index = self.index_siblings(item)
+        if isinstance(index, int):
+            self.objects[index] = item
+        else:
+            self.add(item)
 
     def remove(self, item: BaseTag):
         self.objects.remove(item)
@@ -157,7 +171,7 @@ class BaseContainerTag(BaseTag):
             self.property.clear()
 
     @classmethod
-    def autoclean(cls, func):
+    def autoclean(cls, func: Callable):
         def wrapper(self, *args, **kwargs):
             result = func(self, *args, **kwargs)
             self._cleanup_inactive_property()
