@@ -42,9 +42,11 @@ class CellWidth(BaseContentTag):
         return self._w.value
 
     @width.setter
-    def width(self, new_width: CellWidthAttribute):
+    def width(self, new_width: CellWidthAttribute | Twips):
         if isinstance(new_width, CellWidthAttribute):
             self._w = new_width
+        elif isinstance(new_width, Twips):
+            self._w = CellWidthAttribute(new_width)
         else:
             raise TypeError(f"width must be in Twips not {type(new_width)}!")
 
@@ -87,7 +89,7 @@ class CellProperty(BaseContainerTag):
             self._width = CellWidth(w=Twips(2000))
         else:
             raise TypeError(f"Width value must be CellWidth or Twips not {type(value)}")
-        self.add(self._width)
+        self.change_siblings(self._width)
 
 
 class Cell(BaseContainerTag):
