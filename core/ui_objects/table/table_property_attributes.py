@@ -87,7 +87,8 @@ class TableStyle(BaseContentTag):
     __slots__ = ("_val",)
 
     def __init__(self, val=None):
-        self.style = val
+        if val is not None:
+            self.style = val
 
     @property
     def tag(self) -> str:
