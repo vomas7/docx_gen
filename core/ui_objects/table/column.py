@@ -1,3 +1,5 @@
+from types import NoneType
+
 from core.ui_objects import Objects
 from core.ui_objects.table.validator import validate_word_table_columns
 from core.ui_objects.base.base_attribute import TwipsAttribute
@@ -15,8 +17,8 @@ class W(TwipsAttribute):
 class TableGrid(BaseContainerTag):
     def __init__(
         self,
-        columns_count: int,
-        block_width: int,
+        columns_count: int = None,
+        block_width: int = None,
         objects: Objects | list = None,
         property: Property | list = None,
     ):
@@ -24,7 +26,10 @@ class TableGrid(BaseContainerTag):
         validate_word_table_columns(columns_count)
         self.column_count = columns_count
         self._block_width = block_width
-        self._create_columns()
+        if not isinstance(self.column_count, NoneType) or not isinstance(
+            self._block_width, NoneType
+        ):
+            self._create_columns()
 
     @property
     def tag(self) -> str:
@@ -49,8 +54,9 @@ class GridColumn(BaseContentTag):
 
     __slots__ = ("_w",)
 
-    def __init__(self, width: Twips):
-        self.w = width
+    def __init__(self, width: Twips = None):
+        if width is not None:
+            self.w = width
 
     @property
     def tag(self) -> str:
