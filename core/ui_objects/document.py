@@ -1,5 +1,4 @@
 from typing import IO
-
 from core.ui_objects.atrib.ignorable import Ignorable
 from core.ui_objects.table.table import Table
 from core.utils.constants import DOC_DEFAULT_PATH
@@ -11,8 +10,6 @@ from core.ui_objects.section import Section
 
 
 class Body(BaseContainerTag):
-    __slots__ = ("some",)
-
     def __init__(self, objects: Objects | list = None):
         super().__init__(objects)
 
@@ -22,11 +19,11 @@ class Body(BaseContainerTag):
 
     @property
     def access_children(self):
-        return [{"class": Section}, {"class": Paragraph}, {"class": Table}]
+        return [{"class": Paragraph}, {"class": Table}]
 
     @property
     def access_property(self) -> list[dict]:
-        return list()
+        return [{"class": Section, "required_position": -1}]
 
 
 class Document(BaseContainerTag):

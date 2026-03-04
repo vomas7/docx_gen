@@ -309,7 +309,6 @@ def test_update_objects():
 
     # Remove property - should remove RunProperty
     run.bold = False
-    run._update_properties()  # Явный вызов
     assert len(run.property) == 0
 
     # Test with multiple properties
@@ -318,11 +317,9 @@ def test_update_objects():
     assert len(run.property) == 1
 
     run.bold = False  # Remove one property
-    run._update_properties()
     assert len(run.property) == 1  # Should still have RunProperty (italic)
 
     run.italic = False  # Remove last property
-    run._update_properties()
     assert len(run.property) == 0  # Should remove RunProperty
 
 
@@ -331,17 +328,17 @@ def test_set_run_property_edge_cases():
     run = Run()
 
     # Set property when no RunProperty exists
-    run.set_run_property("bold", True)
+    run._set_property_attr(RunProperty, "bold", True)
     assert run.run_property is not None
     assert run.bold is True
 
     # Update existing property
-    run.set_run_property("bold", False)
-    assert run.bold is False  # После удаления bold=False → None
+    run._set_property_attr(RunProperty, "bold", False)
+    assert run.bold is False
 
     # Set multiple properties
-    run.set_run_property("font", "Arial")
-    run.set_run_property("italic", True)
+    run._set_property_attr(RunProperty, "font", "Arial")
+    run._set_property_attr(RunProperty, "italic", True)
     assert run.font == "Arial"
     assert run.italic is True
 

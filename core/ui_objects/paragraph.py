@@ -18,7 +18,9 @@ class ParagraphProperty(BaseContainerTag):
 
     @property
     def access_children(self):
-        return [{"class": RunProperty}]
+        from core.ui_objects import Section
+
+        return [{"class": RunProperty}, {"class": Section}]
 
     @property
     def access_property(self) -> list[dict]:

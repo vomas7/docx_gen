@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from enum import Enum
 from typing import ClassVar
 from core.utils.metrics import Length, Twips
 
 
-class BaseAttribute:
+class BaseAttribute(ABC):
     """Base attribute properties"""
 
     def __init__(self, xml_name: str):
@@ -36,6 +36,8 @@ class EnumAttribute(BaseAttribute):
 
         enum_class = None
         for attr_name in dir(cls):
+            if attr_name.startswith("__") and attr_name.endswith("__"):
+                continue
             attr_value = getattr(cls, attr_name)
             if (
                 isinstance(attr_value, type)

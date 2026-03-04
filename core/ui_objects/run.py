@@ -143,73 +143,39 @@ class Run(BaseContainerTag):
 
     @property
     def run_property(self):
-        if self.property:
-            run_property = self.property[0]
-            if isinstance(run_property, RunProperty):
-                return run_property
-        return None
+        return self.get_property("RunProperty")
 
     @property
     def bold(self):
         """Bold of text - True | False"""
-        return self.get_from_run_property("bold")
+        return self._get_property_attr(RunProperty, "bold")
 
     @bold.setter
+    @BaseContainerTag.autoclean
     def bold(self, value: bool):
         """Set bold for contain text in Run"""
-        self.set_run_property("bold", value)
-        self._update_properties()
-
-    def clear(self):
-        """Clear all objects in linked objects"""
-        self.objects.clear()
+        self._set_property_attr(RunProperty, "bold", value)
 
     @property
-    def contains_page_break(self):
-        raise NotImplementedError
+    def contains_page_break(self) -> bool:
+        return bool(self.find(Break))
 
     @property
     def italic(self):
         """italic of text - True | False"""
-        return self.get_from_run_property("italic")
+        return self._get_property_attr(RunProperty, "italic")
 
     @italic.setter
+    @BaseContainerTag.autoclean
     def italic(self, value: bool):
         """Set italic for contain text in Run"""
-        self.set_run_property("italic", value)
-        self._update_properties()
+        self._set_property_attr(RunProperty, "italic", value)
 
     @property
     def font(self):
-        return self.get_from_run_property("font")
+        return self._get_property_attr(RunProperty, "font")
 
     @font.setter
+    @BaseContainerTag.autoclean
     def font(self, value: str):
-        self.set_run_property("font", value)
-        self._update_properties()
-
-    def get_from_run_property(self, property_name: str) -> bool | str | None:
-        """Getter of property rPr"""
-        if self.run_property:
-            return self.run_property.get_attribute(property_name)
-        return None
-
-    def set_run_property(self, property_name: str, value) -> None:
-        """Setter property rPr"""
-        if not self.run_property:
-            run_property = RunProperty()
-            setattr(run_property, property_name, value)
-            self.property.insert(0, run_property)
-        else:
-            setattr(self.run_property, property_name, value)
-
-    def _update_properties(self):
-        if self.run_property and not self._has_any_property():
-            self.property.remove(self.run_property)
-
-    def _has_any_property(self) -> bool:
-        properties = [
-            self.get_from_run_property(prop_name)
-            for prop_name in self.run_property.__slots__
-        ]
-        return any(properties)
+        self._set_property_attr(RunProperty, "font", value)

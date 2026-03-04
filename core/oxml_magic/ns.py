@@ -26,7 +26,7 @@ nsmap = {
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
     "mc": "http://schemas.openxmlformats.org/markup-compatibility/2006",
     "uri": "http://schemas.microsoft.com/office/drawing/2010/main",
-    "xmlns": "http://schemas.openxmlformats.org/drawingml/2006/main",
+    # "xmlns": "http://schemas.openxmlformats.org/drawingml/2006/main",
 }
 
 pfxmap = {value: key for key, value in nsmap.items()}

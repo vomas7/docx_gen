@@ -69,14 +69,19 @@ def _register_module_classes(module, initialized_classes: list) -> None:
 def _discover_and_register() -> None:
     """Discovers and registers all classes in the package."""
     initialized_classes = []
-    module_names = [module_name for _, module_name, _ in pkgutil.iter_modules(__path__)]
-    module_names[-1] = module_names.pop(module_names.index('document'))
+    module_names = [
+        module_name
+        for importer, module_name, is_pkg in pkgutil.walk_packages(
+            __path__, prefix=f"{__package__}."
+        )
+    ]
+    module_names[-1] = module_names.pop(module_names.index("core.ui_objects.document"))
     for module_name in module_names:
         if module_name in ("__main__", "__init__"):
             continue
 
         try:
-            module = importlib.import_module(f".{module_name}", __package__)
+            module = importlib.import_module(f"{module_name}")
             _register_module_classes(module, initialized_classes)
         except ImportError as e:
             print(f"Warning: Could not import {module_name}: {e}")
